@@ -1,0 +1,7 @@
+/* You can add global styles to this file, and also import other style files */
+
+
+body { padding-top: 40px; }
+@media screen and (max-width: 768px) {
+  body { padding-top: 0px; }
+}

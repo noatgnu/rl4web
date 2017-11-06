@@ -1,0 +1,29 @@
+<!--The content below is only a placeholder and can be replaced.-->
+<nav id="mainNavbar" class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+  <a class="navbar-brand" href="#">Schulz Lab</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse"
+          data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+          aria-expanded="false" aria-label="Toggle navigation"
+          (click)="toggleCollapsed()">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div id="navbarSupportedContent" [ngClass]="{'collapse': collapsed, 'navbar-collapse': true}">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" routerLink="/" routerLinkActive="active">Home <span class="sr-only">(current)</span></a>
+      </li>
+      <li ngbDropdown class="nav-item d-inline-block">
+        <a class="nav-link dropdown-toggle" href="#" ngbDropdownToggle id="navbarDropdown">
+          Bioinformatic Tools
+        </a>
+        <div ngbDropdownMenu aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" routerLink="/nsp" routerLinkActive="active">N-glycosylation Sequon Parser</a>
+          <div class="dropdown-divider"></div>
+        </div>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<router-outlet></router-outlet>
+
