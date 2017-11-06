@@ -1,8 +1,8 @@
 import { Component, OnInit, ViewChild} from '@angular/core';
-import {FileHandlerService} from "../file-handler.service";
-import {NgForm} from "@angular/forms";
-import {DataStore} from "../data-row";
-import {DomSanitizer, SafeUrl} from "@angular/platform-browser";
+import {FileHandlerService} from '../file-handler.service';
+import {NgForm} from '@angular/forms';
+import {DataStore} from '../data-row';
+import {DomSanitizer, SafeUrl} from '@angular/platform-browser';
 
 @Component({
   selector: 'app-n-gly-sequon-parser',
@@ -12,7 +12,7 @@ import {DomSanitizer, SafeUrl} from "@angular/platform-browser";
 export class NGlySequonParserComponent implements OnInit {
   fileHandler;
   result: DataStore;
-  model = {columnName: "Sequence", ignoreMod: true};
+  model = {columnName: 'Sequence', ignoreMod: true};
   loadHeader = true;
   started = false;
   processing = false;
@@ -20,9 +20,8 @@ export class NGlySequonParserComponent implements OnInit {
   fileSize: number;
   downloadLinks: string[] = [];
   safeDownloadLink: SafeUrl[] = [];
-  sanitize;
 
-  @ViewChild("resultElem") resultElem;
+  @ViewChild('resultElem') resultElem;
   constructor(_fh: FileHandlerService, private sanitization: DomSanitizer) {
     this.fileHandler = _fh.fileHandler;
   }
@@ -30,9 +29,9 @@ export class NGlySequonParserComponent implements OnInit {
   ngOnInit() {
   }
 
-  async processFile(e){
+  async processFile(e) {
     if (this.downloadLinks.length > 0) {
-      for (let link of this.downloadLinks) {
+      for (const link of this.downloadLinks) {
         URL.revokeObjectURL(link);
       }
       this.downloadLinks = [];
@@ -48,14 +47,14 @@ export class NGlySequonParserComponent implements OnInit {
       this.started = true;
       this.processing = true;
       this.result.header.forEach((item, index) => {
-        if (item == f.value.columnName) {
+        if (item === f.value.columnName) {
           this.result.seqColumn = index;
         }
       });
       console.log(this.result.seqColumn);
-      let d = DataStore.filterSequon(f.value.ignoreMod, this.result.data, this.result.seqColumn);
+      const d = DataStore.filterSequon(f.value.ignoreMod, this.result.data, this.result.seqColumn);
       this.downloadLinks.push(DataStore.toCSV(this.result.header, d));
-      for (let link of this.downloadLinks) {
+      for (const link of this.downloadLinks) {
         this.safeDownloadLink.push(this.sanitization.bypassSecurityTrustResourceUrl(link));
       }
       this.processing = false;
