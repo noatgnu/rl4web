@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {DataRow, DataStore} from "./data-row";
 import {Observable} from "rxjs/Observable";
 import {Subject} from "rxjs/Subject";
+import * as FileSaver from 'file-saver';
 
 @Injectable()
 export class FileHandlerService {
@@ -30,5 +31,7 @@ export class FileHandlerService {
     });
   }
 
-
+  saveFile(blob: Blob, fileName: string): void {
+    FileSaver.saveAs(blob, fileName);
+  }
 }
