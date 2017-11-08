@@ -20,7 +20,7 @@ export class FileHandlerService {
         const loadedFile = reader.result;
         console.log();
         const lines = loadedFile.split(/\r\n|\n/);
-        lines.map((line)=>{
+        lines.map((line) => {
           if (line.length > 0) {
             result.push(new DataRow(line.split(/\t/)));
           }
@@ -29,6 +29,19 @@ export class FileHandlerService {
       };
       reader.readAsText(file);
     });
+  }
+
+  fileHandlerNoE(data) {
+    const d: DataRow[] = [];
+    const lines = data.split(/\r\n|\n/);
+    if (lines.length > 1) {
+      for (const line of lines) {
+        if (line.length > 0) {
+          d.push(new DataRow(line.split(/\t/)));
+        }
+      }
+    }
+    return new DataStore(d, true, '');
   }
 
   saveFile(blob: Blob, fileName: string): void {

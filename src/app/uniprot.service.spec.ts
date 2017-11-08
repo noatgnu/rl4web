@@ -2,6 +2,7 @@ import { TestBed, inject } from '@angular/core/testing';
 
 import { UniprotService } from './uniprot.service';
 
+
 describe('UniprotService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
