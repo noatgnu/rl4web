@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import {DataRow, DataStore} from "./data-row";
-import {Observable} from "rxjs/Observable";
-import {Subject} from "rxjs/Subject";
+import {DataRow, DataStore} from './data-row';
+import {Observable} from 'rxjs/Observable';
+import {Subject} from 'rxjs/Subject';
 import * as FileSaver from 'file-saver';
 
 @Injectable()
@@ -12,10 +12,10 @@ export class FileHandlerService {
   constructor() { }
 
   async fileHandler(e, loadHeader) {
-    return new Promise<DataStore>((resolve, reject)=> {
+    return new Promise<DataStore>((resolve, reject) => {
       const file = e.target.files[0];
-      let reader = new FileReader();
-      let result: DataRow[] = [];
+      const reader = new FileReader();
+      const result: DataRow[] = [];
       reader.onload = (event) => {
         const loadedFile = reader.result;
         console.log();
@@ -25,7 +25,7 @@ export class FileHandlerService {
             result.push(new DataRow(line.split(/\t/)));
           }
         });
-        resolve(new DataStore(result, loadHeader, file.name))
+        resolve(new DataStore(result, loadHeader, file.name));
       };
       reader.readAsText(file);
     });

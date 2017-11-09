@@ -25,7 +25,7 @@ export class UniprotParserComponent implements OnInit {
   }
 
   onSubmit(f: NgForm) {
-    const divisor = 2;
+    const divisor = 4;
     if (f.valid && f.value.uniprotList !== '') {
       this.started = true;
       this.processing = true;
@@ -35,45 +35,71 @@ export class UniprotParserComponent implements OnInit {
       if (remainder > 0) {
         quotient += 1;
       }
+      let mainAcessionlist: string[] = [];
 
+      for (const u of ulArray) {
+        if (u.length > 0) {
+          const accession = this._uniprot.Re.exec(u);
+          if (!mainAcessionlist.includes(accession[0])) {
+            mainAcessionlist.push(accession[0]);
+          }
+        }
+      }
       let n = 0;
       while (n < quotient) {
         const options: Map<string, string> = new Map<string, string>([
           ['format', 'tab'],
-          ['column', 'id,entry name,reviewed,protein names,genes,organism,length,database(RefSeq),organism-id,go-id,feature(GLYCOSYLATION),comment(MASS SPECTROMETRY),sequence'],
-          ['compress', 'no']
+          ['columns', 'id,entry name,reviewed,protein names,genes,organism,length,database(RefSeq),organism-id,go-id,feature(GLYCOSYLATION),comment(MASS SPECTROMETRY),sequence'],
+          ['compress', 'no'],
+          ['force', 'no'],
+          ['sort', 'score'],
+          ['desc', ''],
+          ['fil', '']
         ]);
         const accessionList: string[] = [];
-        if ((ulArray.length - divisor * quotient) >= divisor) {
-          for (const u of ulArray.slice(n * quotient, (n + 1) * quotient)) {
-            const accession = u.match(this._uniprot.Re);
-            accessionList.push(accession);
+        if ((mainAcessionlist.length - divisor * quotient) >= divisor) {
+          for (const u of mainAcessionlist.slice(n * quotient, (n + 1) * quotient)) {
+            if (u.length > 0) {
+              const accession = this._uniprot.Re.exec(u);
+              accessionList.push(accession[0]);
+            }
           }
-          options.set('query', accessionList.join(','));
-
         } else {
-          for (const u of ulArray.slice(n * quotient)) {
-            const accession = u.match(this._uniprot.Re);
-            accessionList.push(accession);
+          for (const u of mainAcessionlist.slice(n * quotient)) {
+            if (u.length > 0) {
+              const accession = this._uniprot.Re.exec(u);
+              accessionList.push(accession[0]);
+            }
           }
         }
+        mainAcessionlist = mainAcessionlist.concat(accessionList);
+        options.set('query', accessionList.join(','));
+        n += 1;
         this._uniprot.getUniprot(options)
           .subscribe((data) => {
-            this.results.push(data);
+            console.log(data);
+            this.results.push(data.body);
             if (this.results.length === quotient) {
               const merged = new DataStore([], false, 'uniprot_parsed.txt');
+
               for (const d of this.results) {
                 const ds = this._fh.fileHandlerNoE(d);
+
                 if (!merged.header) {
                   merged.header = ds.header;
                 }
                 merged.data = merged.data.concat(ds.data);
               }
-              this.downloadResults.push(DataStore.toCSV(merged.header, merged.data, 'with_mods_' + merged.fileName, 'Uniprot Parsing Completed'));
+              const s = DataStore.filterRow(mainAcessionlist, 0, merged.data);
+              this.downloadResults.push(DataStore.toCSV(merged.header, s[0], 'with_mods_' + merged.fileName, 'Uniprot Parsing Completed'));
+              if (s[1].length > 0) {
+                this.downloadResults.push(DataStore.toCSV(['Entry'], s[1], 'remain_accession_' + merged.fileName, 'Unsuccessful Match'));
+              }
             }
+            this.processing = false;
             this.finished = true;
           });
-        n += 1;
+
       }
     }
   }

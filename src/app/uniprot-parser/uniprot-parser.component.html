@@ -6,8 +6,8 @@
       <hr class="my-4">
       <form #f="ngForm" (ngSubmit)="onSubmit(f)">
         <div class="form-group">
-          <label for="uniprot-list">Uniprot Accession ID List:</label>
-          <textarea class="form-control" id="uniprot-list" name="uniprot-list" [(ngModel)]="model.uniprotList" required row="3">
+          <label for="uniprotList">Uniprot Accession ID List:</label>
+          <textarea class="form-control" id="uniprotList" name="uniprotList" [(ngModel)]="model.uniprotList" required row="5">
           </textarea>
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>

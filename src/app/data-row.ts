@@ -20,7 +20,7 @@ export class DataRow {
     return this.row[ncol].replace(/\[\w+\]/ig, '');
   }
 
-  hasMod(ncol: number, modList: string[]) {
+  hasMod(ncol: number, modList: string[]): boolean {
     let score = 0;
     for (const mod of modList) {
       if (this.row[ncol].includes(mod)) {
@@ -28,6 +28,10 @@ export class DataRow {
       }
     }
     return score === modList.length;
+  }
+
+  hasString(ncol: number, filterStringArray: string[]) {
+    return filterStringArray.includes(this.row[ncol]);
   }
 }
 
@@ -67,6 +71,21 @@ export class DataStore {
     return d;
   }
 
+  static filterRow(filterStringArray: string[], column: number, data: DataRow[]): DataRow[][] {
+    const y: DataRow[] = [];
+    for (const s of data) {
+      if (s.hasString(column, filterStringArray)) {
+        filterStringArray = filterStringArray.filter(e => e !== s.row[column]);
+        y.push(s);
+      }
+    }
+    const nacc: DataRow[] = [];
+    for (const f of filterStringArray) {
+      nacc.push(new DataRow([f]));
+    }
+    return [y, nacc];
+  }
+
   static filterMod(modList: string[], modColumn: number, data: DataRow[]): DataRow[][] {
     const y: DataRow[] = [];
     const n: DataRow[] = [];
@@ -78,6 +97,29 @@ export class DataStore {
       }
     }
     return [y, n];
+  }
+
+  static getColumnNum (header: string[], colName: string): number {
+    header.forEach((item, index) => {
+      if (item === colName) {
+        return index;
+      }
+    });
+    return -1;
+  }
+
+  static getGO(header: string[], data: DataRow[]) {
+    const goData: DataRow[] = [];
+    const goid = DataStore.getColumnNum(header, 'Gene ontology IDs');
+    const entryName = DataStore.getColumnNum(header, 'Entry name');
+    if (goid !== -1 && entryName !== -1) {
+      for (const d of data) {
+        for (const g of d.row[goid].split(';')) {
+          goData.push(new DataRow([g, 'IEA', d.row[entryName]]));
+        }
+      }
+    }
+    return goData;
   }
 
   static toCSV(header: string[], data: DataRow[], fileName: string, jobName: string): Result {
