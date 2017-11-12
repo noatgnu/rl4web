@@ -100,33 +100,46 @@ export class DataStore {
   }
 
   static getColumnNum (header: string[], colName: string): number {
-    header.forEach((item, index) => {
-      if (item === colName) {
-        return index;
+    let n = 0;
+    for (const h of header) {
+      if (h === colName) {
+        return n;
       }
-    });
+      n += 1;
+    }
     return -1;
   }
 
-  static getGO(header: string[], data: DataRow[]) {
+  static getGO(header: string[], data: DataRow[]): DataStore {
     const goData: DataRow[] = [];
     const goid = DataStore.getColumnNum(header, 'Gene ontology IDs');
     const entryName = DataStore.getColumnNum(header, 'Entry name');
+    goData.push(new DataRow(['Geneontology IDs', 'IEA', 'Entry name']));
     if (goid !== -1 && entryName !== -1) {
       for (const d of data) {
-        for (const g of d.row[goid].split(';')) {
+        for (const g of d.row[goid].split('; ')) {
           goData.push(new DataRow([g, 'IEA', d.row[entryName]]));
         }
       }
     }
-    return goData;
+    if (goData.length > 1) {
+      return new DataStore(goData, true, '');
+    } else {
+      const association = new DataStore([], false, '');
+      association.header = goData[0].row;
+      return association;
+    }
   }
 
   static toCSV(header: string[], data: DataRow[], fileName: string, jobName: string): Result {
     let csvContent = '';
-    csvContent += header.join('\t') + '\n';
-    for (const row of data) {
-      csvContent += row.row.join('\t') + '\n';
+    if (header) {
+      csvContent += header.join('\t') + '\n';
+    }
+    if (data.length > 0) {
+      for (const row of data) {
+        csvContent += row.row.join('\t') + '\n';
+      }
     }
     return new Result(fileName, new Blob([csvContent], {'type': 'text/csv;charset=utf-8;'}), jobName, data.length);
     /*if (navigator.msSaveBlob) {

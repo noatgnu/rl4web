@@ -7,8 +7,14 @@
       <form #f="ngForm" (ngSubmit)="onSubmit(f)">
         <div class="form-group">
           <label for="uniprotList">Uniprot Accession ID List:</label>
-          <textarea class="form-control" id="uniprotList" name="uniprotList" [(ngModel)]="model.uniprotList" required row="5">
+          <textarea class="form-control" id="uniprotList" name="uniprotList" [(ngModel)]="model.uniprotList" required row="10">
           </textarea>
+        </div>
+        <div class="form-check">
+          <label class="form-check-label">
+            <input type="checkbox" class="form-check-input" name="goStats" [(ngModel)]="model.goStats">
+            GOStats Association
+          </label>
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
       </form>
@@ -21,11 +27,14 @@
     <h5 class="card-title">
       Result
     </h5>
-    <h6 class="card-subtitle mb-2 text-primary" [hidden]="!processing">Processing <i class="fa fa-circle-o-notch fa-spin"></i></h6>
-    <h6 class="card-subtitle mb-2 text-success" [hidden]="!finished">Finished <i class="fa fa-check-circle-o" aria-hidden="true"></i></h6>
-    <div class="result-link" [hidden]="!finished" #resultElem>
+    <div *ngIf="status|async; else loading; let status">
+      <div *ngIf="status===true; else loading">
+        <h6 class="card-subtitle mb-2 text-success">Finished <i class="fa fa-check-circle-o" aria-hidden="true"></i></h6>
+      </div>
+    </div>
+    <div class="result-link" *ngIf="uniprot|async; let uniprot">
       <ngb-tabset>
-        <ngb-tab *ngFor="let link of downloadResults">
+        <ngb-tab *ngFor="let link of uniprot">
           <ng-template ngbTabTitle>{{link.jobName}} <span class="badge badge-primary">{{link.length}}</span></ng-template>
           <ng-template ngbTabContent>
             <p class="card-text text-center mt-4">
@@ -39,3 +48,7 @@
     </div>
   </div>
 </div>
+
+<ng-template #loading>
+  <h6 class="card-subtitle mb-2 text-primary">Processing <i class="fa fa-circle-o-notch fa-spin"></i></h6>
+</ng-template>
