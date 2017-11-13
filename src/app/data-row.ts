@@ -22,6 +22,8 @@ export class DataRow {
 
   hasMod(ncol: number, modList: string[]): boolean {
     let score = 0;
+    console.log(this.row);
+    console.log(ncol);
     for (const mod of modList) {
       if (this.row[ncol].includes(mod)) {
         score += 1;

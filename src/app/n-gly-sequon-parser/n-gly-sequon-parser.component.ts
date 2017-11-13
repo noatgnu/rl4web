@@ -2,6 +2,8 @@ import { Component, OnInit, ViewChild} from '@angular/core';
 import {FileHandlerService} from '../file-handler.service';
 import {NgForm} from '@angular/forms';
 import {DataStore, Result} from '../data-row';
+import {NglycoService} from "../nglyco.service";
+import {Observable} from "rxjs/Observable";
 
 @Component({
   selector: 'app-n-gly-sequon-parser',
@@ -19,11 +21,15 @@ export class NGlySequonParserComponent implements OnInit {
   fileSize: number;
   fileDownloader;
   downloadResults: Result[] = [];
+  nglyResult: Observable<Result[]>;
+  statusResult: Observable<boolean>;
 
   @ViewChild('resultElem') resultElem;
-  constructor(_fh: FileHandlerService) {
+  constructor(private _fh: FileHandlerService, private _ngp: NglycoService) {
     this.fileHandler = _fh.fileHandler;
     this.fileDownloader = _fh.saveFile;
+    this.nglyResult = _ngp.nGlyResult;
+    this.statusResult = _ngp.ResultStatus;
   }
 
   ngOnInit() {
@@ -42,25 +48,7 @@ export class NGlySequonParserComponent implements OnInit {
     if (f.valid && this.result) {
       this.started = true;
       this.processing = true;
-      this.result.header.forEach((item, index) => {
-        if (item === f.value.columnName) {
-          this.result.seqColumn = index;
-        } else if (item === f.value.modColumn) {
-          this.result.modColumn = index;
-        }
-      });
-      console.log(this.result.seqColumn);
-      const d = DataStore.filterSequon(f.value.ignoreMod, this.result.data, this.result.seqColumn);
-      this.downloadResults.push(DataStore.toCSV(this.result.header, d, 'sequon_parsed_' + this.result.fileName, 'Sequon parsed'));
-      if (f.value.modFilter) {
-        const fMod = DataStore.filterMod(f.value.mod.split(','), this.result.modColumn, d);
-        if (fMod[0].length > 0) {
-          this.downloadResults.push(DataStore.toCSV(this.result.header, fMod[0], 'with_mods_' + this.result.fileName, 'Sequons with modifications ' + f.value.mod));
-        }
-        if (fMod[1].length > 0) {
-          this.downloadResults.push(DataStore.toCSV(this.result.header, fMod[1], 'without_mods_' + this.result.fileName, 'Sequons without modifications ' + f.value.mod));
-        }
-      }
+      this._ngp.nGlycoParser(this.result, f);
       this.processing = false;
       this.finished = true;
     }

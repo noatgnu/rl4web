@@ -10,8 +10,8 @@ export class UniprotService {
   public Re = /[OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9]([A-Z][A-Z0-9]{2}[0-9]){1,2}/;
   results: string[] = [];
 
-  private _uniprotResultSource = new Subject<Result[]>();
-  UniprotResult = this._uniprotResultSource.asObservable();
+  private _ResultSource = new Subject<Result[]>();
+  UniprotResult = this._ResultSource.asObservable();
 
   private _resultStatusSource = new Subject<boolean>();
   ResultStatus = this._resultStatusSource.asObservable();
@@ -33,7 +33,7 @@ export class UniprotService {
   }
 
   updateUniprotResult(result: Result[]) {
-    this._uniprotResultSource.next(result);
+    this._ResultSource.next(result);
   }
 
   updateResultStatus(status: boolean) {

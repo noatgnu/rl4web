@@ -13,6 +13,7 @@ import {UniprotService} from './uniprot.service';
 import { UniprotParserComponent } from './uniprot-parser/uniprot-parser.component';
 import {HttpClientModule} from "@angular/common/http";
 import { ResultComponent } from './result/result.component';
+import {NglycoService} from "./nglyco.service";
 
 const appRoutes: Routes = [
   {path: '', component: HomeComponent},
@@ -40,7 +41,7 @@ const appRoutes: Routes = [
   providers: [
     FileHandlerService,
     UniprotService,
-
+    NglycoService,
   ],
   bootstrap: [AppComponent]
 })
