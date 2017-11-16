@@ -14,11 +14,14 @@ import { UniprotParserComponent } from './uniprot-parser/uniprot-parser.componen
 import {HttpClientModule} from "@angular/common/http";
 import { ResultComponent } from './result/result.component';
 import {NglycoService} from "./nglyco.service";
+import {PublicationService} from "./publication.service";
+import { PublicationComponent } from './publication/publication.component';
 
 const appRoutes: Routes = [
   {path: '', component: HomeComponent},
   {path: 'nsp', component: NGlySequonParserComponent},
-  {path: 'up', component: UniprotParserComponent}
+  {path: 'up', component: UniprotParserComponent},
+  {path: 'pub', component: PublicationComponent}
 ];
 
 @NgModule({
@@ -27,7 +30,8 @@ const appRoutes: Routes = [
     NGlySequonParserComponent,
     HomeComponent,
     UniprotParserComponent,
-    ResultComponent
+    ResultComponent,
+    PublicationComponent
   ],
   imports: [
     NgbModule.forRoot(),
@@ -42,6 +46,7 @@ const appRoutes: Routes = [
     FileHandlerService,
     UniprotService,
     NglycoService,
+    PublicationService
   ],
   bootstrap: [AppComponent]
 })

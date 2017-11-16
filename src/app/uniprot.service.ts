@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {DataStore, Result} from "./data-row";
-import {FileHandlerService} from "./file-handler.service";
-import {Subject} from "rxjs/Subject";
+import {DataStore, Result} from './data-row';
+import {FileHandlerService} from './file-handler.service';
+import {Subject} from 'rxjs/Subject';
 
 @Injectable()
 export class UniprotService {

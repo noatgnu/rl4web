@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import {DataStore, Result} from "./data-row";
-import {Subject} from "rxjs/Subject";
-import {NgForm} from "@angular/forms";
+import {DataStore, Result} from './data-row';
+import {Subject} from 'rxjs/Subject';
+import {NgForm} from '@angular/forms';
 
 @Injectable()
 export class NglycoService {
