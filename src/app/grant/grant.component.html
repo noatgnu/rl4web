@@ -1,0 +1,31 @@
+<div class="container">
+  <div class="card mt-4">
+    <div class="card-body">
+      <h4 class="card-title">Grants</h4>
+      <div *ngIf="grant|async; else loading; let grant">
+        <hr class="my-4">
+        <div *ngFor="let l of loc">
+          <h5 class="card-text">
+            Administered at {{l}}
+          </h5>
+          <div *ngFor="let g of grant.get(l)">
+            <a [href]="g.link" class="card-text text-link">
+              {{g.projectTitle}}
+            </a>
+            <p *ngIf="g.start < g.end" class="card-text text-muted">
+              ({{g.start}}-{{g.end}}) {{g.grantTitle}}
+            </p>
+            <p *ngIf="g.start === g.end" class="card-text text-muted">
+              {{g.start}}) {{g.grantTitle}}
+            </p>
+            <br>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #loading>
+  <h6 class="card-subtitle mb-2 text-muted">Loading <i class="fa fa-circle-o-notch fa-spin"></i></h6>
+</ng-template>

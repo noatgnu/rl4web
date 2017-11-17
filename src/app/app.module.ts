@@ -16,12 +16,15 @@ import { ResultComponent } from './result/result.component';
 import {NglycoService} from "./nglyco.service";
 import {PublicationService} from "./publication.service";
 import { PublicationComponent } from './publication/publication.component';
+import { GrantComponent } from './grant/grant.component';
+import {GrantService} from "./grant.service";
 
 const appRoutes: Routes = [
   {path: '', component: HomeComponent},
   {path: 'nsp', component: NGlySequonParserComponent},
   {path: 'up', component: UniprotParserComponent},
-  {path: 'pub', component: PublicationComponent}
+  {path: 'pub', component: PublicationComponent},
+  {path: 'grant', component: GrantComponent}
 ];
 
 @NgModule({
@@ -31,7 +34,8 @@ const appRoutes: Routes = [
     HomeComponent,
     UniprotParserComponent,
     ResultComponent,
-    PublicationComponent
+    PublicationComponent,
+    GrantComponent
   ],
   imports: [
     NgbModule.forRoot(),
@@ -46,7 +50,8 @@ const appRoutes: Routes = [
     FileHandlerService,
     UniprotService,
     NglycoService,
-    PublicationService
+    PublicationService,
+    GrantService
   ],
   bootstrap: [AppComponent]
 })
