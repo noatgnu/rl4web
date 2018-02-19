@@ -44,7 +44,7 @@ export class UniprotService {
     this.updateResultStatus(false);
     const result: Result[] = [];
     let mainAcessionlist: string[] = [];
-    const divisor = 300;
+    const divisor = 100;
     for (const u of accList) {
       if (u.length > 0) {
         const accession = this.Re.exec(u);
