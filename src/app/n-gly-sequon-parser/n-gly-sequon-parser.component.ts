@@ -2,13 +2,14 @@ import { Component, OnInit, ViewChild} from '@angular/core';
 import {FileHandlerService} from '../file-handler.service';
 import {NgForm} from '@angular/forms';
 import {DataStore, Result} from '../data-row';
-import {NglycoService} from "../nglyco.service";
-import {Observable} from "rxjs/Observable";
+import {NglycoService} from '../nglyco.service';
+import {Observable} from 'rxjs/Observable';
 
 @Component({
   selector: 'app-n-gly-sequon-parser',
   templateUrl: './n-gly-sequon-parser.component.html',
-  styleUrls: ['./n-gly-sequon-parser.component.css']
+  styleUrls: ['./n-gly-sequon-parser.component.css'],
+  providers: [FileHandlerService, NglycoService]
 })
 export class NGlySequonParserComponent implements OnInit {
   fileHandler;

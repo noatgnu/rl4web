@@ -11,7 +11,7 @@
             <input type="file" class="form-control" aria-label="peptide-summary" aria-describedby="label-peptide" (change)="processFile($event)" required>
           </div>
           <small id="peptide-summary-rows" class="form-text text-muted">
-            <div *ngIf="this.result">
+            <div *ngIf="result">
               {{fileSize}} rows has been loaded.
             </div>
           </small>
