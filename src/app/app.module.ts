@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 
 import { AppComponent } from './app.component';
-import {FormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 
 import { NGlySequonParserComponent } from './n-gly-sequon-parser/n-gly-sequon-parser.component';
@@ -18,9 +18,13 @@ import {PublicationService} from "./publication.service";
 import { PublicationComponent } from './publication/publication.component';
 import { GrantComponent } from './grant/grant.component';
 import {GrantService} from "./grant.service";
+import { SwathLibComponent } from './swath-lib/swath-lib.component';
+import {FileUploadModule} from "ng2-file-upload";
+import {SwathLibAssetService} from "./swath-lib-asset.service";
 
 const appRoutes: Routes = [
   {path: '', component: HomeComponent},
+  {path: 'swathlib', component: SwathLibComponent},
   {path: 'nsp', component: NGlySequonParserComponent},
   {path: 'up', component: UniprotParserComponent},
   {path: 'pub', component: PublicationComponent},
@@ -35,7 +39,8 @@ const appRoutes: Routes = [
     UniprotParserComponent,
     ResultComponent,
     PublicationComponent,
-    GrantComponent
+    GrantComponent,
+    SwathLibComponent
   ],
   imports: [
     NgbModule.forRoot(),
@@ -45,13 +50,16 @@ const appRoutes: Routes = [
     FormsModule,
     BrowserModule,
     HttpClientModule,
+    FileUploadModule,
+    ReactiveFormsModule
   ],
   providers: [
     FileHandlerService,
     UniprotService,
     NglycoService,
     PublicationService,
-    GrantService
+    GrantService,
+    SwathLibAssetService
   ],
   bootstrap: [AppComponent]
 })

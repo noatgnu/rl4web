@@ -1,0 +1,75 @@
+<div class="container">
+  <div class="card mt-4">
+    <div class="card-body">
+      <h4 class="card-title">Swath Ion Library Fabricator</h4>
+      <hr class="my-4">
+      <form #f="ngForm" (ngSubmit)="onSubmit(f)">
+        <div class="form-group">
+          <div class="input-group">
+            <span class="input-group-addon" id="label-fasta">Fasta</span>
+            <input type="file" class="form-control" name="fasta" id="fasta" (change)="getFile($event, 'fasta')"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="input-group">
+            <span class="input-group-addon" id="label-windows">Swath Windows</span>
+            <input type="file" class="form-control" name="windows" id="windows" (change)="getFile($event, 'windows')"/>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-md-4">
+            <label for="staticModsSource">Static mods:</label>
+            <select multiple class="form-control" id="staticModsSource" *ngIf="staticMods|async; else loading; let staticMods" [(ngModel)]="selectedMod" [ngModelOptions]="{standalone: true}">
+              <option *ngFor="let s of staticMods" [value]="s">{{s.modTitle}}</option>
+            </select>
+          </div>
+          <div class="mx-auto static-select">
+            <button type="button" class="btn btn-s btn-success static-select" (click)="addSelected(selectedMod)">Select</button>
+          </div>
+          <div class="mx-auto static-select">
+            <button type="button" class="btn btn-s btn-danger static-select" (click)="removeSelected(selectedMod)">Remove</button>
+          </div>
+          <div class="form-group col-md-4" *ngIf="selectedStaticMods|async; else emptySelection; let selectedStaticMods">
+            <label for="staticMods">Selected Static mods:</label>
+            <select multiple class="form-control" id="staticMods">
+              <option *ngFor="let s of selectedStaticMods" [value]="s">{{s.modTitle}}</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-md-4">
+            <label for="chooseVariableMods">Choose variable ion mod:</label>
+            <select multiple class="form-control" id="chooseVariableMods" *ngIf="variableMods|async; else loading; let variableMods" [(ngModel)]="selectedVariableMod" [ngModelOptions]="{standalone: true}">
+              <option *ngFor="let v of variableMods" [value]="v">{{v.target}}</option>
+            </select>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-success" [disabled]="!checkForm()">Submit</button>
+      </form>
+    </div>
+  </div>
+
+  <div *ngIf="result|async; let result">
+    <hr class="my-4">
+    <p>
+      <ngb-alert type="success">
+        Download result: <a [href]="result.url" class="alert-link" target="_blank">{{result.fileName}}</a>
+      </ngb-alert>
+    </p>
+  </div>
+
+</div>
+
+<ng-template #loading>
+  <h6 class="card-subtitle mb-2 text-muted">Loading <i class="fa fa-circle-o-notch fa-spin"></i></h6>
+</ng-template>
+
+<ng-template #emptySelection>
+  <div class="form-group col-md-4">
+    <label for="staticModsEmpty">Selected Static mods:</label>
+    <select multiple class="form-control" id="staticModsEmpty">
+      <option>None</option>
+    </select>
+  </div>
+
+</ng-template>

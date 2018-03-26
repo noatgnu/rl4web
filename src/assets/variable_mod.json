@@ -1,0 +1,27 @@
+{
+  "data": [
+    {
+      "target": "n-glycosylation",
+      "ions": [
+        {
+          "mass": 0.0,
+          "name": "HexNAc",
+          "label": "y",
+          "number": "0"
+        },
+        {
+          "mass": 203.0794,
+          "name": "HexNAc",
+          "label": "y",
+          "number": "1"
+        },
+        {
+          "mass": 406.1588,
+          "name": "HexNAc2",
+          "ionLabel": "y",
+          "ionNumber": "2"
+        }
+      ]
+    }
+  ]
+}

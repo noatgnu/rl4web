@@ -1,0 +1,22 @@
+{
+  "data": [
+    {
+      "aa": "N",
+      "modTitle": "n-glycosylation",
+      "mass": 203.0794,
+      "name": ""
+    },
+    {
+      "aa": "C",
+      "modTitle": "acrylamide",
+      "mass": 71.08,
+      "name": ""
+    },
+    {
+      "aa": "C",
+      "modTitle": "iodoacetaminde",
+      "mass": 57.02,
+      "name": ""
+    }
+  ]
+}
