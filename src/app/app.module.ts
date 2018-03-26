@@ -19,7 +19,6 @@ import { PublicationComponent } from './publication/publication.component';
 import { GrantComponent } from './grant/grant.component';
 import {GrantService} from "./grant.service";
 import { SwathLibComponent } from './swath-lib/swath-lib.component';
-import {FileUploadModule} from "ng2-file-upload";
 import {SwathLibAssetService} from "./swath-lib-asset.service";
 
 const appRoutes: Routes = [
@@ -50,7 +49,6 @@ const appRoutes: Routes = [
     FormsModule,
     BrowserModule,
     HttpClientModule,
-    FileUploadModule,
     ReactiveFormsModule
   ],
   providers: [
