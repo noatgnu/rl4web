@@ -6,15 +6,17 @@
       <form #f="ngForm" (ngSubmit)="onSubmit(f)">
         <div class="form-group">
           <div class="input-group">
-            <span class="input-group-addon" id="label-fasta">Fasta</span>
+            <label class="input-group-addon" id="label-fasta">Fasta</label>
             <input type="file" class="form-control" name="fasta" id="fasta" (change)="getFile($event, 'fasta')"/>
           </div>
+          <small id="fastaHelp" class="form-text text-muted">Fasta file containing protein fragment sequences</small>
         </div>
         <div class="form-group">
           <div class="input-group">
-            <span class="input-group-addon" id="label-windows">Swath Windows</span>
+            <label class="input-group-addon" id="label-windows">SWATH Windows</label>
             <input type="file" class="form-control" name="windows" id="windows" (change)="getFile($event, 'windows')"/>
           </div>
+          <small id="windowsHelp" class="form-text text-muted">A csv file with two column and header. The first column is the start of the SWATH windows and the second is the end of the SWATH windows</small>
         </div>
         <div class="form-row">
           <div class="form-group col-md-4">
@@ -52,13 +54,14 @@
   <div *ngIf="result|async; let result">
     <hr class="my-4">
     <p>
-      <ngb-alert type="success">
+      <ngb-alert type="success" [dismissible]="false">
         Download result: <a [href]="result.url" class="alert-link" target="_blank">{{result.fileName}}</a>
       </ngb-alert>
     </p>
   </div>
-
 </div>
+
+
 
 <ng-template #loading>
   <h6 class="card-subtitle mb-2 text-muted">Loading <i class="fa fa-circle-o-notch fa-spin"></i></h6>

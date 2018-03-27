@@ -68,7 +68,7 @@ export class SwathLibComponent implements OnInit, AfterViewInit {
       } else {
         this.formData.append('variable', JSON.stringify(this.selectedVariableMod));
       }
-      console.log(this.formData);
+
       this.mod.uploadForm(this.formData).subscribe((resp) => {
         console.log(resp);
         this.mod.updateResult(resp);

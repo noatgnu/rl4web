@@ -22,6 +22,7 @@ export class SwathLibAssetService {
   }
 
   uploadForm(form: FormData) {
+    console.log(form);
     return this.http.post(this.URL, form);
   }
 

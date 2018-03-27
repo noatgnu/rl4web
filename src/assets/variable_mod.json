@@ -7,19 +7,19 @@
           "mass": 0.0,
           "name": "HexNAc",
           "label": "y",
-          "number": "0"
+          "number": "1"
         },
         {
           "mass": 203.0794,
           "name": "HexNAc",
           "label": "y",
-          "number": "1"
+          "number": "2"
         },
         {
           "mass": 406.1588,
-          "name": "HexNAc2",
-          "ionLabel": "y",
-          "ionNumber": "2"
+          "name": "HexNAc",
+          "label": "y",
+          "number": "3"
         }
       ]
     }
