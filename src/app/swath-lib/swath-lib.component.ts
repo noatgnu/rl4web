@@ -99,4 +99,8 @@ export class SwathLibComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
 
   }
+
+  getCurrentDate() {
+    return Date.now();
+  }
 }

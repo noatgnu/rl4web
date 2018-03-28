@@ -55,6 +55,7 @@
     <hr class="my-4">
     <p>
       <ngb-alert type="success" [dismissible]="false">
+        <small><i>Time: {{getCurrentDate() | date:'full'}}</i></small><br />
         Download result: <a [href]="result.url" class="alert-link" target="_blank">{{result.fileName}}</a>
       </ngb-alert>
     </p>
