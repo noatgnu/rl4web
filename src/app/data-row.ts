@@ -81,7 +81,9 @@ export class DataStore {
     }
     const nacc: DataRow[] = [];
     for (const f of filterStringArray) {
-      nacc.push(new DataRow([f]));
+      if (f !== '') {
+        nacc.push(new DataRow([f]));
+      }
     }
     return [y, nacc];
   }

@@ -8,6 +8,10 @@ import {Subject} from 'rxjs/Subject';
 export class UniprotService {
   private baseURL = 'http://www.uniprot.org/uniprot/?';
   public Re = /[OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9]([A-Z][A-Z0-9]{2}[0-9]){1,2}/;
+
+  private base = 'https://www.uniprot.org';
+  private toolEndpoint = '/uploadlists/?';
+
   results: string[] = [];
 
   private _ResultSource = new Subject<Result[]>();
@@ -18,9 +22,8 @@ export class UniprotService {
 
   constructor(private http: HttpClient, private _fh: FileHandlerService) { }
 
-  getUniprot(options: Map<string, string>) {
-    console.log(this.baseURL + this.toParamString(options));
-    return this.http.get(this.baseURL + this.toParamString(options), {responseType: 'text', observe: 'response'});
+  getUniprot(uniprotUrl: string) {
+    return this.http.get(uniprotUrl, {responseType: 'text', observe: 'response'});
   }
 
   toParamString(options: Map<string, string>): string {
@@ -40,7 +43,43 @@ export class UniprotService {
     this._resultStatusSource.next(status);
   }
 
-  mainUniprotParse(accList: string[], goStats: boolean) {
+  UniProtParseGet(accList: string[], goStats: boolean) {
+    this.updateResultStatus(false);
+    const result: Result[] = [];
+    const options: Map<string, string> = new Map<string, string>([
+      ['from', 'ACC+ID'],
+      ['to', 'ACC'],
+      ['query', accList.join(' ')],
+      ['format', 'tab'],
+      ['columns', 'id,entry name,reviewed,protein names,genes,organism,length,database(RefSeq),organism-id,go-id,feature(GLYCOSYLATION),comment(MASS SPECTROMETRY),sequence'],
+      ['compress', 'no'],
+      ['force', 'no'],
+      ['sort', 'score'],
+      ['desc', ''],
+      ['fil', '']
+    ]);
+    const uniprotUrl = this.base + this.toolEndpoint + this.toParamString(options);
+    console.log(uniprotUrl);
+
+    this.getUniprot(uniprotUrl).subscribe((data) => {
+      const df = this._fh.fileHandlerNoE(data.body);
+      df.fileName = 'uniprot_parsed.txt';
+      const s = DataStore.filterRow(accList, 0, df.data);
+      result.push(DataStore.toCSV(df.header, s[0], df.fileName, 'Uniprot Parsing Completed'));
+      console.log(s[1]);
+      if (s[1].length > 0) {
+        result.push(DataStore.toCSV(['Entry'], s[1], 'remaining_accession_' + df.fileName, 'Unsuccessful Match'));
+      }
+      if (goStats) {
+        const go = DataStore.getGO(df.header, df.data);
+        result.push(DataStore.toCSV(go.header, go.data, 'gostats_' + df.fileName, 'GOStats Association File'));
+      }
+      this.updateResultStatus(true);
+      this.updateUniprotResult(result);
+    });
+  }
+
+  /*mainUniprotParse(accList: string[], goStats: boolean) {
     this.updateResultStatus(false);
     const result: Result[] = [];
     let mainAcessionlist: string[] = [];
@@ -117,5 +156,5 @@ export class UniprotService {
           }
         });
     }
-  }
+  }*/
 }

@@ -38,7 +38,8 @@ export class UniprotParserComponent implements OnInit {
       this.processing = true;
       const ulArray = f.value.uniprotList.split(/\r\n|\n/);
       try {
-        this._uniprot.mainUniprotParse(ulArray, f.value.goStats);
+        this._uniprot.UniProtParseGet(ulArray, f.value.goStats);
+        // this._uniprot.mainUniprotParse(ulArray, f.value.goStats);
       } catch (e) {
         console.log(e);
       }
