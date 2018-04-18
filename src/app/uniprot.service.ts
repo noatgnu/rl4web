@@ -66,7 +66,6 @@ export class UniprotService {
       df.fileName = 'uniprot_parsed.txt';
       const s = DataStore.filterRow(accList, 0, df.data);
       result.push(DataStore.toCSV(df.header, s[0], df.fileName, 'Uniprot Parsing Completed'));
-      console.log(s[1]);
       if (s[1].length > 0) {
         result.push(DataStore.toCSV(['Entry'], s[1], 'remaining_accession_' + df.fileName, 'Unsuccessful Match'));
       }
