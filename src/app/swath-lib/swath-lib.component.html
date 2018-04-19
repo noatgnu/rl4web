@@ -22,7 +22,7 @@
           <div class="form-group col-md-4">
             <label for="staticModsSource">Static mods:</label>
             <select multiple class="form-control" id="staticModsSource" *ngIf="staticMods|async; else loading; let staticMods" [(ngModel)]="selectedMod" [ngModelOptions]="{standalone: true}">
-              <option *ngFor="let s of staticMods" [value]="s">{{s.modTitle}}</option>
+              <option *ngFor="let s of staticMods" [value]="s">{{s.modTitle}}({{s.aa}})</option>
             </select>
           </div>
           <div class="mx-auto static-select">
