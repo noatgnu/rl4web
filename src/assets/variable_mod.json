@@ -39,6 +39,17 @@
           "number": "2"
         }
       ]
+    },
+    {
+      "target": "Carboxylation",
+      "ions": [
+        {
+          "mass": 43.9898,
+          "name": "Hex1",
+          "label": "y",
+          "number": "1"
+        }
+      ]
     }
   ]
 }
