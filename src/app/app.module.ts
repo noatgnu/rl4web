@@ -20,6 +20,7 @@ import { GrantComponent } from './grant/grant.component';
 import {GrantService} from "./grant.service";
 import { SwathLibComponent } from './swath-lib/swath-lib.component';
 import {SwathLibAssetService} from "./swath-lib-asset.service";
+import { SequenceSelectorComponent } from './swath-lib/sequence-selector/sequence-selector.component';
 
 const appRoutes: Routes = [
   {path: '', component: HomeComponent},
@@ -39,7 +40,8 @@ const appRoutes: Routes = [
     ResultComponent,
     PublicationComponent,
     GrantComponent,
-    SwathLibComponent
+    SwathLibComponent,
+    SequenceSelectorComponent
   ],
   imports: [
     NgbModule.forRoot(),

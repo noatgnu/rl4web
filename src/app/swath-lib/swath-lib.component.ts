@@ -5,38 +5,43 @@ import {Observable} from 'rxjs/Observable';
 import {StaticMod} from '../static-mod';
 import {VariableMod} from '../variable-mod';
 import {Subject} from 'rxjs/Subject';
+import {FastaFileService} from '../helper/fasta-file.service';
+import {Modification} from '../helper/modification';
 
 
 
 @Component({
   selector: 'app-swath-lib',
   templateUrl: './swath-lib.component.html',
-  styleUrls: ['./swath-lib.component.css']
+  styleUrls: ['./swath-lib.component.css'],
+  providers: [FastaFileService]
 })
 export class SwathLibComponent implements OnInit, AfterViewInit {
-  staticMods: Observable<StaticMod[]>;
-  variableMods: Observable<VariableMod[]>;
-  selectedStaticMods: Observable<StaticMod[]>;
-  private _selectedSource = new Subject<StaticMod[]>();
-  currentMods: StaticMod[] = [];
-  selectedMod: StaticMod[];
+  ff;
+  fasta;
+  staticMods: Observable<Modification[]>;
+  variableMods: Observable<Modification[]>;
+  Ymods: Observable<Modification[]>;
+  selectedStaticMods: Observable<Modification[]>;
+  private _selectedSource = new Subject<Modification[]>();
+  currentMods: Modification[] = [];
+  selectedMod: Modification[];
   selectedVariableMod: VariableMod[];
   private formData: FormData = new FormData();
   result: Observable<SwathResponse>;
 
-  constructor(private mod: SwathLibAssetService) {
+  constructor(private mod: SwathLibAssetService, private fastaFile: FastaFileService) {
     this.staticMods = mod.staticMods;
     this.variableMods = mod.variableMods;
+    this.Ymods = mod.YtypeMods;
     this.selectedStaticMods = this._selectedSource.asObservable();
     this.result = mod.result;
+    this.ff = fastaFile.fileHandler;
   }
 
   ngOnInit() {
-    this.mod.getMods('assets/static_mod.json').subscribe((resp) => {
-      this.mod.updateStaticMods(resp.body['data']);
-    });
-    this.mod.getMods('assets/variable_mod.json').subscribe((resp) => {
-      this.mod.updateVariableMods(resp.body['data']);
+    this.mod.getMods('assets/new_mods.json').subscribe((resp) => {
+      this.mod.updateMods(resp.body['data']);
     });
   }
 
@@ -102,5 +107,10 @@ export class SwathLibComponent implements OnInit, AfterViewInit {
 
   getCurrentDate() {
     return Date.now();
+  }
+
+  async loadFasta(e) {
+    this.fasta = await this.ff(e);
+
   }
 }
