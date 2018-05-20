@@ -7,6 +7,13 @@ export class SeqCoordinate {
     this._modType = modType;
     this._mods = mods;
   }
+  get trigger(): string {
+    return this._trigger;
+  }
+
+  set trigger(value: string) {
+    this._trigger = value;
+  }
 
   get aa(): string {
     return this._aa;
@@ -27,7 +34,7 @@ export class SeqCoordinate {
   private _coordinate: number;
   private _modType: string;
   private _mods: Modification[];
-
+  private _trigger: string;
   get modType(): string {
     return this._modType;
   }

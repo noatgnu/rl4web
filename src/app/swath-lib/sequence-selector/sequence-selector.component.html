@@ -1,13 +1,195 @@
-<div class="row">
-  <div class="col-10">
-    <button type="button" class="btn btn-sm btn-light mr-1 mb-1 mt-1 custom" *ngFor="let aa of seqCoord" placement="top" ngbTooltip="{{aa.coordinate+1}}">{{aa.aa}}</button>
-  </div>
-  <div class="col-2">
-    <label for="auto-search-mod">Select Modifications For Auto-Search:</label>
-    <select id="auto-search-mod" class="form-control">
-
-    </select>
-  </div>
+<div class="container">
+    <div class="card mt-1">
+      <div class="card-body">
+        <div class="row">
+          <h5 class="card-title">
+            {{protein.id}}
+          </h5>
+        </div>
+        <div class="row">
+          <div class="col-10">
+            <div class="inline-seq" ngbDropdown #contextM="ngbDropdown" *ngFor="let aa of seqCoord" [ngSwitch]="aa.modType">
+              <button type="button" class="btn btn-sm btn-light mr-1 mb-1 mt-1 custom" *ngSwitchDefault placement="top" ngbTooltip="{{aa.coordinate+1}}" [id]="aa.modType+aa.coordinate+protein.id" #t="ngbTooltip" (click)="clickEvent(t)" ngbDropdownAnchor (contextmenu)="contextClick(contextM)">{{aa.aa}}</button>
+              <button type="button" class="btn btn-sm btn-danger mr-1 mb-1 mt-1 custom" *ngSwitchCase="'conflicted'" placement="top" ngbTooltip="{{aa.coordinate+1}}" [id]="aa.modType+aa.coordinate+protein.id" #t="ngbTooltip" (click)="clickEvent(t)" ngbDropdownAnchor (contextmenu)="contextClick(contextM)">{{aa.aa}}</button>
+              <button type="button" class="btn btn-sm btn-success mr-1 mb-1 mt-1 custom" *ngSwitchCase="'Ytype'" placement="top" ngbTooltip="{{aa.coordinate+1}}" [id]="aa.modType+aa.coordinate+protein.id" #t="ngbTooltip" (click)="clickEvent(t)" ngbDropdownAnchor (contextmenu)="contextClick(contextM)">{{aa.aa}}</button>
+              <button type="button" class="btn btn-sm btn-primary mr-1 mb-1 mt-1 custom" *ngSwitchCase="'variable'" placement="top" ngbTooltip="{{aa.coordinate+1}}" [id]="aa.modType+aa.coordinate+protein.id" #t="ngbTooltip" (click)="clickEvent(t)" ngbDropdownAnchor (contextmenu)="contextClick(contextM)">{{aa.aa}}</button>
+              <button type="button" class="btn btn-sm btn-warning mr-1 mb-1 mt-1 custom" *ngSwitchCase="'static'" placement="top" ngbTooltip="{{aa.coordinate+1}}" [id]="aa.modType+aa.coordinate+protein.id" #t="ngbTooltip" (click)="clickEvent(t)" ngbDropdownAnchor (contextmenu)="contextClick(contextM)">{{aa.aa}}</button>
+              <div ngbDropdownMenu [attr.aria-labelledby]="aa.modType+aa.coordinate">
+                <button class="dropdown-item" (click)="openEditModal(coordEditor, aa.coordinate)">Edit</button>
+              </div>
+            </div>
+          </div>
+          <div class="col-2">
+            <div *ngIf="modSummary.length > 0">
+              <div *ngFor="let m of modSummary" [ngSwitch]="m.type">
+                <span class="badge badge-pill badge-success" *ngSwitchCase="'Ytype'" (click)="selectCoordinates(m.positions)">{{m.name}} {{m.Ytype}}: {{m.positions.length}}</span>
+                <span class="badge badge-pill badge-primary" *ngSwitchCase="'variable'" (click)="selectCoordinates(m.positions)">{{m.name}} {{m.Ytype}}: {{m.positions.length}}</span>
+                <span class="badge badge-pill badge-warning" *ngSwitchCase="'static'" (click)="selectCoordinates(m.positions)">{{m.name}} {{m.Ytype}}: {{m.positions.length}}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 </div>
 
+<ng-template #coordEditor let-c="close" let-d="dismiss">
+  <div class="modal-header">
+    <h4 class="modal-title">Modification Editor</h4>
+    <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+
+    <div *ngIf="currentCoord">
+      <div class="container">
+        <div class="card">
+          <div class="card-header">
+            Summary
+          </div>
+          <div class="card-body">
+            <div class="card-text">
+              <strong>Position:</strong> {{currentCoord.coordinate + 1}}
+              <br/>
+              <strong>Residue:</strong> {{currentCoord.aa}}
+            </div>
+          </div>
+        </div>
+        <div class="mt-2">
+          <div *ngFor="let m of currentCoord.mods">
+            <div class="card mt-1">
+              <div class="card-body">
+                <h5 class="card-title">
+                  {{m.name}}
+                </h5>
+                <div class="card-text">
+                  Mass: {{m.mass}}
+                  <br/>
+                  Modification type: {{m.type}}
+                  <br/>
+                  Regex pattern: {{m.regex}}
+                  <br/>
+                  Internal label: {{m.label}}
+                  <br/>
+                  Fulfillment status: {{m.status}}
+                  <div *ngIf="m.Ytype!=''">
+                    Y-ion type: {{m.Ytype}}
+                  </div>
+                </div>
+                <div class="text-right">
+                  <button type="button" class="btn btn-primary">Remove</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="mt-2">
+          <button type="button" class="btn btn-outline-primary btn-lg btn-block" (click)="createFormPremade(); createForm(currentCoord.coordinate, currentCoord.aa);"><i class="fa fa-plus"></i></button>
+          <div class="card mt-2" *ngIf="addModForm">
+            <div class="card-body">
+              <form [formGroup]="preMadeForm">
+                <div>
+                  <label for="staticMGen">Static Modifications:</label>
+                  <select multiple class="form-control" id="staticMGen" *ngIf="staticMods|async; let Mods" formControlName="static">
+                    <option *ngFor="let m of Mods" [value]="m">
+                      {{m.name}}
+                    </option>
+                  </select>
+                </div>
+                <div>
+                  <label for="variableMGen">Non-Ytype Variable Modifications:</label>
+                  <select multiple class="form-control" id="variableMGen" *ngIf="variableMods|async; let Mods" formControlName="variable">
+                    <option *ngFor="let m of Mods" [value]="m">
+                      {{m.name}}
+                    </option>
+                  </select>
+                </div>
+                <div>
+                  <label for="yMGen">Ytype Variable Modifications:</label>
+                  <select multiple class="form-control" id="yMGen" *ngIf="Ymods|async; let Mods" formControlName="ytype">
+                    <option *ngFor="let m of Mods" [value]="m">
+                      {{m.name}} ({{m.Ytype}})
+                    </option>
+                  </select>
+                </div>
+                <div class="text-right mt-2">
+                  <button class="btn btn-primary" (click)="addToCurrent('premade')">Add Modification</button>
+                </div>
+              </form>
+              <div class="text-center"><h5>OR</h5></div>
+              <form [formGroup]="addModForm">
+                <div class="form-group row">
+                  <div class="input-group">
+                    <span class="input-group-addon" id="name">Name</span>
+                    <input formControlName="name" type="text" class="form-control" aria-label="name" aria-describedby="name">
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <div class="input-group">
+                    <span class="input-group-addon" id="mass">Mass</span>
+                    <input formControlName="mass" type="text" class="form-control" aria-label="mass" aria-describedby="mass">
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <div class="input-group">
+                    <span class="input-group-addon" id="type">Modification type</span>
+                    <select formControlName="type" class="form-control" aria-label="type" aria-describedby="type">
+                      <option value="static">Static</option>
+                      <option value="variable">Variable</option>
+                      <option value="Ytype">Y-type</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <div class="input-group">
+                    <span class="input-group-addon" id="Ytype">Y ion-label</span>
+                    <input formControlName="Ytype" class="form-control" aria-label="Ytype" aria-describedby="Ytype">
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <div class="input-group">
+                    <span class="input-group-addon" id="label">Internal Modification Label</span>
+                    <input formControlName="label" class="form-control" aria-label="label" aria-describedby="label">
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <div class="input-group">
+                    <span class="input-group-addon" id="regex">Regex</span>
+                    <input formControlName="regex" type="text" class="form-control" aria-label="regex" aria-describedby="regex">
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <div class="input-group">
+                    <span class="input-group-addon" id="status">Status</span>
+                    <input formControlName="status" type="text" class="form-control" aria-label="status" aria-describedby="status">
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <div class="input-group">
+                    <span class="input-group-addon" id="multiple-pattern">Multiple Pattern</span>
+                    <input formControlName="multiple_pattern" type="text" class="form-control" aria-label="multiple-pattern" aria-describedby="multiple-pattern">
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <div class="input-group">
+                    <span class="input-group-addon" id="auto-allocation">Auto Allocation</span>
+                    <input formControlName="auto_allocation" type="text" class="form-control" aria-label="auto-allocation" aria-describedby="auto-allocation">
+                  </div>
+                </div>
+                <div class="text-right mt-2">
+                  <button class="btn btn-primary" (click)="addToCurrent('custom')">Add Custom Modification</button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+</ng-template>
 

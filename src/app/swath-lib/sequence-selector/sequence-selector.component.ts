@@ -1,31 +1,255 @@
-import { Component, OnInit, Input } from '@angular/core';
-import {Protein} from "../../helper/protein";
-import {SeqCoordinate} from "../../helper/seq-coordinate";
-import {Modification} from "../../helper/modification";
+import {Component, OnInit, Input, OnChanges, SimpleChanges, SimpleChange} from '@angular/core';
+import {Protein} from '../../helper/protein';
+import {SeqCoordinate} from '../../helper/seq-coordinate';
+import {Modification} from '../../helper/modification';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {NgbDropdownConfig, NgbModal, NgbTooltipConfig, ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
+import {SwathLibAssetService} from '../../swath-lib-asset.service';
+import {Observable} from 'rxjs/Observable';
+import {SwathResultService} from "../../helper/swath-result.service";
+import {SwathQuery} from "../../helper/swath-query";
 
 @Component({
   selector: 'app-sequence-selector',
   templateUrl: './sequence-selector.component.html',
-  styleUrls: ['./sequence-selector.component.css']
+  styleUrls: ['./sequence-selector.component.css'],
+  providers: [NgbTooltipConfig, NgbDropdownConfig]
 })
 export class SequenceSelectorComponent implements OnInit {
-  @Input('protein') protein: Protein;
-  @Input('variable_mods') variable_mods: Map<string, Modification>;
-  @Input('static_mods') static_mods: Map<string, Modification>;
-  @Input('y_mods') y_mods: Map<string, Modification[]>;
+  preMadeForm: FormGroup;
+  addModForm: FormGroup;
+  staticMods: Observable<Modification[]>;
+  variableMods: Observable<Modification[]>;
+  Ymods: Observable<Modification[]>;
+
+  get currentCoord(): SeqCoordinate {
+    return this._currentCoord;
+  }
+
+  set currentCoord(value: SeqCoordinate) {
+    this._currentCoord = value;
+  }
+  get modSummary(): Modification[] {
+    return this._modSummary;
+  }
+
+  set modSummary(value: Modification[]) {
+    this._modSummary = value;
+  }
+  get protein(): Protein {
+    return this._protein;
+  }
+  @Input()
+  set protein(value: Protein) {
+    this._protein = value;
+  }
+
+  get form(): FormGroup {
+    return this._form;
+  }
+  @Input()
+  set form(value: FormGroup) {
+    this._form = value;
+    this.decorSeq();
+  }
+  private _protein: Protein;
+  private _form: FormGroup;
+
   seqCoord: SeqCoordinate[] = [];
-  constructor() {
+  modMap: Map<number, Modification[]> = new Map<number, Modification[]>();
+  private _modSummary: Modification[];
+  constructor(private mod: SwathLibAssetService, tooltip: NgbTooltipConfig, dropdown: NgbDropdownConfig, private modalService: NgbModal, private fb: FormBuilder, private srs: SwathResultService) {
+    this.staticMods = mod.staticMods;
+    this.variableMods = mod.variableMods;
+    this.Ymods = mod.YtypeMods;
+    tooltip.placement = 'top';
+    tooltip.triggers = 'hover';
+  }
+
+  private _currentCoord: SeqCoordinate;
+
+  ngOnInit() {
 
   }
 
-  ngOnInit() {
+  decorSeq() {
+    this.modMap = new Map<number, Modification[]>();
+    this.seqCoord = [];
+    if (this.form.value['static'] !== null || this.form.value['variable'] !== null || this.form.value['ytype'] !== null) {
+      this.applyModification(this.protein);
+    }
     this.transformSequence();
   }
 
   transformSequence() {
+    this.modSummary = [];
+    this.seqCoord = [];
     for (let i = 0; i < this.protein.sequence.length; i++) {
       const s = new SeqCoordinate(this.protein.sequence[i], i, '', []);
+      this.setMod(i, s);
       this.seqCoord.push(s);
+    }
+    console.log(this.seqCoord);
+    this.summarize();
+  }
+
+  private setMod(i: number, s) {
+    if (this.modMap !== undefined) {
+      if (this.modMap.has(i)) {
+        for (const m of this.modMap.get(i)) {
+          this.appendMod(s, m);
+        }
+      }
+    }
+  }
+
+  private appendMod(s, m) {
+    if (s.modType !== m.type) {
+
+      if (s.modType !== '') {
+        s.modType = 'conflicted';
+      } else {
+        s.modType = m.type;
+      }
+    } else {
+      if (s.modType !== 'Ytype') {
+        s.modType = 'conflicted';
+      }
+    }
+    s.mods.push(m);
+  }
+
+  applyModification(protein: Protein) {
+    this.modifySeq(protein, 'static');
+    this.modifySeq(protein, 'variable');
+    this.modifySeq(protein, 'ytype');
+  }
+
+  private modifySeq(f, modCat) {
+    if (this.form.value[modCat] !== null) {
+      for (const m of this.form.value[modCat]) {
+        const reg = new RegExp(m.regex, 'g');
+        let match = reg.exec(f.sequence);
+        while (match != null) {
+          if (this.modMap.has(match.index)) {
+            const mM = this.modMap.get(match.index);
+            mM.push(m);
+            this.modMap.set(match.index, mM);
+          } else {
+            const n = [];
+            n.push(m);
+            this.modMap.set(match.index, n);
+          }
+          match = reg.exec(f.sequence);
+        }
+      }
+    }
+  }
+
+  summarize() {
+    this.modSummary = [];
+    const summaryMap = new Map<string, number>();
+    let count = 0;
+    for (const i of this.seqCoord) {
+      if (i.mods.length > 0) {
+
+        for (const m of i.mods) {
+          if (summaryMap.has(m.name + m.Ytype)) {
+            const sumIndex = summaryMap.get(m.name + m.Ytype);
+            this.modSummary[sumIndex].positions.push(i.coordinate);
+          } else {
+            this.modSummary.push(Object.create(m));
+            this.modSummary[count].positions = [];
+            this.modSummary[count].positions.push(i.coordinate);
+            summaryMap.set(m.name + m.Ytype, count);
+            count ++;
+          }
+        }
+      }
+    }
+    this.srs.UpdateOutput(new SwathQuery(this.protein, this.modSummary, this.form.value['windows'], this.form.value['rt']));
+  }
+
+  selectCoordinates(coordinates: number[]) {
+    for (const c of coordinates) {
+      const el = this.getElement(this.seqCoord[c].modType + c + this.protein.id);
+      el.click();
+    }
+  }
+
+  getElement(id) {
+    return document.getElementById(id);
+  }
+
+  clickEvent(t) {
+    if (!t.isOpen()) {
+      t.toggle();
+    }
+  }
+
+  contextClick(c) {
+    c.open();
+    return false;
+  }
+
+  openEditModal(modal, position) {
+    this.currentCoord = this.seqCoord[position];
+    this.modalService.open(modal);
+  }
+
+  createForm(position, aa) {
+    this.addModForm = this.fb.group({
+      'name': ['', Validators.required],
+      'mass': [0, Validators.required],
+      'regex': aa,
+      'multiple_pattern': 'FALSE',
+      'label': [],
+      'type': 'static',
+      'Ytype': [],
+      'status': [],
+      'auto_allocation': 'FALSE',
+      'positions': [],
+    });
+    console.log(this.addModForm);
+  }
+
+  createFormPremade() {
+    this.preMadeForm = this.fb.group({
+      'static': [],
+      'variable': [],
+      'ytype': []
+    });
+  }
+
+  addToCurrent(c) {
+    if (c === 'premade') {
+      this.helperPremade('static');
+      this.helperPremade('variable');
+      this.helperPremade('ytype');
+    } else {
+      this.appendMod(this.currentCoord,
+        new Modification(
+          [this.currentCoord.coordinate],
+          this.addModForm.value['status'],
+          this.addModForm.value['multiple_pattern'],
+          this.addModForm.value['Ytype'],
+          this.addModForm.value['auto_allocation'],
+          this.addModForm.value['type'],
+          this.addModForm.value['mass'],
+          this.addModForm.value['regex'],
+          this.addModForm.value['label'],
+          this.addModForm.value['name']
+          ));
+    }
+
+    this.summarize();
+  }
+
+  private helperPremade(m) {
+    if (this.preMadeForm.value[m] !== null) {
+      for (const c of this.preMadeForm.value[m]) {
+        this.appendMod(this.currentCoord, Object.create(c));
+      }
     }
   }
 }

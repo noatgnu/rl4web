@@ -21,6 +21,7 @@ import {GrantService} from "./grant.service";
 import { SwathLibComponent } from './swath-lib/swath-lib.component';
 import {SwathLibAssetService} from "./swath-lib-asset.service";
 import { SequenceSelectorComponent } from './swath-lib/sequence-selector/sequence-selector.component';
+import {SwathResultService} from "./helper/swath-result.service";
 
 const appRoutes: Routes = [
   {path: '', component: HomeComponent},
@@ -59,7 +60,8 @@ const appRoutes: Routes = [
     NglycoService,
     PublicationService,
     GrantService,
-    SwathLibAssetService
+    SwathLibAssetService,
+    SwathResultService
   ],
   bootstrap: [AppComponent]
 })

@@ -3,24 +3,28 @@ import {HttpClient} from '@angular/common/http';
 import {Subject} from 'rxjs/Subject';
 import {StaticMod} from './static-mod';
 import {VariableMod} from './variable-mod';
-import {Modification} from "./helper/modification";
+import {Modification} from './helper/modification';
+import {BehaviorSubject} from 'rxjs/BehaviorSubject';
+import {SwathWindows} from "./helper/swath-windows";
 
 
 @Injectable()
 export class SwathLibAssetService {
-  private _staticModsSource = new Subject<Modification[]>();
-  private _variableModsSource = new Subject<Modification[]>();
-  private _YtypeModsSource = new Subject<Modification[]>();
+  private _staticModsSource = new BehaviorSubject<Modification[]>(null);
+  private _variableModsSource = new BehaviorSubject<Modification[]>(null);
+  private _YtypeModsSource = new BehaviorSubject<Modification[]>(null);
+  private _windowsSource = new BehaviorSubject<SwathWindows[]>(null);
   private _resultSource = new Subject<SwathResponse>();
   staticMods = this._staticModsSource.asObservable();
   variableMods = this._variableModsSource.asObservable();
   YtypeMods = this._YtypeModsSource.asObservable();
+  windowsReader = this._windowsSource.asObservable();
   result = this._resultSource.asObservable();
   private URL = 'http://10.50.193.80:9000/api/swathlib/upload/';
   private resultURL = 'http://10.50.193.80:9000/api/swathlib/result/';
   constructor(private http: HttpClient) { }
 
-  getMods(url) {
+  getAssets(url) {
     return this.http.get(url, {observe: 'response'});
   }
 
@@ -66,6 +70,10 @@ export class SwathLibAssetService {
     s.url = this.resultURL + s.fileName;
     console.log(s);
     this._resultSource.next(s);
+  }
+
+  updateWindows(data) {
+    this._windowsSource.next(data);
   }
 
   checkServerExist() {

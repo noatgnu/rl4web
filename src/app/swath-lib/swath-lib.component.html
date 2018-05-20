@@ -1,63 +1,79 @@
-
-
 <div class="container">
-  <form class="mt-4">
+  <form class="mt-4" [formGroup]="form">
     <div class="form-group">
       <div class="input-group">
         <span class="input-group-addon" id="label-fasta-input">Fasta Input:</span>
         <input type="file" class="form-control" aria-label="fasta-input" aria-describedby="label-fasta-input" (change)="loadFasta($event)" required>
       </div>
-      <div *ngIf="fasta">
+      <div *ngIf="fasta|async; let fasta">
         <small id="peptide-summary-rows" class="form-text text-muted">
           {{fasta.content.length}} peptides have been loaded.
         </small>
       </div>
-      <div class="row mt-4">
-        <div class="col-4">
-          <label for="staticMGen">Static Modifications:</label>
-          <select multiple class="form-control" id="staticMGen" *ngIf="staticMods|async; let Mods">
-            <option *ngFor="let m of Mods" [value]="m">
-              {{m.name}}
-            </option>
-          </select>
+    </div>
+    <div class="form-group">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">
+            Post-translational Modifications
+          </h5>
+          <div class="row mt-4">
+            <div class="col-4">
+              <label for="staticMGen">Static Modifications:</label>
+              <select multiple class="form-control" id="staticMGen" *ngIf="staticMods|async; let Mods" formControlName="static">
+                <option *ngFor="let m of Mods" [value]="m">
+                  {{m.name}}
+                </option>
+              </select>
+            </div>
+            <div class="col-4">
+              <label for="variableMGen">Non-Ytype Variable Modifications:</label>
+              <select multiple class="form-control" id="variableMGen" *ngIf="variableMods|async; let Mods" formControlName="variable">
+                <option *ngFor="let m of Mods" [value]="m">
+                  {{m.name}}
+                </option>
+              </select>
+            </div>
+            <div class="col-4">
+              <label for="yMGen">Ytype Variable Modifications:</label>
+              <select multiple class="form-control" id="yMGen" *ngIf="Ymods|async; let Mods" formControlName="ytype">
+                <option *ngFor="let m of Mods" [value]="m">
+                  {{m.name}} ({{m.Ytype}})
+                </option>
+              </select>
+            </div>
+          </div>
+          <div class="row mt-3">
+            <div class="col-2">
+              <label for="rt">Rention Time:</label>
+              <select multiple class="form-control" id="rt" formControlName="rt">
+                <option *ngFor="let r of rt" [value]="r">
+                  {{r}}
+                </option>
+              </select>
+            </div>
+            <div class="col-4">
+              <label for="windows">Swath Windows:</label>
+              <select multiple class="form-control" id="windows" formControlName="windows" *ngIf="windows|async; let windows">
+                <option *ngFor="let w of windows" [value]="w">
+                  {{w.start}} - {{w.stop}}
+                </option>
+              </select>
+            </div>
+          </div>
+          <div class="text-right mt-4">
+            <button type="button" class="btn btn-primary" (click)="applyModification()">Apply Modifications</button>
+          </div>
         </div>
-        <div class="col-4">
-          <label for="variableMGen">Non-Ytype Variable Modifications:</label>
-          <select multiple class="form-control" id="variableMGen" *ngIf="variableMods|async; let Mods">
-            <option *ngFor="let m of Mods" [value]="m">
-              {{m.name}}
-            </option>
-          </select>
-        </div>
-        <div class="col-4">
-
-          <label for="yMGen">Ytype Variable Modifications:</label>
-          <select multiple class="form-control" id="yMGen" *ngIf="Ymods|async; let Mods">
-            <option *ngFor="let m of Mods" [value]="m">
-              {{m.name}} ({{m.Ytype}})
-            </option>
-          </select>
-        </div>
-
       </div>
-
-      <div *ngIf="fasta">
-        <hr/>
-        <ngb-accordion #acc="ngbAccordion" activeIds="sequence-sel">
-          <ngb-panel *ngFor="let p of fasta.content" title="{{p.id}}" id="sequence-sel">
-            <ng-template ngbPanelContent>
-              <app-sequence-selector [protein]="p"></app-sequence-selector>
-            </ng-template>
-          </ngb-panel>
-        </ngb-accordion>
-
-      </div>
-
     </div>
   </form>
 </div>
 
-
+<div class="container" *ngIf="fasta|async; let fasta">
+  <hr/>
+  <app-sequence-selector *ngFor="let p of fasta.content" [protein]="p" [form]="form"></app-sequence-selector>
+</div>
 
 <ng-template #loading>
   <h6 class="card-subtitle mb-2 text-muted">Loading <i class="fa fa-circle-o-notch fa-spin"></i></h6>
