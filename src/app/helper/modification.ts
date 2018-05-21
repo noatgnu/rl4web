@@ -1,4 +1,11 @@
 export class Modification {
+  get forErase(): boolean {
+    return this._forErase;
+  }
+
+  set forErase(value: boolean) {
+    this._forErase = value;
+  }
   constructor(positions: Array<number>, status: string, multiple_pattern: string, Ytype: string, auto_allocation: string, type: string, mass: number, regex: string, label: string, name: string) {
     this._positions = positions;
     this._status = status;
@@ -10,6 +17,7 @@ export class Modification {
     this._regex = regex;
     this._label = label;
     this._name = name;
+    this.forErase = false;
   }
   get positions(): Array<number> {
     return this._positions;
@@ -100,4 +108,5 @@ export class Modification {
   private _regex: string;
   private _label: string;
   private _name: string;
+  private _forErase: boolean;
 }

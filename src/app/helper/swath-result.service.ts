@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Subject} from 'rxjs/Subject';
 import {SwathQuery} from './swath-query';
-import {DataStore} from "../data-row";
+import {DataStore} from '../data-row';
 
 @Injectable()
 export class SwathResultService {
@@ -12,7 +12,7 @@ export class SwathResultService {
   sendTriggerReader = this._sendTrigger.asObservable();
 
   constructor(private http: HttpClient) { }
-  private URL = 'http://10.89.221.44:9000/api/swathlib/upload/';
+  private URL = 'http://localhost:9000/api/swathlib/upload/';
   UpdateOutput(data) {
     this._outputSource.next(data);
   }

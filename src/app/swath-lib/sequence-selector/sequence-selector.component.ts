@@ -6,10 +6,10 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {NgbDropdownConfig, NgbModal, NgbTooltipConfig, ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
 import {SwathLibAssetService} from '../../swath-lib-asset.service';
 import {Observable} from 'rxjs/Observable';
-import {SwathResultService} from "../../helper/swath-result.service";
-import {SwathQuery} from "../../helper/swath-query";
-import {Subscription} from "rxjs/Subscription";
-import {DataStore} from "../../data-row";
+import {SwathResultService} from '../../helper/swath-result.service';
+import {SwathQuery} from '../../helper/swath-query';
+import {Subscription} from 'rxjs/Subscription';
+import {DataStore} from '../../data-row';
 
 @Component({
   selector: 'app-sequence-selector',
@@ -75,7 +75,7 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
   private _currentCoord: SeqCoordinate;
 
   ngOnInit() {
-    this.SendTriggerSub = this.sendTriggerRead.subscribe((data)=>{
+    this.SendTriggerSub = this.sendTriggerRead.subscribe((data) => {
       this.sent = false;
       this.progress = 0;
       if (data) {
@@ -83,7 +83,7 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
         this.progress = 20;
         this.summarize();
         this.progress = 40;
-        this.srs.SendQuery(new SwathQuery(this.protein, this.modSummary, this.form.value['windows'], this.form.value['rt'])).subscribe((response) => {
+        this.srs.SendQuery(new SwathQuery(this.protein, this.modSummary, this.form.value['windows'], this.form.value['rt'], this.form.value['extra-mass'])).subscribe((response) => {
           this.progress = 60;
           const df = new DataStore(response.body['data'], true, '');
           this.progress = 80;
@@ -265,7 +265,6 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
           this.addModForm.value['name']
           ));
     }
-
     this.summarize();
   }
 
@@ -281,7 +280,7 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
     if (t.checked) {
       for (const k of m.positions) {
         for (const m2 of this.seqCoord[k].mods) {
-          if ((m.name + m.Ytype) === (m2.name+m2.Ytype)) {
+          if ((m.name + m.Ytype) === (m2.name + m2.Ytype)) {
             m2.status = 'filled';
           }
         }
@@ -289,7 +288,7 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
     } else {
       for (const k of m.positions) {
         for (const m2 of this.seqCoord[k].mods) {
-          if ((m.name + m.Ytype) === (m2.name+m2.Ytype)) {
+          if ((m.name + m.Ytype) === (m2.name + m2.Ytype)) {
             m2.status = '';
           }
         }
@@ -297,7 +296,7 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
     }
     for (const k of m.positions) {
       for (const m2 of this.seqCoord[k].mods) {
-        if ((m.name + m.Ytype) === (m2.name+m2.Ytype)) {
+        if ((m.name + m.Ytype) === (m2.name + m2.Ytype)) {
           m2.status = m.status;
         }
       }
@@ -308,7 +307,7 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
     if (t.checked) {
       for (const k of m.positions) {
         for (const m2 of this.seqCoord[k].mods) {
-          if ((m.name + m.Ytype) === (m2.name+m2.Ytype)) {
+          if ((m.name + m.Ytype) === (m2.name + m2.Ytype)) {
             m2.multiple_pattern = 'TRUE';
           }
         }
@@ -316,12 +315,43 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
     } else {
       for (const k of m.positions) {
         for (const m2 of this.seqCoord[k].mods) {
-          if ((m.name + m.Ytype) === (m2.name+m2.Ytype)) {
+          if ((m.name + m.Ytype) === (m2.name + m2.Ytype)) {
             m2.multiple_pattern = 'FALSE';
           }
         }
       }
     }
+  }
 
+  removeModification(m) {
+    m.forErase = true;
+    let ind = -1;
+    for (let i = 0; i < this.currentCoord.mods.length; i++) {
+      if (this.currentCoord.mods[i].forErase) {
+        ind = i;
+        break;
+      }
+    }
+    if (ind !== -1) {
+      this.currentCoord.mods.splice(ind, 1);
+      let temp = '';
+      for (const mod of this.currentCoord.mods) {
+        if (temp === '') {
+          temp = mod.type;
+        } else {
+          if (temp === mod.type) {
+            if (temp !== 'Ytype') {
+              temp = 'conflicted';
+              break;
+            }
+          } else {
+            temp = 'conflicted';
+            break;
+          }
+        }
+      }
+      this.currentCoord.modType = temp;
+      this.summarize();
+    }
   }
 }

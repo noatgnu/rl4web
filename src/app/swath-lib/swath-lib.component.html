@@ -60,6 +60,10 @@
                 </option>
               </select>
             </div>
+            <div class="col-2">
+              <label for="extra-mass">Extra Mass:</label>
+              <input type="text" class="form-control" id="extra-mass" formControlName="extra-mass">
+            </div>
           </div>
           <div class="text-right mt-4">
             <button type="button" class="btn btn-primary" (click)="applyModification()">Apply Modifications</button>
@@ -73,13 +77,16 @@
 <div class="container" *ngIf="fasta|async; let fasta">
   <hr/>
   <app-sequence-selector *ngFor="let p of fasta.content" [protein]="p" [form]="form"></app-sequence-selector>
-  <div class="text-right mt-4">
-    <button type="button" class="btn btn-primary" [disabled]="collectTrigger" (click)="SendQueries()">Submit Queries</button>
+  <div class="row">
+    <div class="text-right mt-4">
+      <button type="button" class="btn btn-primary" [disabled]="collectTrigger" (click)="SendQueries()">Submit Queries</button>
+    </div>
+
+    <div *ngIf="txtResult">
+      <button type="button" class="btn btn-success" (click)="fileDownloader(txtResult.content, txtResult.fileName)">Download Compiled Results</button>
+    </div>
   </div>
 
-  <div *ngIf="txtResult">
-    <button type="button" class="btn btn-success" (click)="fileDownloader(txtResult.content, txtResult.fileName)">Download Compiled Results</button>
-  </div>
 </div>
 
 <ng-template #loading>

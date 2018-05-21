@@ -21,7 +21,7 @@
           </div>
           <div class="col-3">
             <div *ngIf="modSummary.length > 0">
-              <div *ngFor="let m of modSummary">
+              <div class="mt-2" *ngFor="let m of modSummary">
                 <div class="row in-line" [ngSwitch]="m.type">
                   <span class="badge badge-pill badge-success" *ngSwitchCase="'Ytype'" (click)="selectCoordinates(m.positions)">{{m.name}} {{m.Ytype}}: {{m.positions.length}}</span>
                   <span class="badge badge-pill badge-primary" *ngSwitchCase="'variable'" (click)="selectCoordinates(m.positions)">{{m.name}} {{m.Ytype}}: {{m.positions.length}}</span>
@@ -42,9 +42,9 @@
             </div>
           </div>
         </div>
-      </div>
-      <div>
-        <ngb-progressbar type="info" [value]="progress"></ngb-progressbar>
+        <div class="mt-4" *ngIf="sent">
+          <ngb-progressbar type="info" [animated]="true" [striped]="true" [value]="progress"></ngb-progressbar>
+        </div>
       </div>
     </div>
 </div>
@@ -94,7 +94,7 @@
                   </div>
                 </div>
                 <div class="text-right">
-                  <button type="button" class="btn btn-primary">Remove</button>
+                  <button type="button" class="btn btn-primary" (click)="removeModification(m)">Remove</button>
                 </div>
               </div>
             </div>
