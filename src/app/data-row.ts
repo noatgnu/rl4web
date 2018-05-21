@@ -140,7 +140,9 @@ export class DataStore {
     }
     if (data.length > 0) {
       for (const row of data) {
-        csvContent += row.row.join('\t') + '\n';
+        if (row.row !== undefined) {
+          csvContent += row.row.join('\t') + '\n';
+        }
       }
     }
     return new Result(fileName, new Blob([csvContent], {'type': 'text/csv;charset=utf-8;'}), jobName, data.length);

@@ -1,4 +1,4 @@
-import {Component, OnInit, Input, OnChanges, SimpleChanges, SimpleChange} from '@angular/core';
+import {Component, OnInit, Input, OnDestroy} from '@angular/core';
 import {Protein} from '../../helper/protein';
 import {SeqCoordinate} from '../../helper/seq-coordinate';
 import {Modification} from '../../helper/modification';
@@ -8,6 +8,7 @@ import {SwathLibAssetService} from '../../swath-lib-asset.service';
 import {Observable} from 'rxjs/Observable';
 import {SwathResultService} from "../../helper/swath-result.service";
 import {SwathQuery} from "../../helper/swath-query";
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   selector: 'app-sequence-selector',
@@ -15,7 +16,7 @@ import {SwathQuery} from "../../helper/swath-query";
   styleUrls: ['./sequence-selector.component.css'],
   providers: [NgbTooltipConfig, NgbDropdownConfig]
 })
-export class SequenceSelectorComponent implements OnInit {
+export class SequenceSelectorComponent implements OnInit, OnDestroy {
   preMadeForm: FormGroup;
   addModForm: FormGroup;
   staticMods: Observable<Modification[]>;
@@ -58,10 +59,13 @@ export class SequenceSelectorComponent implements OnInit {
   seqCoord: SeqCoordinate[] = [];
   modMap: Map<number, Modification[]> = new Map<number, Modification[]>();
   private _modSummary: Modification[];
+  SendTriggerSub: Subscription;
+  sendTriggerRead: Observable<boolean>;
   constructor(private mod: SwathLibAssetService, tooltip: NgbTooltipConfig, dropdown: NgbDropdownConfig, private modalService: NgbModal, private fb: FormBuilder, private srs: SwathResultService) {
     this.staticMods = mod.staticMods;
     this.variableMods = mod.variableMods;
     this.Ymods = mod.YtypeMods;
+    this.sendTriggerRead = this.srs.sendTriggerReader;
     tooltip.placement = 'top';
     tooltip.triggers = 'hover';
   }
@@ -69,7 +73,15 @@ export class SequenceSelectorComponent implements OnInit {
   private _currentCoord: SeqCoordinate;
 
   ngOnInit() {
+    this.SendTriggerSub = this.sendTriggerRead.subscribe((data)=>{
+      if (data) {
+        this.summarize();
+      }
+    });
+  }
 
+  ngOnDestroy() {
+    this.SendTriggerSub.unsubscribe();
   }
 
   decorSeq() {
@@ -89,7 +101,7 @@ export class SequenceSelectorComponent implements OnInit {
       this.setMod(i, s);
       this.seqCoord.push(s);
     }
-    console.log(this.seqCoord);
+
     this.summarize();
   }
 
@@ -167,12 +179,13 @@ export class SequenceSelectorComponent implements OnInit {
         }
       }
     }
+
     this.srs.UpdateOutput(new SwathQuery(this.protein, this.modSummary, this.form.value['windows'], this.form.value['rt']));
   }
 
   selectCoordinates(coordinates: number[]) {
     for (const c of coordinates) {
-      const el = this.getElement(this.seqCoord[c].modType + c + this.protein.id);
+      const el = this.getElement(this.seqCoord[c].modType + c + this.protein.id + this.protein.sequence);
       el.click();
     }
   }
@@ -210,7 +223,6 @@ export class SequenceSelectorComponent implements OnInit {
       'auto_allocation': 'FALSE',
       'positions': [],
     });
-    console.log(this.addModForm);
   }
 
   createFormPremade() {
@@ -251,5 +263,53 @@ export class SequenceSelectorComponent implements OnInit {
         this.appendMod(this.currentCoord, Object.create(c));
       }
     }
+  }
+
+  changeStatus(t, m) {
+    if (t.checked) {
+      for (const k of m.positions) {
+        for (const m2 of this.seqCoord[k].mods) {
+          if ((m.name + m.Ytype) === (m2.name+m2.Ytype)) {
+            m2.status = 'filled';
+          }
+        }
+      }
+    } else {
+      for (const k of m.positions) {
+        for (const m2 of this.seqCoord[k].mods) {
+          if ((m.name + m.Ytype) === (m2.name+m2.Ytype)) {
+            m2.status = '';
+          }
+        }
+      }
+    }
+    for (const k of m.positions) {
+      for (const m2 of this.seqCoord[k].mods) {
+        if ((m.name + m.Ytype) === (m2.name+m2.Ytype)) {
+          m2.status = m.status;
+        }
+      }
+    }
+  }
+
+  changePattern(t, m) {
+    if (t.checked) {
+      for (const k of m.positions) {
+        for (const m2 of this.seqCoord[k].mods) {
+          if ((m.name + m.Ytype) === (m2.name+m2.Ytype)) {
+            m2.multiple_pattern = 'TRUE';
+          }
+        }
+      }
+    } else {
+      for (const k of m.positions) {
+        for (const m2 of this.seqCoord[k].mods) {
+          if ((m.name + m.Ytype) === (m2.name+m2.Ytype)) {
+            m2.multiple_pattern = 'FALSE';
+          }
+        }
+      }
+    }
+
   }
 }

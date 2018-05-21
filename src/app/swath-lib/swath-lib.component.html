@@ -45,7 +45,7 @@
           </div>
           <div class="row mt-3">
             <div class="col-2">
-              <label for="rt">Rention Time:</label>
+              <label for="rt">Rentenion Time:</label>
               <select multiple class="form-control" id="rt" formControlName="rt">
                 <option *ngFor="let r of rt" [value]="r">
                   {{r}}
@@ -53,7 +53,7 @@
               </select>
             </div>
             <div class="col-4">
-              <label for="windows">Swath Windows:</label>
+              <label for="windows">SWATH Windows:</label>
               <select multiple class="form-control" id="windows" formControlName="windows" *ngIf="windows|async; let windows">
                 <option *ngFor="let w of windows" [value]="w">
                   {{w.start}} - {{w.stop}}
@@ -73,6 +73,13 @@
 <div class="container" *ngIf="fasta|async; let fasta">
   <hr/>
   <app-sequence-selector *ngFor="let p of fasta.content" [protein]="p" [form]="form"></app-sequence-selector>
+  <div class="text-right mt-4">
+    <button type="button" class="btn btn-primary" [disabled]="collectTrigger" (click)="SendQueries()">Submit Queries</button>
+  </div>
+
+  <div *ngIf="txtResult">
+    <button type="button" class="btn btn-success" (click)="fileDownloader(txtResult.content, txtResult.fileName)">Download Compiled Results</button>
+  </div>
 </div>
 
 <ng-template #loading>

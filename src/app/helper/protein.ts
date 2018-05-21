@@ -1,10 +1,18 @@
 import {Modification} from "./modification";
 
 export class Protein {
+  get ion_type(): string {
+    return this._ion_type;
+  }
+
+  set ion_type(value: string) {
+    this._ion_type = value;
+  }
   constructor(id: string, sequence: string, modifications: Map<string, Modification>) {
     this._id = id;
     this._sequence = sequence;
     this._modifications = modifications;
+    this.ion_type = '';
   }
   get id(): string {
     return this._id;
@@ -32,4 +40,5 @@ export class Protein {
   private _id: string;
   private _sequence: string;
   private _modifications: Map<string, Modification>;
+  private _ion_type: string;
 }

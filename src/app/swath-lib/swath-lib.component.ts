@@ -10,7 +10,9 @@ import {FastaFile} from '../helper/fasta-file';
 import {SwathQuery} from '../helper/swath-query';
 import {SwathResultService} from '../helper/swath-result.service';
 import {Subscription} from 'rxjs/Subscription';
-import {SwathWindows} from "../helper/swath-windows";
+import {SwathWindows} from '../helper/swath-windows';
+import {DataStore} from '../data-row';
+import {FileHandlerService} from "../file-handler.service";
 
 @Component({
   selector: 'app-swath-lib',
@@ -19,7 +21,10 @@ import {SwathWindows} from "../helper/swath-windows";
   providers: [FastaFileService],
 })
 export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
-  queryCollection: SwathQuery[];
+  txtResult;
+  fileDownloader;
+  queryCollection: SwathQuery[] = [];
+  resultCollection: DataStore[] = [];
   form: FormGroup;
   ff;
   fasta: Observable<FastaFile>;
@@ -39,7 +44,7 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
   outputSubscription: Subscription;
   collectTrigger = false;
   rt = [];
-  constructor(private mod: SwathLibAssetService, private fastaFile: FastaFileService, private fb: FormBuilder, private srs: SwathResultService) {
+  constructor(private mod: SwathLibAssetService, private fastaFile: FastaFileService, private fb: FormBuilder, private srs: SwathResultService, private _fh: FileHandlerService) {
     this.staticMods = mod.staticMods;
     this.variableMods = mod.variableMods;
     this.Ymods = mod.YtypeMods;
@@ -53,6 +58,7 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
     for (let i = 1; i <= 60; i++) {
       this.rt.push(i);
     }
+    this.fileDownloader = this._fh.saveFile;
   }
 
   ngOnInit() {
@@ -65,15 +71,27 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
     this.outputSubscription = this.resultReader.subscribe((data) => {
       if (this.collectTrigger) {
         this.queryCollection.push(data);
-        this.srs.SendOutput(data).subscribe((response) => {
-
+        this.srs.SendQuery(data).subscribe((response) => {
+          console.log(response.body);
+          const df = new DataStore(response.body['data'], true, this.fastaContent.name + '_library.txt');
+          this.resultCollection.push(df);
+          console.log(this.resultCollection);
+          if (this.resultCollection.length === this.fastaContent.content.length) {
+            const findf = new DataStore([], false, this.fastaContent.name + '_library.txt');
+            for (const r of this.resultCollection) {
+              if (r.header !== undefined) {
+                findf.header = r.header;
+                findf.data = findf.data.concat(r.data);
+              }
+            }
+            this.txtResult = DataStore.toCSV(findf.header, findf.data, this.fastaContent.name + '_library.txt', this.fastaContent.name + '_library.txt');
+          }
         });
         if (this.queryCollection.length === this.fastaContent.content.length) {
-
+          this.collectTrigger = false;
         }
       }
 
-      console.log(data);
     });
   }
 
@@ -161,5 +179,12 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
   async loadFasta(e) {
     this.fastaContent = await this.ff(e);
     this.fastaFile.UpdateFastaSource(this.fastaContent);
+  }
+
+  SendQueries() {
+    this.collectTrigger = true;
+    this.queryCollection = [];
+    this.resultCollection = [];
+    this.srs.UpdateSendTrigger(true);
   }
 }
