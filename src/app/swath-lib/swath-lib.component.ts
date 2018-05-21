@@ -40,7 +40,7 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
   private formData: FormData = new FormData();
   result: Observable<SwathResponse>;
   fastaContent: FastaFile;
-  resultReader: Observable<SwathQuery>;
+  resultReader: Observable<DataStore>;
   outputSubscription: Subscription;
   collectTrigger = false;
   rt = [];
@@ -70,28 +70,21 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
     });
     this.outputSubscription = this.resultReader.subscribe((data) => {
       if (this.collectTrigger) {
-        this.queryCollection.push(data);
-        this.srs.SendQuery(data).subscribe((response) => {
-          console.log(response.body);
-          const df = new DataStore(response.body['data'], true, this.fastaContent.name + '_library.txt');
-          this.resultCollection.push(df);
-          console.log(this.resultCollection);
-          if (this.resultCollection.length === this.fastaContent.content.length) {
-            const findf = new DataStore([], false, this.fastaContent.name + '_library.txt');
-            for (const r of this.resultCollection) {
-              if (r.header !== undefined) {
-                findf.header = r.header;
-                findf.data = findf.data.concat(r.data);
-              }
+        this.resultCollection.push(data);
+        if (this.resultCollection.length === this.fastaContent.content.length) {
+          const findf = new DataStore([], false, this.fastaContent.name + '_library.txt');
+          for (const r of this.resultCollection) {
+            if (r.header !== undefined) {
+              findf.header = r.header;
+              findf.data = findf.data.concat(r.data);
             }
-            this.txtResult = DataStore.toCSV(findf.header, findf.data, this.fastaContent.name + '_library.txt', this.fastaContent.name + '_library.txt');
           }
-        });
-        if (this.queryCollection.length === this.fastaContent.content.length) {
+          this.txtResult = DataStore.toCSV(findf.header, findf.data, findf.fileName, findf.fileName);
+        }
+        if (this.resultCollection.length === this.fastaContent.content.length) {
           this.collectTrigger = false;
         }
       }
-
     });
   }
 

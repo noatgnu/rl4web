@@ -9,6 +9,7 @@ import {Observable} from 'rxjs/Observable';
 import {SwathResultService} from "../../helper/swath-result.service";
 import {SwathQuery} from "../../helper/swath-query";
 import {Subscription} from "rxjs/Subscription";
+import {DataStore} from "../../data-row";
 
 @Component({
   selector: 'app-sequence-selector',
@@ -22,7 +23,8 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
   staticMods: Observable<Modification[]>;
   variableMods: Observable<Modification[]>;
   Ymods: Observable<Modification[]>;
-
+  sent: boolean;
+  progress: number;
   get currentCoord(): SeqCoordinate {
     return this._currentCoord;
   }
@@ -74,8 +76,20 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.SendTriggerSub = this.sendTriggerRead.subscribe((data)=>{
+      this.sent = false;
+      this.progress = 0;
       if (data) {
+        this.sent = true;
+        this.progress = 20;
         this.summarize();
+        this.progress = 40;
+        this.srs.SendQuery(new SwathQuery(this.protein, this.modSummary, this.form.value['windows'], this.form.value['rt'])).subscribe((response) => {
+          this.progress = 60;
+          const df = new DataStore(response.body['data'], true, '');
+          this.progress = 80;
+          this.srs.UpdateOutput(df);
+          this.progress = 100;
+        });
       }
     });
   }
@@ -179,8 +193,6 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
         }
       }
     }
-
-    this.srs.UpdateOutput(new SwathQuery(this.protein, this.modSummary, this.form.value['windows'], this.form.value['rt']));
   }
 
   selectCoordinates(coordinates: number[]) {
