@@ -20,7 +20,7 @@ export class SwathLibAssetService {
   YtypeMods = this._YtypeModsSource.asObservable();
   windowsReader = this._windowsSource.asObservable();
   result = this._resultSource.asObservable();
-  private URL = 'http://10.50.193.80:9000/api/swathlib/upload/';
+  private URL = 'http://10.89.221.44:9000/api/swathlib/upload/';
   private resultURL = 'http://10.50.193.80:9000/api/swathlib/result/';
   constructor(private http: HttpClient) { }
 
