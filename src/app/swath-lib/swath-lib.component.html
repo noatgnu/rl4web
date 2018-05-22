@@ -75,7 +75,7 @@
           </div>
           <div class="row mt-3">
             <div class="col-4">
-              <label for="windows">Oxonium Ions:</label>
+              <label for="oxonium">Oxonium Ions:</label>
               <select multiple class="form-control" id="oxonium" formControlName="oxonium" *ngIf="oxonium|async; let oxonium">
                 <option *ngFor="let o of oxonium" [value]="o">
                   {{o.components}} ({{o.mz}} m/z)

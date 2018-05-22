@@ -10,6 +10,7 @@ import {SwathResultService} from '../../helper/swath-result.service';
 import {SwathQuery} from '../../helper/swath-query';
 import {Subscription} from 'rxjs/Subscription';
 import {DataStore} from '../../data-row';
+import {Oxonium} from "../../helper/oxonium";
 
 @Component({
   selector: 'app-sequence-selector',
@@ -20,9 +21,11 @@ import {DataStore} from '../../data-row';
 export class SequenceSelectorComponent implements OnInit, OnDestroy {
   preMadeForm: FormGroup;
   addModForm: FormGroup;
+  extraForm: FormGroup;
   staticMods: Observable<Modification[]>;
   variableMods: Observable<Modification[]>;
   Ymods: Observable<Modification[]>;
+  oxonium: Observable<Oxonium[]>;
   sent: boolean;
   progress: number;
 
@@ -68,7 +71,9 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
     this.staticMods = mod.staticMods;
     this.variableMods = mod.variableMods;
     this.Ymods = mod.YtypeMods;
+    this.oxonium = mod.oxoniumReader;
     this.sendTriggerRead = this.srs.sendTriggerReader;
+
     tooltip.placement = 'top';
     tooltip.triggers = 'hover';
   }
@@ -76,6 +81,7 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
   private _currentCoord: SeqCoordinate;
 
   ngOnInit() {
+    this.createExtraForm();
     this.SendTriggerSub = this.sendTriggerRead.subscribe((data) => {
       this.sent = false;
       this.progress = 0;
@@ -235,6 +241,10 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
     this.modalService.open(modal);
   }
 
+  openProteinEditor(modal) {
+    this.modalService.open(modal);
+  }
+
   createForm(position, aa) {
     this.addModForm = this.fb.group({
       'name': ['', Validators.required],
@@ -248,6 +258,14 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
       'auto_allocation': 'FALSE',
       'positions': [],
     });
+  }
+
+  createExtraForm() {
+    this.extraForm = this.fb.group({
+      'name': this.protein.id,
+      'oxonium': Object.create(this.form.value['oxonium'])
+    });
+    console.log(this.extraForm.value['oxonium'][0]);
   }
 
   createFormPremade() {
