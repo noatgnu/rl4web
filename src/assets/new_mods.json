@@ -8,8 +8,8 @@
       "type": "Ytype",
       "auto_allocation": "FALSE",
       "Ytype": "Y0",
-      "multiple_pattern": "",
-      "status": ""
+      "multiple_pattern": false,
+      "status": false
     },
     {
       "name": "GalNAc",
@@ -19,8 +19,8 @@
       "type": "Ytype",
       "auto_allocation": "FALSE",
       "Ytype": "Y1",
-      "multiple_pattern": "",
-      "status": ""
+      "multiple_pattern": false,
+      "status": false
     },
     {
       "name": "HexNAc",
@@ -30,8 +30,8 @@
       "type": "Ytype",
       "auto_allocation": "FALSE",
       "Ytype": "Y0",
-      "multiple_pattern": "",
-      "status": ""
+      "multiple_pattern": false,
+      "status": false
     },
     {
       "name": "HexNAc",
@@ -41,8 +41,8 @@
       "type": "Ytype",
       "auto_allocation": "FALSE",
       "Ytype": "Y1",
-      "multiple_pattern": "",
-      "status": ""
+      "multiple_pattern": false,
+      "status": false
     },
     {
       "name": "HexNAc",
@@ -52,8 +52,8 @@
       "type": "Ytype",
       "auto_allocation": "FALSE",
       "Ytype": "Y2",
-      "multiple_pattern": "",
-      "status": ""
+      "multiple_pattern": false,
+      "status": false
     },
     {
       "name": "Phosphorylation",
@@ -63,8 +63,8 @@
       "type": "variable",
       "auto_allocation": "FALSE",
       "Ytype": "",
-      "multiple_pattern": "",
-      "status": ""
+      "multiple_pattern": false,
+      "status": false
     },
     {
       "name": "Sulfation",
@@ -74,8 +74,8 @@
       "type": "variable",
       "auto_allocation": "FALSE",
       "Ytype": "",
-      "multiple_pattern": "",
-      "status": ""
+      "multiple_pattern": false,
+      "status": false
     },
     {
       "name": "Propionamide",
@@ -85,8 +85,8 @@
       "type": "static",
       "auto_allocation": "FALSE",
       "Ytype": "",
-      "multiple_pattern": "",
-      "status": ""
+      "multiple_pattern": false,
+      "status": false
     },
     {
       "name": "Carbamidomethyl",
@@ -96,8 +96,8 @@
       "type": "static",
       "auto_allocation": "FALSE",
       "Ytype": "",
-      "multiple_pattern": "",
-      "status": ""
+      "multiple_pattern": false,
+      "status": false
     }
   ]
 }

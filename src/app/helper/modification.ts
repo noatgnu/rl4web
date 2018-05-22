@@ -6,7 +6,7 @@ export class Modification {
   set forErase(value: boolean) {
     this._forErase = value;
   }
-  constructor(positions: Array<number>, status: string, multiple_pattern: string, Ytype: string, auto_allocation: string, type: string, mass: number, regex: string, label: string, name: string) {
+  constructor(positions: Array<number>, status: boolean, multiple_pattern: boolean, Ytype: string, auto_allocation: string, type: string, mass: number, regex: string, label: string, name: string) {
     this._positions = positions;
     this._status = status;
     this._multiple_pattern = multiple_pattern;
@@ -27,19 +27,19 @@ export class Modification {
     this._positions = value;
   }
 
-  get status(): string {
+  get status(): boolean {
     return this._status;
   }
 
-  set status(value: string) {
+  set status(value: boolean) {
     this._status = value;
   }
 
-  get multiple_pattern(): string {
+  get multiple_pattern(): boolean {
     return this._multiple_pattern;
   }
 
-  set multiple_pattern(value: string) {
+  set multiple_pattern(value: boolean) {
     this._multiple_pattern = value;
   }
 
@@ -99,8 +99,8 @@ export class Modification {
     this._name = value;
   }
   private _positions: Array<number>;
-  private _status: string;
-  private _multiple_pattern: string;
+  private _status: boolean;
+  private _multiple_pattern: boolean;
   private _Ytype: string;
   private _auto_allocation: string;
   private _type: string;

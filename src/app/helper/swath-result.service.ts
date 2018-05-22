@@ -12,7 +12,8 @@ export class SwathResultService {
   sendTriggerReader = this._sendTrigger.asObservable();
 
   constructor(private http: HttpClient) { }
-  private URL = 'http://10.89.221.44:9000/api/swathlib/upload/';
+  //private URL = 'http://10.89.221.44:9000/api/swathlib/upload/';
+  private URL = 'http://localhost:9000/api/swathlib/upload/';
   UpdateOutput(data) {
     this._outputSource.next(data);
   }
@@ -23,6 +24,7 @@ export class SwathResultService {
         m[key] = m[key];
       }
     }
+    console.log(data);
     return this.http.put(this.URL, data, {observe: 'response'});
   }
 

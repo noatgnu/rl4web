@@ -25,6 +25,7 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
   Ymods: Observable<Modification[]>;
   sent: boolean;
   progress: number;
+
   get currentCoord(): SeqCoordinate {
     return this._currentCoord;
   }
@@ -157,13 +158,18 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
         const reg = new RegExp(m.regex, 'g');
         let match = reg.exec(f.sequence);
         while (match != null) {
+          const newMod = Object.create(m);
+          for (const key in newMod) {
+            newMod[key] = newMod[key];
+          }
           if (this.modMap.has(match.index)) {
             const mM = this.modMap.get(match.index);
-            mM.push(m);
+            mM.push(newMod);
+
             this.modMap.set(match.index, mM);
           } else {
             const n = [];
-            n.push(m);
+            n.push(newMod);
             this.modMap.set(match.index, n);
           }
           match = reg.exec(f.sequence);
@@ -184,9 +190,16 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
             const sumIndex = summaryMap.get(m.name + m.Ytype);
             this.modSummary[sumIndex].positions.push(i.coordinate);
           } else {
-            this.modSummary.push(Object.create(m));
+            const newMod = Object.create(m);
+            for (const key in newMod) {
+              newMod[key] = newMod[key];
+            }
+            this.modSummary.push(newMod);
             this.modSummary[count].positions = [];
             this.modSummary[count].positions.push(i.coordinate);
+            if (m.status !== false) {
+              this.modSummary[count].status = m.status;
+            }
             summaryMap.set(m.name + m.Ytype, count);
             count ++;
           }
@@ -227,11 +240,11 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
       'name': ['', Validators.required],
       'mass': [0, Validators.required],
       'regex': aa,
-      'multiple_pattern': 'FALSE',
+      'multiple_pattern': false,
       'label': [],
       'type': 'static',
       'Ytype': [],
-      'status': [],
+      'status': false,
       'auto_allocation': 'FALSE',
       'positions': [],
     });
@@ -281,25 +294,21 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
       for (const k of m.positions) {
         for (const m2 of this.seqCoord[k].mods) {
           if ((m.name + m.Ytype) === (m2.name + m2.Ytype)) {
-            m2.status = 'filled';
+            console.log(this.protein.id);
+            m2.status = true;
           }
         }
       }
+      m.status = true;
     } else {
       for (const k of m.positions) {
         for (const m2 of this.seqCoord[k].mods) {
           if ((m.name + m.Ytype) === (m2.name + m2.Ytype)) {
-            m2.status = '';
+            m2.status = false;
           }
         }
       }
-    }
-    for (const k of m.positions) {
-      for (const m2 of this.seqCoord[k].mods) {
-        if ((m.name + m.Ytype) === (m2.name + m2.Ytype)) {
-          m2.status = m.status;
-        }
-      }
+      m.status = false;
     }
   }
 
@@ -308,18 +317,20 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
       for (const k of m.positions) {
         for (const m2 of this.seqCoord[k].mods) {
           if ((m.name + m.Ytype) === (m2.name + m2.Ytype)) {
-            m2.multiple_pattern = 'TRUE';
+            m2.multiple_pattern = true;
           }
         }
       }
+      m.multiple_pattern = true;
     } else {
       for (const k of m.positions) {
         for (const m2 of this.seqCoord[k].mods) {
           if ((m.name + m.Ytype) === (m2.name + m2.Ytype)) {
-            m2.multiple_pattern = 'FALSE';
+            m2.multiple_pattern = false;
           }
         }
       }
+      m.multiple_pattern = false;
     }
   }
 
@@ -360,5 +371,6 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
       s.modType = undefined;
       s.mods = [];
     }
+    this.summarize();
   }
 }

@@ -32,6 +32,7 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
   variableMods: Observable<Modification[]>;
   Ymods: Observable<Modification[]>;
   windows: Observable<SwathWindows[]>;
+  finished: boolean;
   selectedStaticMods: Observable<Modification[]>;
   private _selectedSource = new Subject<Modification[]>();
   currentMods: Modification[] = [];
@@ -80,6 +81,7 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
             }
           }
           this.txtResult = DataStore.toCSV(findf.header, findf.data, findf.fileName, findf.fileName);
+          this.finished = true;
         }
         if (this.resultCollection.length === this.fastaContent.content.length) {
           this.collectTrigger = false;
@@ -178,6 +180,7 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   SendQueries() {
+    this.finished = false;
     this.collectTrigger = true;
     this.queryCollection = [];
     this.resultCollection = [];

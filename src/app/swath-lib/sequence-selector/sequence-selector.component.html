@@ -26,12 +26,12 @@
                   <span class="badge badge-pill badge-warning" *ngSwitchCase="'static'" (click)="selectCoordinates(m.positions)">{{m.name}} {{m.Ytype}}: {{m.positions.length}}</span>
                 </div>
                 <div class="row mt-2 in-line form-inline" *ngIf="m.type=='Ytype'">
-                  <input type="checkbox" class="form-control form-control-sm" id="status-filled" #status (change)="changeStatus(status, m)">
-                  <label for="status-filled">Filled all positions</label>
+                  <input type="checkbox" class="form-control form-control-sm" id="status-filled-{{protein.id+protein.sequence}}" #statusfilled (change)="changeStatus(statusfilled, m)" [checked]="m.status">
+                  <label for="status-filled-{{protein.id+protein.sequence}}">Filled all positions</label>
                 </div>
                 <div class="row mt-2 in-line form-inline" *ngIf="m.type=='Ytype'||m.type=='variable'">
-                  <input type="checkbox" class="form-control form-control-sm" id="mp" #mp (change)="changePattern(mp, m)">
-                  <label for="mp">Multiple Pattern</label>
+                  <input type="checkbox" class="form-control form-control-sm" id="mp-{{protein.id+protein.sequence}}" #mp (change)="changePattern(mp, m)" [checked]="m.multiple_pattern">
+                  <label for="mp-{{protein.id+protein.sequence}}">Multiple Pattern</label>
                 </div>
               </div>
               <div class="text-right mt-4">
@@ -180,13 +180,19 @@
                 <div class="form-group row">
                   <div class="input-group">
                     <span class="input-group-addon" id="status">Status</span>
-                    <input formControlName="status" type="text" class="form-control" aria-label="status" aria-describedby="status">
+                    <select formControlName="status" class="form-control" aria-label="status" aria-describedby="status">
+                      <option value=false>False</option>
+                      <option value=true>True</option>
+                    </select>
                   </div>
                 </div>
                 <div class="form-group row">
                   <div class="input-group">
                     <span class="input-group-addon" id="multiple-pattern">Multiple Pattern</span>
-                    <input formControlName="multiple_pattern" type="text" class="form-control" aria-label="multiple-pattern" aria-describedby="multiple-pattern">
+                    <select formControlName="multiple_pattern" class="form-control" aria-label="multiple-pattern" aria-describedby="multiple-pattern">
+                      <option value=false>False</option>
+                      <option value=true>True</option>
+                    </select>
                   </div>
                 </div>
                 <div class="form-group row">
