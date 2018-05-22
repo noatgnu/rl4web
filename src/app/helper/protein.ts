@@ -1,6 +1,7 @@
 import {Modification} from "./modification";
 
 export class Protein {
+
   get extra(): number {
     return this._extra;
   }
@@ -50,4 +51,5 @@ export class Protein {
   private _modifications: Map<string, Modification>;
   private _ion_type: string;
   private _extra: number;
+
 }

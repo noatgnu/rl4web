@@ -99,7 +99,8 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
       'ytype': [],
       'rt': [],
       'windows': [],
-      'extra-mass': 0
+      'extra-mass': 0,
+      'max-charge': 2
     });
   }
 

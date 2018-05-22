@@ -3,13 +3,15 @@ import {Modification} from "./modification";
 import {SwathWindows} from "./swath-windows";
 
 export class SwathQuery {
-  constructor(protein: Protein, modifications: Modification[], windows: SwathWindows[], rt: Array<number>, extra: number) {
+  constructor(protein: Protein, modifications: Modification[], windows: SwathWindows[], rt: Array<number>, extra: number, charge: number) {
     this._protein = protein;
     this._modifications = modifications;
     this._windows = windows;
     this._rt = rt;
     this._extra = extra;
+    this._charge = charge;
   }
+
   get extra(): number {
     return this._extra;
   }
@@ -49,9 +51,19 @@ export class SwathQuery {
   set modifications(value: Modification[]) {
     this._modifications = value;
   }
+
+  get charge(): number {
+    return this._charge;
+  }
+
+  set charge(value: number) {
+    this._charge = value;
+  }
+
   private _protein: Protein;
   private _modifications: Modification[];
   private _windows: SwathWindows[];
   private _rt: Array<number>;
   private _extra: number;
+  private _charge: number;
 }
