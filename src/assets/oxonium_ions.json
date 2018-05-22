@@ -1,0 +1,54 @@
+{
+  "data": [
+    {
+      "components": "Hex-2H2O",
+      "mz": 127.06,
+      "dependencies": ["GalNAc", "HexNAc"]
+    },
+    {
+      "components": "HexNAc-others",
+      "mz": 138.05,
+      "dependencies": ["HexNAc"]
+    },
+    {
+      "components": "Hex",
+      "mz": 163.06,
+      "dependencies": ["GalNAc", "HexNAc"]
+    },
+    {
+      "components": "HexNAc-2H2O",
+      "mz": 168.09,
+      "dependencies": ["HexNAc"]
+    },
+    {
+      "components": "HexNAc-H2O",
+      "mz": 186.09,
+      "dependencies": ["HexNAc"]
+    },
+    {
+      "components": "HexNAc",
+      "mz": 204.09,
+      "dependencies": ["HexNAc"]
+    },
+    {
+      "components": "NeuAc-H2O",
+      "mz": 274.09,
+      "dependencies": ["HexNAc"]
+    },
+    {
+      "components": "NeuAc",
+      "mz": 292.08,
+      "dependencies": ["HexNAc"]
+    },
+    {
+      "components": "HexHexNAc",
+      "mz": 366.14,
+      "dependencies": ["HexNAc"]
+    },
+    {
+      "components": "NeuAcHexHexNAc",
+      "mz": 657.23,
+      "dependencies": ["HexNAc"]
+    }
+  ]
+}

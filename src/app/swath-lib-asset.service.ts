@@ -6,6 +6,7 @@ import {VariableMod} from './variable-mod';
 import {Modification} from './helper/modification';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {SwathWindows} from "./helper/swath-windows";
+import {Oxonium} from "./helper/oxonium";
 
 
 @Injectable()
@@ -14,12 +15,14 @@ export class SwathLibAssetService {
   private _variableModsSource = new BehaviorSubject<Modification[]>(null);
   private _YtypeModsSource = new BehaviorSubject<Modification[]>(null);
   private _windowsSource = new BehaviorSubject<SwathWindows[]>(null);
+  private _oxoniumSource = new BehaviorSubject<Oxonium[]>(null);
   private _resultSource = new Subject<SwathResponse>();
   staticMods = this._staticModsSource.asObservable();
   variableMods = this._variableModsSource.asObservable();
   YtypeMods = this._YtypeModsSource.asObservable();
   windowsReader = this._windowsSource.asObservable();
   result = this._resultSource.asObservable();
+  oxoniumReader = this._oxoniumSource.asObservable();
   private URL = 'http://10.89.221.44:9000/api/swathlib/upload/';
   private resultURL = 'http://10.50.193.80:9000/api/swathlib/result/';
   constructor(private http: HttpClient) { }
@@ -74,6 +77,10 @@ export class SwathLibAssetService {
 
   updateWindows(data) {
     this._windowsSource.next(data);
+  }
+
+  updateOxonium(data) {
+    this._oxoniumSource.next(data);
   }
 
   checkServerExist() {

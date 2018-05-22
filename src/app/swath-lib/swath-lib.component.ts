@@ -13,6 +13,7 @@ import {Subscription} from 'rxjs/Subscription';
 import {SwathWindows} from '../helper/swath-windows';
 import {DataStore} from '../data-row';
 import {FileHandlerService} from "../file-handler.service";
+import {Oxonium} from "../helper/oxonium";
 
 @Component({
   selector: 'app-swath-lib',
@@ -32,6 +33,7 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
   variableMods: Observable<Modification[]>;
   Ymods: Observable<Modification[]>;
   windows: Observable<SwathWindows[]>;
+  oxonium: Observable<Oxonium[]>;
   finished: boolean;
   selectedStaticMods: Observable<Modification[]>;
   private _selectedSource = new Subject<Modification[]>();
@@ -49,6 +51,7 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
     this.staticMods = mod.staticMods;
     this.variableMods = mod.variableMods;
     this.Ymods = mod.YtypeMods;
+    this.oxonium = mod.oxoniumReader;
     this.selectedStaticMods = this._selectedSource.asObservable();
     this.windows = mod.windowsReader;
     this.result = mod.result;
@@ -68,6 +71,9 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
     });
     this.mod.getAssets('assets/windows.json').subscribe((resp) => {
       this.mod.updateWindows(resp.body['data']);
+    });
+    this.mod.getAssets('assets/oxonium_ions.json').subscribe((resp) => {
+      this.mod.updateOxonium(resp.body['data']);
     });
     this.outputSubscription = this.resultReader.subscribe((data) => {
       if (this.collectTrigger) {
@@ -101,6 +107,7 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
       'ytype': [],
       'rt': [],
       'windows': [],
+      'oxonium': [],
       'extra-mass': 0,
       'precursor-charge': 2,
       'max-charge': 2
