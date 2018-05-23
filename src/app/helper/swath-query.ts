@@ -1,8 +1,34 @@
 import {Protein} from "./protein";
 import {Modification} from "./modification";
 import {SwathWindows} from "./swath-windows";
+import {Oxonium} from "./oxonium";
 
 export class SwathQuery {
+  get oxonium(): Oxonium[] {
+    return this._oxonium;
+  }
+
+  set oxonium(value: Oxonium[]) {
+    const newOxonium = [];
+    if (value) {
+      for (const o of value) {
+        if (this.modifications.length > 0) {
+          for (const m of this.modifications) {
+            if (o.dependencies.includes(m.name)) {
+              if (!newOxonium.includes(o)) {
+                newOxonium.push(o);
+              }
+              break;
+            }
+          }
+        }
+      }
+      if (newOxonium.length > 0) {
+        this._oxonium = newOxonium;
+      }
+    }
+  }
+
   constructor(protein: Protein, modifications: Modification[], windows: SwathWindows[], rt: Array<number>, extra: number, charge: number, precursor_charge: number) {
     this._protein = protein;
     this._modifications = modifications;
@@ -75,4 +101,5 @@ export class SwathQuery {
   private _extra: number;
   private _charge: number;
   private _precursor_charge: number;
+  private _oxonium: Oxonium[];
 }

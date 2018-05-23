@@ -14,6 +14,7 @@ import {SwathWindows} from '../helper/swath-windows';
 import {DataStore} from '../data-row';
 import {FileHandlerService} from "../file-handler.service";
 import {Oxonium} from "../helper/oxonium";
+import {e} from "@angular/core/src/render3";
 
 @Component({
   selector: 'app-swath-lib',
@@ -110,7 +111,8 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
       'oxonium': [],
       'extra-mass': 0,
       'precursor-charge': 2,
-      'max-charge': 2
+      'max-charge': 2,
+      'ion-type': ''
     });
   }
 
@@ -182,8 +184,10 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async loadFasta(e) {
-    this.fastaContent = await this.ff(e);
-    this.fastaFile.UpdateFastaSource(this.fastaContent);
+    if (e) {
+      this.fastaContent = await this.ff(e);
+      this.fastaFile.UpdateFastaSource(this.fastaContent);
+    }
   }
 
   SendQueries() {

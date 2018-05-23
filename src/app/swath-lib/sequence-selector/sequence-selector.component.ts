@@ -3,7 +3,13 @@ import {Protein} from '../../helper/protein';
 import {SeqCoordinate} from '../../helper/seq-coordinate';
 import {Modification} from '../../helper/modification';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {NgbDropdownConfig, NgbModal, NgbTooltipConfig, ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
+import {
+  NgbDropdownConfig,
+  NgbModal,
+  NgbTooltipConfig,
+  ModalDismissReasons,
+  NgbModalRef
+} from '@ng-bootstrap/ng-bootstrap';
 import {SwathLibAssetService} from '../../swath-lib-asset.service';
 import {Observable} from 'rxjs/Observable';
 import {SwathResultService} from '../../helper/swath-result.service';
@@ -19,6 +25,7 @@ import {Oxonium} from "../../helper/oxonium";
   providers: [NgbTooltipConfig, NgbDropdownConfig]
 })
 export class SequenceSelectorComponent implements OnInit, OnDestroy {
+  modalref: NgbModalRef;
   preMadeForm: FormGroup;
   addModForm: FormGroup;
   extraForm: FormGroup;
@@ -58,6 +65,8 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
   set form(value: FormGroup) {
     this._form = value;
     this.decorSeq();
+    this.createExtraForm();
+    this.protein.ion_type = this._form.value['ion-type'];
   }
   private _protein: Protein;
   private _form: FormGroup;
@@ -90,7 +99,9 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
         this.progress = 20;
         this.summarize();
         this.progress = 40;
-        this.srs.SendQuery(new SwathQuery(this.protein, this.modSummary, this.form.value['windows'], this.form.value['rt'], this.form.value['extra-mass'], this.form.value['max-charge'], this.form.value['precursor-charge'])).subscribe((response) => {
+        const query = new SwathQuery(this.protein, this.modSummary, this.form.value['windows'], this.form.value['rt'], this.form.value['extra-mass'], this.form.value['max-charge'], this.form.value['precursor-charge']);
+        query.oxonium = this.extraForm.value['oxonium'];
+        this.srs.SendQuery(query).subscribe((response) => {
           this.progress = 60;
           const df = new DataStore(response.body['data'], true, '');
           this.progress = 80;
@@ -242,7 +253,7 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
   }
 
   openProteinEditor(modal) {
-    this.modalService.open(modal);
+    this.modalref = this.modalService.open(modal);
   }
 
   createForm(position, aa) {
@@ -261,11 +272,26 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
   }
 
   createExtraForm() {
-    this.extraForm = this.fb.group({
-      'name': this.protein.id,
-      'oxonium': Object.create(this.form.value['oxonium'])
-    });
-    console.log(this.extraForm.value['oxonium'][0]);
+    console.log(this.form.value['oxonium']);
+    if (this.form.value['oxonium']) {
+      if (this.form.value['oxonium'].length > 0) {
+        this.extraForm = this.fb.group({
+          'name': '',
+          'oxonium': Object.create(this.form.value['oxonium'])
+        });
+      } else {
+        this.extraForm = this.fb.group({
+          'name': '',
+          'oxonium': []
+        });
+      }
+    } else {
+      this.extraForm = this.fb.group({
+        'name': '',
+        'oxonium': []
+      });
+    }
+
   }
 
   createFormPremade() {
@@ -390,5 +416,10 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
       s.mods = [];
     }
     this.summarize();
+  }
+
+  saveProtein() {
+    this.protein.id = this.extraForm.value['name'];
+    this.modalref.close();
   }
 }

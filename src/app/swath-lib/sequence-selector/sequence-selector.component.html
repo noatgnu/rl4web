@@ -1,7 +1,6 @@
 <div class="container">
     <div class="card mt-1">
       <div class="card-body">
-
         <div class="row">
           <div class="col-6">
             <h5 class="card-title">
@@ -10,12 +9,10 @@
           </div>
           <div class="col-6">
             <div class="text-right">
-              <button class="btn btn-sm btn-outline-secondary" (click)="openProteinEditor(proteinEditor)"><i class="fa fa-cog"></i></button>
+              <button class="btn btn-sm btn-outline-secondary" (click)="openProteinEditor(proteinEditor)" ngbTooltip="Modify Query Properties" #e="ngbTooltip">Edit <i class="fa fa-cog"></i></button>
             </div>
           </div>
         </div>
-
-
         <div class="row">
           <div class="col-9">
             <div class="inline-seq" ngbDropdown #contextM="ngbDropdown" *ngFor="let aa of seqCoord" [ngSwitch]="aa.modType">
@@ -47,6 +44,12 @@
                 </div>
               </div>
             </div>
+            <div class="row" *ngIf="extraForm.value['oxonium']">
+              Selected oxonium ions:
+              <ul>
+                <li *ngFor="let o of extraForm.value['oxonium']">{{o.components}}</li>
+              </ul>
+            </div>
 
             <div class="text-right mt-4">
               <input type="text" class="form-control form-control-sm" aria-label="ion-type" aria-describedby="ion-type" [(ngModel)]="protein.ion_type" placeholder="Ion Type">
@@ -55,7 +58,6 @@
               <button type="button" class="btn btn-sm btn-warning" (click)="clearModifications()">Clear All Modifications</button>
             </div>
           </div>
-
         </div>
         <div class="mt-4" *ngIf="sent">
           <ngb-progressbar type="info" [animated]="true" [striped]="true" [value]="progress"></ngb-progressbar>
@@ -72,7 +74,6 @@
     </button>
   </div>
   <div class="modal-body">
-
     <div *ngIf="currentCoord">
       <div class="container">
         <div class="card">
@@ -252,5 +253,8 @@
         </select>
       </div>
     </form>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-primary" (click)="saveProtein()">Save</button>
   </div>
 </ng-template>
