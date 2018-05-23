@@ -1,7 +1,7 @@
 {
   "data": [
     {
-      "name": "GalNAc",
+      "name": "O-Mannose",
       "label": "g",
       "mass": 0,
       "regex": "[S|T]",
@@ -12,7 +12,7 @@
       "status": false
     },
     {
-      "name": "GalNAc",
+      "name": "O-Mannose",
       "label": "g",
       "mass": 162.05,
       "regex": "[S|T]",
