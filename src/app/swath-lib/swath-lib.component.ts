@@ -14,7 +14,6 @@ import {SwathWindows} from '../helper/swath-windows';
 import {DataStore} from '../data-row';
 import {FileHandlerService} from "../file-handler.service";
 import {Oxonium} from "../helper/oxonium";
-import {e} from "@angular/core/src/render3";
 
 @Component({
   selector: 'app-swath-lib',
@@ -38,10 +37,6 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
   finished: boolean;
   selectedStaticMods: Observable<Modification[]>;
   private _selectedSource = new Subject<Modification[]>();
-  currentMods: Modification[] = [];
-  selectedMod: Modification[];
-  selectedVariableMod: VariableMod[];
-  private formData: FormData = new FormData();
   result: Observable<SwathResponse>;
   fastaContent: FastaFile;
   resultReader: Observable<DataStore>;
@@ -119,60 +114,6 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
   applyModification() {
     this.form = Object.create(this.form);
     this.fastaFile.UpdateFastaSource(Object.create(this.fastaContent));
-  }
-
-  getFile(event, handle) {
-    if (event.target.files && event.target.files.length > 0) {
-      const fileList: FileList = event.target.files;
-      if (this.formData.has(handle)) {
-        this.formData.set(handle, fileList[0], fileList[0].name);
-      } else {
-        this.formData.append(handle, fileList[0], fileList[0].name);
-      }
-    }
-  }
-
-  checkForm() {
-    return this.formData.has('fasta') && this.formData.has('windows');
-  }
-
-  onSubmit(f: NgForm) {
-    if (f.valid) {
-      if (this.formData.has('static')) {
-        this.formData.set('static', JSON.stringify(this.currentMods));
-      } else {
-        this.formData.append('static', JSON.stringify(this.currentMods));
-      }
-      if (this.formData.has('variable')) {
-        this.formData.set('variable', JSON.stringify(this.selectedVariableMod));
-      } else {
-        this.formData.append('variable', JSON.stringify(this.selectedVariableMod));
-      }
-
-      this.mod.uploadForm(this.formData).subscribe((resp) => {
-        this.mod.updateResult(resp);
-      });
-    }
-  }
-
-  addSelected(newMods) {
-    for (const i of newMods) {
-      if (this.currentMods.indexOf(i) === -1) {
-        this.currentMods.push(i);
-      }
-    }
-    this._selectedSource.next(this.currentMods);
-  }
-
-  removeSelected(removeMods) {
-    for (const i of removeMods) {
-      const r = this.currentMods.indexOf(i);
-      if (r !== -1) {
-        this.currentMods.splice(r, 1);
-      }
-    }
-
-    this._selectedSource.next(this.currentMods);
   }
 
   ngAfterViewInit() {

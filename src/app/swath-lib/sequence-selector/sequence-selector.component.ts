@@ -114,6 +114,7 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.SendTriggerSub.unsubscribe();
+
   }
 
   decorSeq() {
@@ -421,5 +422,9 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
   saveProtein() {
     this.protein.id = this.extraForm.value['name'];
     this.modalref.close();
+  }
+
+  trackbyCoord(index, item) {
+    return item.coordinate;
   }
 }
