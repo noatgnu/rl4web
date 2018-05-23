@@ -22,6 +22,7 @@ export class FastaFileService {
         const loadedFile = reader.result;
         const lines = loadedFile.split(/\r\n|\n/);
         lines.map((line) => {
+          console.log(line);
           if (line.length > 0) {
             if (line.startsWith('>', 0)) {
               if (currentP.id !== '') {
@@ -34,8 +35,9 @@ export class FastaFileService {
               currentP.sequence += line;
             }
           }
+          console.log(currentP);
         });
-
+        result.push(currentP);
         resolve(new FastaFile(file.name, result));
       };
       reader.readAsText(file);
