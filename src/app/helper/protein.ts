@@ -1,6 +1,13 @@
 import {Modification} from "./modification";
 
 export class Protein {
+  get unique_id(): string {
+    return this._unique_id;
+  }
+
+  set unique_id(value: string) {
+    this._unique_id = value;
+  }
 
   get extra(): number {
     return this._extra;
@@ -51,5 +58,5 @@ export class Protein {
   private _modifications: Map<string, Modification>;
   private _ion_type: string;
   private _extra: number;
-
+  private _unique_id: string;
 }

@@ -228,7 +228,7 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
 
   selectCoordinates(coordinates: number[]) {
     for (const c of coordinates) {
-      const el = this.getElement(this.seqCoord[c].modType + c + this.protein.id + this.protein.sequence);
+      const el = this.getElement(this.protein.unique_id + c);
       el.click();
     }
   }

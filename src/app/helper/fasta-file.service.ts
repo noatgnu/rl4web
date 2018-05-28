@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import {DataRow, DataStore} from '../data-row';
 import {Protein} from './protein';
 import {Modification} from './modification';
 import {FastaFile} from "./fasta-file";
@@ -17,6 +16,7 @@ export class FastaFileService {
       const file = e.target.files[0];
       const reader = new FileReader();
       const result: Protein[] = [];
+      let unique_id = 1;
       let currentP = new Protein('', '', new Map<string, Modification>());
       reader.onload = (event) => {
         const loadedFile = reader.result;
@@ -26,8 +26,10 @@ export class FastaFileService {
           if (line.length > 0) {
             if (line.startsWith('>', 0)) {
               if (currentP.id !== '') {
+                currentP.unique_id = unique_id.toString();
                 result.push(currentP);
                 currentP = new Protein(line.slice(1), '', new Map<string, Modification>());
+                unique_id += 1;
               } else {
                 currentP.id = line.slice(1);
               }
@@ -37,6 +39,7 @@ export class FastaFileService {
           }
           console.log(currentP);
         });
+        currentP.unique_id = unique_id.toString();
         result.push(currentP);
         resolve(new FastaFile(file.name, result));
       };

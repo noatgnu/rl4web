@@ -22,7 +22,7 @@ import {Oxonium} from "../helper/oxonium";
   providers: [FastaFileService],
 })
 export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
-  txtResult;
+  finishedTime;
   fileDownloader;
   queryCollection: SwathQuery[] = [];
   resultCollection: DataStore[] = [];
@@ -75,14 +75,7 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
       if (this.collectTrigger) {
         this.resultCollection.push(data);
         if (this.resultCollection.length === this.fastaContent.content.length) {
-          const findf = new DataStore([], false, this.fastaContent.name + '_library.txt');
-          for (const r of this.resultCollection) {
-            if (r.header !== undefined) {
-              findf.header = r.header;
-              findf.data = findf.data.concat(r.data);
-            }
-          }
-          this.txtResult = DataStore.toCSV(findf.header, findf.data, findf.fileName, findf.fileName);
+          this.finishedTime = this.getCurrentDate();
           this.finished = true;
         }
         if (this.resultCollection.length === this.fastaContent.content.length) {
@@ -137,5 +130,17 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
     this.queryCollection = [];
     this.resultCollection = [];
     this.srs.UpdateSendTrigger(true);
+  }
+
+  downloadFile() {
+    const findf = new DataStore([], false, this.fastaContent.name + '_library.txt');
+    for (const r of this.resultCollection) {
+      if (r.header !== undefined) {
+        findf.header = r.header;
+        findf.data = findf.data.concat(r.data);
+      }
+    }
+    const txtResult = DataStore.toCSV(findf.header, findf.data, findf.fileName, findf.fileName);
+    this._fh.saveFile(txtResult.content, txtResult.fileName);
   }
 }

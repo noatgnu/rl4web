@@ -107,9 +107,9 @@
 
   <div class="text-right mt-4" *ngIf="finished">
     <div class="row">
-      Query finished on {{getCurrentDate()|date:'full'}}
+      Query finished on {{finishedTime|date:'full'}}
     </div>
-    <button type="button" class="btn btn-success" (click)="fileDownloader(txtResult.content, txtResult.fileName)">Download Compiled Results</button>
+    <button type="button" class="btn btn-success" (click)="downloadFile()">Download Compiled Results</button>
   </div>
 
 

@@ -78,6 +78,17 @@
       "status": false
     },
     {
+      "name": "Carboxylation",
+      "label": "e",
+      "mass": 43.98983,
+      "regex": "E",
+      "type": "variable",
+      "auto_allocation": "FALSE",
+      "Ytype": "",
+      "multiple_pattern": false,
+      "status": false
+    },
+    {
       "name": "Propionamide",
       "label": "c",
       "mass": 71.037114,
