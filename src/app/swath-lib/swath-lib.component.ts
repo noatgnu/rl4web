@@ -28,6 +28,7 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
   resultCollection: DataStore[] = [];
   form: FormGroup;
   ff;
+  sf;
   fasta: Observable<FastaFile>;
   staticMods: Observable<Modification[]>;
   variableMods: Observable<Modification[]>;
@@ -52,6 +53,7 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
     this.windows = mod.windowsReader;
     this.result = mod.result;
     this.ff = fastaFile.fileHandler;
+    this.sf = _fh.fileHandler;
     this.createForm();
     this.fasta = this.fastaFile.fastaFileReader;
     this.resultReader = srs.OutputReader;

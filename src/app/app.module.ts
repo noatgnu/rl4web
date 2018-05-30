@@ -22,6 +22,7 @@ import { SwathLibComponent } from './swath-lib/swath-lib.component';
 import {SwathLibAssetService} from "./swath-lib-asset.service";
 import { SequenceSelectorComponent } from './swath-lib/sequence-selector/sequence-selector.component';
 import {SwathResultService} from "./helper/swath-result.service";
+import { UserSettingsComponent } from './swath-lib/user-settings/user-settings.component';
 
 const appRoutes: Routes = [
   {path: '', component: HomeComponent},
@@ -42,7 +43,8 @@ const appRoutes: Routes = [
     PublicationComponent,
     GrantComponent,
     SwathLibComponent,
-    SequenceSelectorComponent
+    SequenceSelectorComponent,
+    UserSettingsComponent
   ],
   imports: [
     NgbModule.forRoot(),

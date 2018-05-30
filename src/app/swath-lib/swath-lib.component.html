@@ -1,99 +1,110 @@
-<div class="container">
-  <form class="mt-4" [formGroup]="form">
-    <div class="form-group">
-      <div class="input-group">
-        <span class="input-group-addon" id="label-fasta-input">Fasta Input:</span>
-        <input type="file" class="form-control" aria-label="fasta-input" aria-describedby="label-fasta-input" (change)="loadFasta($event)" required>
-      </div>
-      <div *ngIf="fasta|async; let fasta">
-        <small id="peptide-summary-rows" class="form-text text-muted">
-          {{fasta.content.length}} peptides have been loaded.
-        </small>
-      </div>
-    </div>
-    <div class="form-group">
-      <div class="card">
-        <div class="card-body">
-          <h5 class="card-title">
-            Queryset Input Settings
-          </h5>
-          <div class="row mt-4">
-            <div class="col-4">
-              <label for="staticMGen">Static Modifications:</label>
-              <select multiple class="form-control" id="staticMGen" *ngIf="staticMods|async; let Mods" formControlName="static">
-                <option *ngFor="let m of Mods" [value]="m">
-                  {{m.name}}
-                </option>
-              </select>
+<div class="container mt-4">
+  <ngb-tabset>
+    <ngb-tab title="Main">
+      <ng-template ngbTabContent>
+        <form class="mt-4" [formGroup]="form">
+          <div class="form-group">
+            <div class="input-group">
+              <span class="input-group-addon" id="label-fasta-input">Fasta Input:</span>
+              <input type="file" class="form-control" aria-label="fasta-input" aria-describedby="label-fasta-input" (change)="loadFasta($event)" required>
             </div>
-            <div class="col-4">
-              <label for="variableMGen">Non-Ytype Variable Modifications:</label>
-              <select multiple class="form-control" id="variableMGen" *ngIf="variableMods|async; let Mods" formControlName="variable">
-                <option *ngFor="let m of Mods" [value]="m">
-                  {{m.name}}
-                </option>
-              </select>
-            </div>
-            <div class="col-4">
-              <label for="yMGen">Ytype Variable Modifications:</label>
-              <select multiple class="form-control" id="yMGen" *ngIf="Ymods|async; let Mods" formControlName="ytype">
-                <option *ngFor="let m of Mods" [value]="m">
-                  {{m.name}} ({{m.Ytype}})
-                </option>
-              </select>
+            <div *ngIf="fasta|async; let fasta">
+              <small id="peptide-summary-rows" class="form-text text-muted">
+                {{fasta.content.length}} peptides have been loaded.
+              </small>
             </div>
           </div>
-          <div class="row mt-3">
-            <div class="col-2">
-              <label for="rt">Retention Time:</label>
-              <select multiple class="form-control" id="rt" formControlName="rt">
-                <option *ngFor="let r of rt" [value]="r">
-                  {{r}}
-                </option>
-              </select>
-            </div>
-            <div class="col-4">
-              <label for="windows">SWATH Windows:</label>
-              <select multiple class="form-control" id="windows" formControlName="windows" *ngIf="windows|async; let windows">
-                <option *ngFor="let w of windows" [value]="w">
-                  {{w.start}} - {{w.stop}}
-                </option>
-              </select>
-            </div>
-            <div class="col-2">
-              <label for="extra-mass">Extra Mass:</label>
-              <input type="number" class="form-control" id="extra-mass" formControlName="extra-mass">
-            </div>
-            <div class="col-2">
-              <label for="max-charge">Max Charge:</label>
-              <input type="number" class="form-control" id="max-charge" formControlName="max-charge">
-            </div>
-            <div class="col-2">
-              <label for="precursor-charge">Precursor Charge:</label>
-              <input type="number" class="form-control" id="precursor-charge" formControlName="precursor-charge">
+          <div class="form-group">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">
+                  Queryset Input Settings
+                </h5>
+                <div class="row mt-4">
+                  <div class="col-4">
+                    <label for="staticMGen">Static Modifications:</label>
+                    <select multiple class="form-control" id="staticMGen" *ngIf="staticMods|async; let Mods" formControlName="static">
+                      <option *ngFor="let m of Mods" [value]="m">
+                        {{m.name}}
+                      </option>
+                    </select>
+                  </div>
+                  <div class="col-4">
+                    <label for="variableMGen">Non-Ytype Variable Modifications:</label>
+                    <select multiple class="form-control" id="variableMGen" *ngIf="variableMods|async; let Mods" formControlName="variable">
+                      <option *ngFor="let m of Mods" [value]="m">
+                        {{m.name}}
+                      </option>
+                    </select>
+                  </div>
+                  <div class="col-4">
+                    <label for="yMGen">Ytype Variable Modifications:</label>
+                    <select multiple class="form-control" id="yMGen" *ngIf="Ymods|async; let Mods" formControlName="ytype">
+                      <option *ngFor="let m of Mods" [value]="m">
+                        {{m.name}} ({{m.Ytype}})
+                      </option>
+                    </select>
+                  </div>
+                </div>
+                <div class="row mt-3">
+                  <div class="col-2">
+                    <label for="rt">Retention Time:</label>
+                    <select multiple class="form-control" id="rt" formControlName="rt">
+                      <option *ngFor="let r of rt" [value]="r">
+                        {{r}}
+                      </option>
+                    </select>
+                  </div>
+                  <div class="col-4">
+                    <label for="windows">SWATH Windows:</label>
+                    <select multiple class="form-control" id="windows" formControlName="windows" *ngIf="windows|async; let windows">
+                      <option *ngFor="let w of windows" [value]="w">
+                        {{w.start}} - {{w.stop}}
+                      </option>
+                    </select>
+                  </div>
+                  <div class="col-2">
+                    <label for="extra-mass">Extra Mass:</label>
+                    <input type="number" class="form-control" id="extra-mass" formControlName="extra-mass">
+                  </div>
+                  <div class="col-2">
+                    <label for="max-charge">Max Charge:</label>
+                    <input type="number" class="form-control" id="max-charge" formControlName="max-charge">
+                  </div>
+                  <div class="col-2">
+                    <label for="precursor-charge">Precursor Charge:</label>
+                    <input type="number" class="form-control" id="precursor-charge" formControlName="precursor-charge">
+                  </div>
+                </div>
+                <div class="row mt-3">
+                  <div class="col-4">
+                    <label for="oxonium">Oxonium Ions:</label>
+                    <select multiple class="form-control" id="oxonium" formControlName="oxonium" *ngIf="oxonium|async; let oxonium">
+                      <option *ngFor="let o of oxonium" [value]="o">
+                        {{o.components}} ({{o.mz}} m/z)
+                      </option>
+                    </select>
+                  </div>
+                  <div class="col-3">
+                    <label for="ion-type">Fragmentation ion-type:</label>
+                    <input type="text" class="form-control" id="ion-type" formControlName="ion-type">
+                  </div>
+                </div>
+                <div class="text-right mt-4">
+                  <button type="button" class="btn btn-primary" (click)="applyModification()">Apply Modifications</button>
+                </div>
+              </div>
             </div>
           </div>
-          <div class="row mt-3">
-            <div class="col-4">
-              <label for="oxonium">Oxonium Ions:</label>
-              <select multiple class="form-control" id="oxonium" formControlName="oxonium" *ngIf="oxonium|async; let oxonium">
-                <option *ngFor="let o of oxonium" [value]="o">
-                  {{o.components}} ({{o.mz}} m/z)
-                </option>
-              </select>
-            </div>
-            <div class="col-3">
-              <label for="ion-type">Fragmentation ion-type:</label>
-              <input type="text" class="form-control" id="ion-type" formControlName="ion-type">
-            </div>
-          </div>
-          <div class="text-right mt-4">
-            <button type="button" class="btn btn-primary" (click)="applyModification()">Apply Modifications</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </form>
+        </form>
+      </ng-template>
+    </ngb-tab>
+    <ngb-tab title="Settings">
+      <ng-template ngbTabContent>
+        <app-user-settings></app-user-settings>
+      </ng-template>
+    </ngb-tab>
+  </ngb-tabset>
 </div>
 
 <div class="container" *ngIf="fasta|async; let fasta">

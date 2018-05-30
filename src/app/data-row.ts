@@ -41,12 +41,17 @@ export class DataStore {
   seqColumn: number;
   modColumn: number;
   fileName: string;
+  columnMap: Map<string, number>;
   constructor(data: DataRow[], loadHeader: boolean, fileName: string) {
     this.fileName = fileName;
     if (data.length > 1) {
       if (loadHeader) {
         this.header = data[0].row;
         this.data = data.slice(1);
+        this.columnMap = new Map();
+        for (let i = 0; i < this.header.length; i ++) {
+          this.columnMap.set(this.header[i], i);
+        }
       } else {
         this.data = data;
       }

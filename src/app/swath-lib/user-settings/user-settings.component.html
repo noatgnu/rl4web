@@ -1,0 +1,14 @@
+<form class="mt-4">
+  <div class="form-group">
+    <div class="input-group">
+      <span class="input-group-addon" id="mod-lib">Custom Modification Library:</span>
+      <input type="file" class="form-control" aria-label="mod-lib" aria-describedby="mod-lib" (change)="loadSettings($event, 'mod-lib')" required>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="input-group">
+      <span class="input-group-addon" id="swath-win">Custom SWATH Windows Range:</span>
+      <input type="file" class="form-control" aria-label="swath-win" aria-describedby="swath-win" (change)="loadSettings($event, 'swath-win')" required>
+    </div>
+  </div>
+</form>
