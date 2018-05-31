@@ -9,7 +9,8 @@
       "auto_allocation": "FALSE",
       "Ytype": "Y0",
       "multiple_pattern": false,
-      "status": false
+      "status": false,
+      "m_label": ""
     },
     {
       "name": "O-Mannose",
@@ -20,7 +21,8 @@
       "auto_allocation": "FALSE",
       "Ytype": "Y1",
       "multiple_pattern": false,
-      "status": false
+      "status": false,
+      "m_label": ""
     },
     {
       "name": "HexNAc",
@@ -31,7 +33,8 @@
       "auto_allocation": "FALSE",
       "Ytype": "Y0",
       "multiple_pattern": false,
-      "status": false
+      "status": false,
+      "m_label": ""
     },
     {
       "name": "HexNAc",
@@ -42,7 +45,8 @@
       "auto_allocation": "FALSE",
       "Ytype": "Y1",
       "multiple_pattern": false,
-      "status": false
+      "status": false,
+      "m_label": ""
     },
     {
       "name": "HexNAc",
@@ -53,7 +57,8 @@
       "auto_allocation": "FALSE",
       "Ytype": "Y2",
       "multiple_pattern": false,
-      "status": false
+      "status": false,
+      "m_label": ""
     },
     {
       "name": "Phosphorylation",
@@ -64,7 +69,8 @@
       "auto_allocation": "FALSE",
       "Ytype": "",
       "multiple_pattern": false,
-      "status": false
+      "status": false,
+      "m_label": ""
     },
     {
       "name": "Sulfation",
@@ -75,7 +81,8 @@
       "auto_allocation": "FALSE",
       "Ytype": "",
       "multiple_pattern": false,
-      "status": false
+      "status": false,
+      "m_label": ""
     },
     {
       "name": "Carboxylation",
@@ -86,7 +93,8 @@
       "auto_allocation": "FALSE",
       "Ytype": "",
       "multiple_pattern": false,
-      "status": false
+      "status": false,
+      "m_label": ""
     },
     {
       "name": "Propionamide",
@@ -97,7 +105,8 @@
       "auto_allocation": "FALSE",
       "Ytype": "",
       "multiple_pattern": false,
-      "status": false
+      "status": false,
+      "m_label": "PPa"
     },
     {
       "name": "Carbamidomethyl",
@@ -108,7 +117,8 @@
       "auto_allocation": "FALSE",
       "Ytype": "",
       "multiple_pattern": false,
-      "status": false
+      "status": false,
+      "m_label": ""
     }
   ]
 }

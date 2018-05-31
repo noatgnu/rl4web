@@ -22,10 +22,14 @@ export class UserSettingsComponent implements OnInit {
     const content = await this.sf(e, true);
     switch (settingCat) {
       case 'mod-lib':
-        const mods = [];
+        const mods: Modification[] = [];
+        console.log(content.columnMap);
+        console.log(content.data);
         for (const r of content.data) {
-          mods.push(new Modification([], false, false, r.row[content.columnMap['Ytype']], 'FALSE', r.row[content.columnMap['type']], parseFloat(r.row[content.columnMap['mass']]), r.row[content.columnMap['regex']], r.row[content.columnMap['label']], r.row[content.columnMap['name']]));
+          const m = new Modification([], false, false, r.row[content.columnMap.get('Ytype')], 'FALSE', r.row[content.columnMap.get('type')], parseFloat(r.row[content.columnMap.get('mass')]), r.row[content.columnMap.get('regex')], r.row[content.columnMap.get('label')], r.row[content.columnMap.get('name')], r.row[content.columnMap.get('m_label')]);
+          mods.push(m);
         }
+        console.log(mods);
         this.mod.updateMods(mods);
         break;
       case 'swath-win':

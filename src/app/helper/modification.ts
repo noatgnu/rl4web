@@ -1,4 +1,11 @@
 export class Modification {
+  get m_label(): string {
+    return this._m_label;
+  }
+
+  set m_label(value: string) {
+    this._m_label = value;
+  }
   get forErase(): boolean {
     return this._forErase;
   }
@@ -6,19 +13,7 @@ export class Modification {
   set forErase(value: boolean) {
     this._forErase = value;
   }
-  constructor(positions: Array<number>, status: boolean, multiple_pattern: boolean, Ytype: string, auto_allocation: string, type: string, mass: number, regex: string, label: string, name: string) {
-    this._positions = positions;
-    this._status = status;
-    this._multiple_pattern = multiple_pattern;
-    this._Ytype = Ytype;
-    this._auto_allocation = auto_allocation;
-    this._type = type;
-    this._mass = mass;
-    this._regex = regex;
-    this._label = label;
-    this._name = name;
-    this.forErase = false;
-  }
+
   get positions(): Array<number> {
     return this._positions;
   }
@@ -106,7 +101,24 @@ export class Modification {
   private _type: string;
   private _mass: number;
   private _regex: string;
+
+  constructor(positions: Array<number>, status: boolean, multiple_pattern: boolean, Ytype: string, auto_allocation: string, type: string, mass: number, regex: string, label: string, name: string, m_label: string) {
+    this._positions = positions;
+    this._status = status;
+    this._multiple_pattern = multiple_pattern;
+    this._Ytype = Ytype;
+    this._auto_allocation = auto_allocation;
+    this._type = type;
+    this._mass = mass;
+    this._regex = regex;
+    this._label = label;
+    this._name = name;
+    this._m_label = m_label;
+    this.forErase = false;
+  }
+
   private _label: string;
   private _name: string;
   private _forErase: boolean;
+  private _m_label: string;
 }

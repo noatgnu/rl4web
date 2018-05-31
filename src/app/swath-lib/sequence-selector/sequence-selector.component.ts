@@ -7,7 +7,7 @@ import {
   NgbDropdownConfig,
   NgbModal,
   NgbTooltipConfig,
-  ModalDismissReasons,
+
   NgbModalRef
 } from '@ng-bootstrap/ng-bootstrap';
 import {SwathLibAssetService} from '../../swath-lib-asset.service';
@@ -16,7 +16,7 @@ import {SwathResultService} from '../../helper/swath-result.service';
 import {SwathQuery} from '../../helper/swath-query';
 import {Subscription} from 'rxjs/Subscription';
 import {DataStore} from '../../data-row';
-import {Oxonium} from "../../helper/oxonium";
+import {Oxonium} from '../../helper/oxonium';
 
 @Component({
   selector: 'app-sequence-selector',
@@ -269,6 +269,7 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
       'status': false,
       'auto_allocation': 'FALSE',
       'positions': [],
+      'display_label': ''
     });
   }
 
@@ -320,7 +321,8 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
           this.addModForm.value['mass'],
           this.addModForm.value['regex'],
           this.addModForm.value['label'],
-          this.addModForm.value['name']
+          this.addModForm.value['name'],
+          this.addModForm.value['display_label']
           ));
     }
     this.summarize();
