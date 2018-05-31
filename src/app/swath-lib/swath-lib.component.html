@@ -109,7 +109,7 @@
 
 <div class="container" *ngIf="fasta|async; let fasta">
   <hr/>
-  <app-sequence-selector *ngFor="let p of fasta.content" [protein]="p" [form]="form"></app-sequence-selector>
+  <app-sequence-selector *ngFor="let p of fasta.content" [protein]="p" [form]="passForm"></app-sequence-selector>
 
   <div class="text-right mt-4">
     <button type="button" class="btn btn-primary" [disabled]="collectTrigger" (click)="SendQueries()">Submit Queries</button>

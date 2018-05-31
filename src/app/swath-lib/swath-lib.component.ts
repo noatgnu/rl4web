@@ -44,6 +44,7 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
   outputSubscription: Subscription;
   collectTrigger = false;
   rt = [];
+  passForm: FormGroup;
   constructor(private mod: SwathLibAssetService, private fastaFile: FastaFileService, private fb: FormBuilder, private srs: SwathResultService, private _fh: FileHandlerService) {
     this.staticMods = mod.staticMods;
     this.variableMods = mod.variableMods;
@@ -107,8 +108,8 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   applyModification() {
-    console.log(this.form);
-    this.form = Object.create(this.form);
+    console.log(this.form.value);
+    this.passForm = Object.create(this.form);
     this.fastaFile.UpdateFastaSource(Object.create(this.fastaContent));
   }
 
