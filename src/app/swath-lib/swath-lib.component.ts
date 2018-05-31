@@ -107,6 +107,7 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   applyModification() {
+    console.log(this.form);
     this.form = Object.create(this.form);
     this.fastaFile.UpdateFastaSource(Object.create(this.fastaContent));
   }
