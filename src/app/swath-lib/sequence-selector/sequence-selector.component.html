@@ -23,6 +23,8 @@
               <button type="button" class="btn btn-sm btn-warning mr-1 mb-1 mt-1 custom" *ngSwitchCase="'static'" placement="top" ngbTooltip="{{aa.coordinate+1}}" [id]="protein.unique_id+aa.coordinate" #t="ngbTooltip" (click)="clickEvent(t)" ngbDropdownAnchor (contextmenu)="contextClick(contextM)">{{aa.aa}}</button>
               <div ngbDropdownMenu [attr.aria-labelledby]="aa.modType+aa.coordinate">
                 <button class="dropdown-item" (click)="openEditModal(coordEditor, aa.coordinate)">Edit</button>
+                <button class="dropdown-item" (click)="y_stop_at=aa.coordinate">Set y-series stop</button>
+                <button class="dropdown-item" (click)="b_stop_at=aa.coordinate">Set b-series stop</button>
               </div>
             </div>
           </div>
@@ -50,7 +52,18 @@
                 <li *ngFor="let o of extraForm.value['oxonium']">{{o.components}}</li>
               </ul>
             </div>
-
+            <div class="row" *ngIf="b_stop_at>-1">
+              <small>
+                b-series stopping at {{seqCoord[b_stop_at].aa}}{{b_stop_at+1}}
+              </small>
+               <i class="fa fa-times-circle" (click)="b_stop_at=-1"></i>
+            </div>
+            <div class="row" *ngIf="y_stop_at>-1">
+              <small>
+                y-series stopping at {{seqCoord[y_stop_at].aa}}{{y_stop_at+1}}
+              </small>
+               <i class="fa fa-times-circle" (click)="y_stop_at=-1"></i>
+            </div>
             <div class="text-right mt-4">
               <input type="text" class="form-control form-control-sm" aria-label="ion-type" aria-describedby="ion-type" [(ngModel)]="protein.ion_type" placeholder="Ion Type">
             </div>

@@ -103,7 +103,8 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
       'extra-mass': 0,
       'precursor-charge': 2,
       'max-charge': 2,
-      'ion-type': ''
+      'ion-type': '',
+      'variable-bracket-format': 'windows'
     });
   }
 
@@ -124,7 +125,8 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
   async loadFasta(e) {
     if (e) {
       this.fastaContent = await this.ff(e);
-      this.fastaFile.UpdateFastaSource(this.fastaContent);
+      this.passForm = Object.create(this.form);
+      this.fastaFile.UpdateFastaSource(Object.create(this.fastaContent));
     }
   }
 

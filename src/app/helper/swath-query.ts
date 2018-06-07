@@ -4,6 +4,27 @@ import {SwathWindows} from "./swath-windows";
 import {Oxonium} from "./oxonium";
 
 export class SwathQuery {
+  get variable_format(): string {
+    return this._variable_format;
+  }
+
+  set variable_format(value: string) {
+    this._variable_format = value;
+  }
+  get b_stop_at(): number {
+    return this._b_stop_at;
+  }
+
+  set b_stop_at(value: number) {
+    this._b_stop_at = value;
+  }
+  get y_stop_at(): number {
+    return this._y_stop_at;
+  }
+
+  set y_stop_at(value: number) {
+    this._y_stop_at = value;
+  }
   get oxonium(): Oxonium[] {
     return this._oxonium;
   }
@@ -101,5 +122,8 @@ export class SwathQuery {
   private _extra: number;
   private _charge: number;
   private _precursor_charge: number;
+  private _b_stop_at: number;
+  private _y_stop_at: number;
+  private _variable_format: string;
   private _oxonium: Oxonium[];
 }

@@ -35,7 +35,8 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
   oxonium: Observable<Oxonium[]>;
   sent: boolean;
   progress: number;
-
+  b_stop_at = -1;
+  y_stop_at = -1;
   get currentCoord(): SeqCoordinate {
     return this._currentCoord;
   }
@@ -100,6 +101,9 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
         this.summarize();
         this.progress = 40;
         const query = new SwathQuery(this.protein, this.modSummary, this.form.value['windows'], this.form.value['rt'], this.form.value['extra-mass'], this.form.value['max-charge'], this.form.value['precursor-charge']);
+        query.b_stop_at = this.b_stop_at;
+        query.y_stop_at = this.y_stop_at;
+        query.variable_format = this.form.value['variable-bracket-format'];
         query.oxonium = this.extraForm.value['oxonium'];
         this.srs.SendQuery(query).subscribe((response) => {
           this.progress = 60;
