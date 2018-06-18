@@ -10,6 +10,7 @@ export class AppComponent implements OnInit {
   title = 'app';
   collapsed = true;
   swathlibActive = true;
+  stringArray = ['Glycan Within', 'Glycan Without'];
   constructor (private mod: SwathLibAssetService) {
 
   }
@@ -26,5 +27,8 @@ export class AppComponent implements OnInit {
     this.collapsed = !this.collapsed;
   }
 
-
+  randomString(): string {
+    const randomNumb = Math.floor(Math.random() * this.stringArray.length);
+    return this.stringArray[randomNumb];
+  }
 }
