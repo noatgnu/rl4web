@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import {Protein} from './protein';
 import {Modification} from './modification';
-import {FastaFile} from "./fasta-file";
-import {Subject} from "rxjs/Subject";
+import {FastaFile} from './fasta-file';
+import {Subject} from 'rxjs/Subject';
 
 @Injectable()
 export class FastaFileService {

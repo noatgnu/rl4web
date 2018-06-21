@@ -20,6 +20,7 @@
           <a class="dropdown-item" routerLink="/nsp" routerLinkActive="active">N-glycosylation Sequon Parser</a>
           <a class="dropdown-item" routerLink="/up" routerLinkActive="active">Uniprot Parser</a>
           <a class="dropdown-item" routerLink="/swathlib" routerLinkActive="active" *ngIf="swathlibActive">SWATH Ion Library Fabricator</a>
+          <a class="dropdown-item" routerLink="/gpp" routerLinkActive="active">Glycan Position Profiler</a>
           <div class="dropdown-divider"></div>
         </div>
       </li>
@@ -30,6 +31,9 @@
         <a class="nav-link" routerLink="/grant" routerLinkActive="active">Grants</a>
       </li>
     </ul>
+    <div *ngIf="serverStatus|async; let serverStatus">
+      <span class="badge badge-success" *ngIf="serverStatus==true">Connected</span>
+    </div>
   </div>
 </nav>
 
@@ -40,7 +44,7 @@
   <hr>
   <p class="text-muted">
     <small>
-      <i class="fa fa-copyright" aria-hidden="true"></i> Copyright Project-RL4. {{randomString()}}.
+      <i class="fa fa-copyright" aria-hidden="true"></i> Copyright Project-RL4. {{footer}}.
     </small>
   </p>
 </div>

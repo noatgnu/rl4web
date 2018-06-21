@@ -7,6 +7,7 @@ import {Modification} from './helper/modification';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {SwathWindows} from "./helper/swath-windows";
 import {Oxonium} from "./helper/oxonium";
+import {BaseUrl} from "./helper/base-url";
 
 
 @Injectable()
@@ -23,8 +24,11 @@ export class SwathLibAssetService {
   windowsReader = this._windowsSource.asObservable();
   result = this._resultSource.asObservable();
   oxoniumReader = this._oxoniumSource.asObservable();
-  private URL = 'http://10.89.221.44:9000/api/swathlib/upload/';
-  private resultURL = 'http://10.50.193.80:9000/api/swathlib/result/';
+  url = new BaseUrl();
+  private URL = this.url.url + ':9000/api/swathlib/upload/';
+  private resultURL = this.url.url + ':9000/api/swathlib/result/';
+  private _statusSource = new BehaviorSubject<boolean>(false);
+  statusReader = this._statusSource.asObservable();
   constructor(private http: HttpClient) { }
 
   getAssets(url) {
@@ -85,6 +89,10 @@ export class SwathLibAssetService {
 
   checkServerExist() {
     return this.http.get(this.URL, {observe: 'response'});
+  }
+
+  updateServerStatus(data) {
+    this._statusSource.next(data);
   }
 }
 

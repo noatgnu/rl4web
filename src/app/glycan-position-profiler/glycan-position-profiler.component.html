@@ -1,0 +1,126 @@
+<div class="container mt-4">
+  <div class="card">
+    <div class="card-body">
+      <form [formGroup]="form">
+        <div class="input-group">
+          <span class="input-group-addon" id="label-excel-input">Excel Input Files:</span>
+          <input type="file" multiple class="form-control" aria-label="excel-input" aria-describedby="label-excel-input" (change)="fileChange($event)" required>
+        </div>
+
+        <div *ngIf="fileNames.length>0">
+          <div class="card mt-2">
+            <h6 class="card-header">Auto Replicates and Conditions Parser</h6>
+            <div class="card-body">
+              <div class="row">
+                <div class="form-group col-3">
+                  <label for="rep-input">Replicates:</label>
+                  <input type="text" formControlName="reps" class="form-control" id="rep-input">
+                </div>
+                <div class="form-group col-3">
+                  <label for="cond-input">Conditions:</label>
+                  <input type="text" formControlName="conds" class="form-control" id="cond-input">
+                </div>
+                <div class="form-group col-6">
+                  <label for="target-input">Target Proteins:</label>
+                  <input type="text" formControlName="targets" class="form-control" id="target-input">
+                </div>
+              </div>
+              <button type="button" class="btn btn-primary" (click)="genValueMap()">Parse</button>
+            </div>
+          </div>
+          <ul class="list-group">
+            <li *ngFor="let name of fileNames" class="list-group-item mt-2">
+              <h6>{{name}}</h6>
+              <div class="row">
+                <div class="form-group col-3">
+                  <label for="{{name}}-rep">Replicate label:</label>
+                  <input type="text" class="form-control" id="{{name}}-rep">
+                </div>
+                <div class="form-group col-3">
+                  <label for="{{name}}-cond">Condition label:</label>
+                  <input type="text" class="form-control" id="{{name}}-cond">
+                </div>
+                <div class="form-group col-6">
+                  <label for="{{name}}-target">Target proteins:</label>
+                  <input type="text" class="form-control" id="{{name}}-target">
+                </div>
+              </div>
+            </li>
+          </ul>
+          <div class="card mt-2">
+            <h6 class="card-header">Upload Reference Sequences</h6>
+            <div class="card-body">
+              <div class="input-group mt-2">
+                <span class="input-group-addon" id="label-fasta-input">Fasta Input Files:</span>
+                <input type="file" class="form-control" aria-label="fasta-input" aria-describedby="label-fasta-input" (change)="loadFasta($event)" required>
+              </div>
+              <div class="input-group mt-2">
+                <span class="input-group-addon" id="label-alignment-input">Alignment Input Files (Optional):</span>
+                <input type="file" class="form-control" aria-label="alignment-input" aria-describedby="label-alignment-input" (change)="loadAlignment($event)" required>
+              </div>
+            </div>
+          </div>
+          <div class="card mt-2">
+            <h6 class="card-header">Advanced Parameters</h6>
+            <div class="card-body">
+              <div class="row">
+                <div class="form-group mt-2 col-6">
+                  <label for="area-input">Minimal Area Intensity:</label>
+                  <input type="number" class="form-control" id="area-input" formControlName="minimumArea" required>
+                </div>
+                <div class="form-group mt-2 col-6">
+                  <label for="maxSites-input">Maximum N-linked Sites:</label>
+                  <input type="number" class="form-control" id="maxSites-input" formControlName="maxSites" required>
+                </div>
+              </div>
+
+            </div>
+          </div>
+          <div class="text-right mt-2">
+            <button type="button" class="btn btn-primary" (click)="genExp()">Generate Experiment</button>
+          </div>
+        </div>
+        <div *ngIf="queries.length > 0">
+          <div *ngFor="let q of queries" class="mt-2">
+            <hr>
+            <h6>{{q.protein}}</h6>
+            <div *ngFor="let c of q.conds" class="card mt-2">
+              <h6 class="card-header">{{c}}</h6>
+              <div class="card-body">
+                <div *ngFor="let fn of fileNames" class="card-text">
+                  <div *ngIf="q.condsMap[fn]===c">
+                    <p *ngIf="q.repsMap[fn]">
+                      {{fn}} (Rep: {{q.repsMap[fn]}})
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <hr>
+          <div class="text-right">
+            <button type="button" class="btn btn-success" (click)="upload()">Submit</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="container mt-4" *ngIf="result|async;let result">
+  <div class="card">
+    <h6 class="card-header">Result</h6>
+    <div class="card-body">
+      <div class="card mt-2" *ngFor="let r of result">
+        <div class="card-body">
+          <p>
+            {{r.protein}}
+          </p>
+        </div>
+        <div class="card-footer">
+          <a role="button" class="btn btn-success btn-small" [href]="r.url">Download</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

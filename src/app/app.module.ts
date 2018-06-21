@@ -23,11 +23,14 @@ import {SwathLibAssetService} from "./swath-lib-asset.service";
 import { SequenceSelectorComponent } from './swath-lib/sequence-selector/sequence-selector.component';
 import {SwathResultService} from "./helper/swath-result.service";
 import { UserSettingsComponent } from './swath-lib/user-settings/user-settings.component';
+import { GlycanPositionProfilerComponent } from './glycan-position-profiler/glycan-position-profiler.component';
+import { GlycanPositionExpComponent } from './glycan-position-profiler/glycan-position-exp/glycan-position-exp.component';
 
 const appRoutes: Routes = [
   {path: '', component: HomeComponent},
   {path: 'swathlib', component: SwathLibComponent},
   {path: 'nsp', component: NGlySequonParserComponent},
+  {path: 'gpp', component: GlycanPositionProfilerComponent},
   {path: 'up', component: UniprotParserComponent},
   {path: 'pub', component: PublicationComponent},
   {path: 'grant', component: GrantComponent}
@@ -44,7 +47,9 @@ const appRoutes: Routes = [
     GrantComponent,
     SwathLibComponent,
     SequenceSelectorComponent,
-    UserSettingsComponent
+    UserSettingsComponent,
+    GlycanPositionProfilerComponent,
+    GlycanPositionExpComponent
   ],
   imports: [
     NgbModule.forRoot(),
