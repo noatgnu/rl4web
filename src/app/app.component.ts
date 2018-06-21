@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {SwathLibAssetService} from './swath-lib-asset.service';
 import {Observable} from "rxjs/Observable";
+import {AnnoucementService} from "./helper/annoucement.service";
 
 @Component({
   selector: 'app-root',
@@ -14,8 +15,10 @@ export class AppComponent implements OnInit {
   stringArray = ['Glycan Within', 'Glycan Without'];
   footer = '';
   serverStatus: Observable<boolean>;
-  constructor (private mod: SwathLibAssetService) {
+  annoucement: Observable<string>;
+  constructor (private mod: SwathLibAssetService, private anServ: AnnoucementService) {
     this.serverStatus = this.mod.statusReader;
+    this.annoucement = this.anServ.annoucementReader;
   }
 
   ngOnInit () {

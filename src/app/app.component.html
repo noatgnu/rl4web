@@ -31,6 +31,9 @@
         <a class="nav-link" routerLink="/grant" routerLinkActive="active">Grants</a>
       </li>
     </ul>
+    <div *ngIf="annoucement|async; let announcement" class="nav-item text-light mr-2">
+      {{announcement}}
+    </div>
     <div *ngIf="serverStatus|async; let serverStatus">
       <span class="badge badge-success" *ngIf="serverStatus==true">Connected</span>
     </div>

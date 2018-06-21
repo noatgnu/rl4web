@@ -25,6 +25,7 @@ import {SwathResultService} from "./helper/swath-result.service";
 import { UserSettingsComponent } from './swath-lib/user-settings/user-settings.component';
 import { GlycanPositionProfilerComponent } from './glycan-position-profiler/glycan-position-profiler.component';
 import { GlycanPositionExpComponent } from './glycan-position-profiler/glycan-position-exp/glycan-position-exp.component';
+import {AnnoucementService} from "./helper/annoucement.service";
 
 const appRoutes: Routes = [
   {path: '', component: HomeComponent},
@@ -62,6 +63,7 @@ const appRoutes: Routes = [
     ReactiveFormsModule
   ],
   providers: [
+    AnnoucementService,
     FileHandlerService,
     UniprotService,
     NglycoService,
@@ -73,3 +75,13 @@ const appRoutes: Routes = [
   bootstrap: [AppComponent]
 })
 export class AppModule { }
+declare global {
+  interface  Array<T> {
+    extend(Array: any[]);
+  }
+}
+Array.prototype.extend = function (other_array: any[]) {
+  other_array.forEach(function(v) {this.push(v); }, this);
+};
+
+
