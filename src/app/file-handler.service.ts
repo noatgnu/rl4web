@@ -3,6 +3,7 @@ import {DataRow, DataStore} from './data-row';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 import * as FileSaver from 'file-saver';
+import * as StreamSaver from 'streamsaver';
 
 @Injectable()
 export class FileHandlerService {
@@ -46,5 +47,13 @@ export class FileHandlerService {
 
   saveFile(blob: Blob, fileName: string): void {
     FileSaver.saveAs(blob, fileName);
+  }
+
+  createSaveStream(filename: string) {
+    return StreamSaver.createWriteStream(filename);
+  }
+
+  checkSaveStreamSupport() {
+    return StreamSaver.supported;
   }
 }

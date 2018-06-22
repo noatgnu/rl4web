@@ -15,6 +15,7 @@ import {DataStore, Result} from '../data-row';
 import {FileHandlerService} from '../file-handler.service';
 import {Oxonium} from '../helper/oxonium';
 import {AnnoucementService} from '../helper/annoucement.service';
+import * as TextEncoding from 'text-encoding';
 
 @Component({
   selector: 'app-swath-lib',
@@ -46,7 +47,7 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
   collectTrigger = false;
   rt = [];
   passForm: FormGroup;
-  txtResult: Result;
+  findf: DataStore;
   constructor(private mod: SwathLibAssetService, private fastaFile: FastaFileService, private fb: FormBuilder, private srs: SwathResultService, private _fh: FileHandlerService, private anSer: AnnoucementService) {
     this.staticMods = mod.staticMods;
     this.variableMods = mod.variableMods;
@@ -85,22 +86,20 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
           this.finished = true;
           this.collectTrigger = false;
           let count = 0;
-          const findf = new DataStore([], false, this.fastaContent.name + '_library.txt');
+          this.findf = new DataStore([], false, `${this.fastaContent.name}_library.txt`);
           for (const r of this.resultCollection) {
             count ++;
-            this.anSer.Announce(`Compiling ${count} of ${this.resultCollection.length}`);
             if (r.header !== undefined) {
               if (r.data !== undefined) {
                 if (r.data.constructor === Array) {
-                  findf.header = r.header;
-                  findf.data.extend(r.data);
+                  this.findf.header = r.header;
+                  this.findf.data.extend(r.data);
                 }
               }
             }
+            this.anSer.Announce(`Compiled ${count} of ${this.resultCollection.length}`);
           }
-          this.anSer.Announce('Converting results to tabulated files');
-          this.txtResult = DataStore.toCSV(findf.header, findf.data, findf.fileName, findf.fileName);
-          this.anSer.Announce('Finished.');
+
         }
       }
     });
@@ -158,6 +157,29 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   downloadFile() {
-    this._fh.saveFile(this.txtResult.content, this.txtResult.fileName);
+    if (this._fh.checkSaveStreamSupport()) {
+      this.anSer.Announce('Starting stream.');
+      const fileStream = this._fh.createSaveStream(`${this.fastaContent.name}_library.txt`);
+      const writer = fileStream.getWriter();
+      const encoder = new TextEncoding.TextEncoder;
+      if (this.findf.header) {
+        const uint8array = encoder.encode(this.findf.header.join('\t') + '\n');
+        writer.write(uint8array);
+      }
+      if (this.findf.data.length > 0) {
+        for (const row of this.findf.data) {
+          if (row.row !== undefined) {
+            const uint8array = encoder.encode(row.row.join('\t') + '\n');
+            writer.write(uint8array);
+          }
+        }
+      }
+      writer.close();
+    } else {
+      this.anSer.Announce('Stream not supported. Fallback to FileSaver.');
+      const txtResult = DataStore.toCSV(this.findf.header, this.findf.data, this.findf.fileName, this.findf.fileName);
+      this._fh.saveFile(txtResult.content, txtResult.fileName);
+    }
+    this.anSer.Announce('Finished.');
   }
 }
