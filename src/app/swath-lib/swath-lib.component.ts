@@ -140,7 +140,7 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
     this.collectTrigger = true;
     this.queryCollection = [];
     this.resultCollection = [];
-    this.anSer.Announce('Queries submitted and waiting for processing...');
+    this.anSer.Announce('Queries submitted. Waiting for processing...');
     this.srs.UpdateSendTrigger(true);
   }
 
