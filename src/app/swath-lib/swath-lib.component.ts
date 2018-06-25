@@ -68,6 +68,8 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit() {
+    console.log(this._fh.checkSaveStreamSupport());
+
     this.mod.getAssets('assets/new_mods.json').subscribe((resp) => {
       this.mod.updateMods(resp.body['data']);
     });
@@ -85,21 +87,7 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
           this.finishedTime = this.getCurrentDate();
           this.finished = true;
           this.collectTrigger = false;
-          let count = 0;
-          this.findf = new DataStore([], false, `${this.fastaContent.name}_library.txt`);
-          for (const r of this.resultCollection) {
-            count ++;
-            if (r.header !== undefined) {
-              if (r.data !== undefined) {
-                if (r.data.constructor === Array) {
-                  this.findf.header = r.header;
-                  this.findf.data.extend(r.data);
-                }
-              }
-            }
-            this.anSer.Announce(`Compiled ${count} of ${this.resultCollection.length}`);
-          }
-
+          this.anSer.Announce('All results have been collected.');
         }
       }
     });
@@ -152,31 +140,53 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
     this.collectTrigger = true;
     this.queryCollection = [];
     this.resultCollection = [];
-    this.anSer.Announce('Queries submitted');
+    this.anSer.Announce('Queries submitted and waiting for processing...');
     this.srs.UpdateSendTrigger(true);
   }
 
   downloadFile() {
+    let count = 0;
     if (this._fh.checkSaveStreamSupport()) {
       this.anSer.Announce('Starting stream.');
       const fileStream = this._fh.createSaveStream(`${this.fastaContent.name}_library.txt`);
       const writer = fileStream.getWriter();
       const encoder = new TextEncoding.TextEncoder;
-      if (this.findf.header) {
-        const uint8array = encoder.encode(this.findf.header.join('\t') + '\n');
-        writer.write(uint8array);
-      }
-      if (this.findf.data.length > 0) {
-        for (const row of this.findf.data) {
-          if (row.row !== undefined) {
-            const uint8array = encoder.encode(row.row.join('\t') + '\n');
+      let writeHeader = false;
+      for (const r of this.resultCollection) {
+        count++;
+        if (r.header !== undefined) {
+          if (writeHeader === false) {
+            const uint8array = encoder.encode(r.header.join('\t') + '\n');
             writer.write(uint8array);
+            writeHeader = true;
+          }
+          if (r.data.constructor === Array) {
+            if (r.data.length > 0) {
+              for (const row of r.data) {
+                if (row.row !== undefined) {
+                  const uint8array = encoder.encode(row.row.join('\t') + '\n');
+                  writer.write(uint8array);
+                }
+              }
+            }
           }
         }
       }
       writer.close();
     } else {
       this.anSer.Announce('Stream not supported. Fallback to FileSaver.');
+      this.findf = new DataStore([], false, `${this.fastaContent.name}_library.txt`);
+      for (const r of this.resultCollection) {
+        count ++;
+        if (r.header !== undefined) {
+          if (r.data.constructor === Array) {
+            this.findf.header = r.header;
+            this.findf.data.extend(r.data);
+          }
+        }
+        this.anSer.Announce(`Compiled ${count} of ${this.resultCollection.length}`);
+      }
+      this.anSer.Announce(`Compiled ${count} of ${this.resultCollection.length}`);
       const txtResult = DataStore.toCSV(this.findf.header, this.findf.data, this.findf.fileName, this.findf.fileName);
       this._fh.saveFile(txtResult.content, txtResult.fileName);
     }
