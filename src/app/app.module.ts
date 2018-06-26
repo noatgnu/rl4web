@@ -26,6 +26,7 @@ import { UserSettingsComponent } from './swath-lib/user-settings/user-settings.c
 import { GlycanPositionProfilerComponent } from './glycan-position-profiler/glycan-position-profiler.component';
 import { GlycanPositionExpComponent } from './glycan-position-profiler/glycan-position-exp/glycan-position-exp.component';
 import {AnnoucementService} from "./helper/annoucement.service";
+import { SwathLibHelpComponent } from './swath-lib/swath-lib-help/swath-lib-help.component';
 
 const appRoutes: Routes = [
   {path: '', component: HomeComponent},
@@ -50,7 +51,8 @@ const appRoutes: Routes = [
     SequenceSelectorComponent,
     UserSettingsComponent,
     GlycanPositionProfilerComponent,
-    GlycanPositionExpComponent
+    GlycanPositionExpComponent,
+    SwathLibHelpComponent
   ],
   imports: [
     NgbModule.forRoot(),

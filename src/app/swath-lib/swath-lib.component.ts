@@ -1,5 +1,5 @@
 import {Component, OnInit, AfterViewInit, OnDestroy} from '@angular/core';
-import {FormBuilder, FormGroup, NgForm} from '@angular/forms';
+import {FormBuilder, FormGroup} from '@angular/forms';
 import {SwathLibAssetService, SwathResponse} from '../swath-lib-asset.service';
 import {Observable} from 'rxjs/Observable';
 import {VariableMod} from '../variable-mod';
@@ -16,6 +16,7 @@ import {FileHandlerService} from '../file-handler.service';
 import {Oxonium} from '../helper/oxonium';
 import {AnnoucementService} from '../helper/annoucement.service';
 import * as TextEncoding from 'text-encoding';
+import {BaseUrl} from '../helper/base-url';
 
 @Component({
   selector: 'app-swath-lib',
@@ -48,6 +49,7 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
   rt = [];
   passForm: FormGroup;
   findf: DataStore;
+  bu = new BaseUrl();
   constructor(private mod: SwathLibAssetService, private fastaFile: FastaFileService, private fb: FormBuilder, private srs: SwathResultService, private _fh: FileHandlerService, private anSer: AnnoucementService) {
     this.staticMods = mod.staticMods;
     this.variableMods = mod.variableMods;
@@ -68,6 +70,8 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit() {
+    this._fh.setMitmLocation(location.protocol + '//' + location.host + '/mitm/mitm.html');
+    this._fh.mitmLocation();
     console.log(this._fh.checkSaveStreamSupport());
 
     this.mod.getAssets('assets/new_mods.json').subscribe((resp) => {

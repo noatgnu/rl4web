@@ -50,7 +50,17 @@ export class FileHandlerService {
   }
 
   createSaveStream(filename: string) {
+
     return StreamSaver.createWriteStream(filename);
+  }
+
+  mitmLocation() {
+    console.log(StreamSaver.mitm);
+  }
+
+  setMitmLocation(loc: string) {
+    StreamSaver.mitm = loc + '?version=' +
+      StreamSaver.version.full;
   }
 
   checkSaveStreamSupport() {

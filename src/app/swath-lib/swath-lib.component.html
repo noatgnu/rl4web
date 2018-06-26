@@ -1,4 +1,7 @@
 <div class="container mt-4">
+  <ngb-alert type="warning" [dismissible]="false">
+    For large library, Chrome is recommended due to Blob size limitation.
+  </ngb-alert>
   <ngb-tabset>
     <ngb-tab title="Main">
       <ng-template ngbTabContent>
@@ -116,6 +119,11 @@
     <ngb-tab title="Settings">
       <ng-template ngbTabContent>
         <app-user-settings></app-user-settings>
+      </ng-template>
+    </ngb-tab>
+    <ngb-tab title="Help">
+      <ng-template ngbTabContent>
+        <app-swath-lib-help></app-swath-lib-help>
       </ng-template>
     </ngb-tab>
   </ngb-tabset>
