@@ -1,3 +1,4 @@
+///<reference path="../../node_modules/@types/node/index.d.ts"/>
 import { Injectable } from '@angular/core';
 import {DataRow, DataStore} from './data-row';
 import {Observable} from 'rxjs/Observable';
@@ -65,4 +66,5 @@ export class FileHandlerService {
   checkSaveStreamSupport() {
     return StreamSaver.supported;
   }
+
 }
