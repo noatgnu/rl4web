@@ -31,8 +31,8 @@
     // Register the worker, then forward the dataChannel to the worker
     // So they can talk directly, so we don't have to be "the middle man" any
     // longer
-    navigator.serviceWorker.getRegistration('/').then(function(swReg){
-      return swReg || navigator.serviceWorker.register('/sw.js', {scope: '/'})
+    navigator.serviceWorker.getRegistration('./').then(function(swReg){
+      return swReg || navigator.serviceWorker.register('sw.js', {scope: './'})
     }).then(function(swReg) {
       console.log("Registration Succeeded. Scope is "+swReg.scope);
       // This sends the message data as well as transferring
