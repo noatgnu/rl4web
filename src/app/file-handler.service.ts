@@ -50,7 +50,6 @@ export class FileHandlerService {
   }
 
   createSaveStream(filename: string) {
-
     return StreamSaver.createWriteStream(filename);
   }
 

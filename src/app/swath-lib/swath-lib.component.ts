@@ -70,7 +70,8 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit() {
-    this._fh.setMitmLocation(location.protocol + '//' + location.host + '/mitm/mitm.html');
+    // this._fh.setMitmLocation('https://jimmywarting.github.io/StreamSaver.js/mitm.html');
+    this._fh.setMitmLocation(location.protocol + '//' + 'schulzlab.glycoproteo.me/mitm.html');
     this._fh.mitmLocation();
     console.log(this._fh.checkSaveStreamSupport());
 
