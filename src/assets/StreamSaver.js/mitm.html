@@ -9,53 +9,60 @@
 	when the worker then receives a stream then the worker will tell the opener
 	to open up a link that will start the download
 -->
-<script>
-  let host = "schulzlab.glycoproteo.me";
+<html>
+<head>
+  <script>
+    let host = "schulzlab.glycoproteo.me";
 
-  // Service worker only works on https, 127.0.0.1 and localhost
-  // So we just redirect asap
-  if (window.location.host === host && window.location.protocol !== "https:")
-    window.location.protocol = "https:";
+    // Service worker only works on https, 127.0.0.1 and localhost
+    // So we just redirect asap
+    if (window.location.host === host && window.location.protocol !== "https:")
+      window.location.protocol = "https:";
 
-  // message event is the first thing we need to setup a listner for
-  // don't want the opener to do a random timeout - instead they can listen for
-  // the ready event
-  function onmessage (event) {
-    console.log('received message');
-    let {data, ports} = event;
-    console.log(event.data);
-    // It's important to have a messageChannel, don't want to interfere
-    // with other simultaneous downloads
-    if(!ports || !ports.length) {
-      console.log("Mehhh! You didn't send a messageChannel");
-    } else {
-      navigator.serviceWorker.getRegistration('./').then(function(swReg){
-        return swReg || navigator.serviceWorker.register('sw.js', {scope: './'})
-      }).then(function(swReg) {
-        console.log("Registration Succeeded. Scope is "+swReg.scope);
-        // This sends the message data as well as transferring
-        // messageChannel.port2 to the service worker. The service worker can
-        // then use the transferred port to reply via postMessage(), which
-        // will in turn trigger the onmessage handler on messageChannel.port1.
-        console.log('Setting up port2');
-        let swRegTmp = swReg.installing || swReg.waiting;
+    // message event is the first thing we need to setup a listner for
+    // don't want the opener to do a random timeout - instead they can listen for
+    // the ready event
+    function onmessage (event) {
+      console.log('received message');
+      let {data, ports} = event;
+      // It's important to have a messageChannel, don't want to interfere
+      // with other simultaneous downloads
+      if(!ports || !ports.length) {
+        console.log("Mehhh! You didn't send a messageChannel");
+      } else {
+        navigator.serviceWorker.getRegistration('./').then(function(swReg){
+          return swReg || navigator.serviceWorker.register('sw.js', {scope: './'})
+        }).then(function(swReg) {
+          console.log("Registration Succeeded. Scope is "+swReg.scope);
+          // This sends the message data as well as transferring
+          // messageChannel.port2 to the service worker. The service worker can
+          // then use the transferred port to reply via postMessage(), which
+          // will in turn trigger the onmessage handler on messageChannel.port1.
+          console.log('Setting up port2');
+          let swRegTmp = swReg.installing || swReg.waiting;
 
-        if (swReg.active)
-          return swReg.active.postMessage(data, [ports[0]]);
+          if (swReg.active)
+            return swReg.active.postMessage(data, [ports[0]]);
 
-        swRegTmp.onstatechange = () => {
-          if (swRegTmp.state === 'activated')
-            swReg.active.postMessage(data, [ports[0]])
-        }
-      })
-    }
-    // Register the worker, then forward the dataChannel to the worker
-    // So they can talk directly, so we don't have to be "the middle man" any
-    // longer
-  };
-  addEventListener('message', onmessage, false);
-  window.parent.postMessage('test', '*');
-  // The opener can't listen to onload event, so we need to help em out!
-  // (telling them that we are ready to accept postMessage's)
-  opener && opener.postMessage('StreamSaver::loadedPopup', '*')
-</script>
+          swRegTmp.onstatechange = () => {
+            if (swRegTmp.state === 'activated')
+              swReg.active.postMessage(data, [ports[0]])
+          }
+        })
+      }
+      // Register the worker, then forward the dataChannel to the worker
+      // So they can talk directly, so we don't have to be "the middle man" any
+      // longer
+    };
+    addEventListener('message', onmessage, false);
+    window.parent.postMessage('test', '*');
+    // The opener can't listen to onload event, so we need to help em out!
+    // (telling them that we are ready to accept postMessage's)
+    opener && opener.postMessage('StreamSaver::loadedPopup', '*')
+  </script>
+</head>
+<body>
+Delegating worker...
+</body>
+</html>
+

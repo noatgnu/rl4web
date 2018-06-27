@@ -37,7 +37,7 @@ function createStream(resolve, reject, port){
 		start(controller) {
 			// When we receive data on the messageChannel, we write
 			port.onmessage = ({data}) => {
-			  console.log(data)
+
 				if (data === 'end') {
                     resolve()
                     return controller.close()
