@@ -73,13 +73,12 @@
 			if(!secure) {
 				popup = window.open(streamSaver.mitm, Math.random())
 				let ready = false
-				setInterval(function(){
-					console.log('test');
+        let si = setInterval(function(){
 					if (ready) {
 						popup.postMessage({filename, size}, '*', [channel.port2])
 						window.removeEventListener('message', onready)
+            clearInterval(si)
 					}
-					popup.postMessage('test2', '*');
 				}, 2000)
 				let onready = evt => {
 					console.log('mitm created')
