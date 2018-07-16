@@ -1,9 +1,27 @@
-import {Protein} from "./protein";
-import {Modification} from "./modification";
-import {SwathWindows} from "./swath-windows";
-import {Oxonium} from "./oxonium";
+import {Protein} from './protein';
+import {Modification} from './modification';
+import {SwathWindows} from './swath-windows';
+import {Oxonium} from './oxonium';
+import {SeqCoordinate} from './seq-coordinate';
 
 export class SwathQuery {
+  constructor(protein: Protein, modifications: Modification[], windows: SwathWindows[], rt: Array<number>, extra: number, charge: number, precursor_charge: number, conflict: SeqCoordinate[]) {
+    this._protein = protein;
+    this._modifications = modifications;
+    this._windows = windows;
+    this._rt = rt;
+    this._extra = extra;
+    this._charge = charge;
+    this._precursor_charge = precursor_charge;
+    this._conflict = conflict;
+  }
+  get conflict(): SeqCoordinate[] {
+    return this._conflict;
+  }
+
+  set conflict(value: SeqCoordinate[]) {
+    this._conflict = value;
+  }
   get variable_format(): string {
     return this._variable_format;
   }
@@ -50,15 +68,7 @@ export class SwathQuery {
     }
   }
 
-  constructor(protein: Protein, modifications: Modification[], windows: SwathWindows[], rt: Array<number>, extra: number, charge: number, precursor_charge: number) {
-    this._protein = protein;
-    this._modifications = modifications;
-    this._windows = windows;
-    this._rt = rt;
-    this._extra = extra;
-    this._charge = charge;
-    this._precursor_charge = precursor_charge;
-  }
+
   get precursor_charge(): number {
     return this._precursor_charge;
   }
@@ -126,4 +136,5 @@ export class SwathQuery {
   private _y_stop_at: number;
   private _variable_format: string;
   private _oxonium: Oxonium[];
+  private _conflict: SeqCoordinate[];
 }

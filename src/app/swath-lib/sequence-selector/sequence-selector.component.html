@@ -36,13 +36,13 @@
                   <span class="badge badge-pill badge-primary" *ngSwitchCase="'variable'" (click)="selectCoordinates(m.positions)">{{m.name}} {{m.Ytype}}: {{m.positions.length}}</span>
                   <span class="badge badge-pill badge-warning" *ngSwitchCase="'static'" (click)="selectCoordinates(m.positions)">{{m.name}} {{m.Ytype}}: {{m.positions.length}}</span>
                 </div>
-                <div class="row mt-2 in-line form-inline" *ngIf="m.type=='Ytype'">
-                  <input type="checkbox" class="form-control form-control-sm" id="status-filled-{{protein.id+protein.sequence}}" #statusfilled (change)="changeStatus(statusfilled, m)" [checked]="m.status">
-                  <label for="status-filled-{{protein.id+protein.sequence}}">Filled all positions</label>
+                <div class="row mt-2 in-line form-inline" *ngIf="m.type=='Ytype'||m.type=='variable'">
+                  <input type="checkbox" class="form-control form-control-sm" id="status-filled-{{protein.id+m.label}}" #statusfilled (change)="changeStatus(statusfilled, m)" [checked]="m.status">
+                  <label for="status-filled-{{protein.id+m.label}}">Filled all positions</label>
                 </div>
                 <div class="row mt-2 in-line form-inline" *ngIf="m.type=='Ytype'||m.type=='variable'">
-                  <input type="checkbox" class="form-control form-control-sm" id="mp-{{protein.id+protein.sequence}}" #mp (change)="changePattern(mp, m)" [checked]="m.multiple_pattern">
-                  <label for="mp-{{protein.id+protein.sequence}}">Multiple Pattern</label>
+                  <input type="checkbox" class="form-control form-control-sm" id="mp-{{protein.id+m.label}}" #mp (change)="changePattern(mp, m)" [checked]="m.multiple_pattern">
+                  <label for="mp-{{protein.id+m.label}}">Multiple Pattern</label>
                 </div>
               </div>
             </div>
@@ -271,3 +271,4 @@
     <button type="button" class="btn btn-primary" (click)="saveProtein()">Save</button>
   </div>
 </ng-template>
+

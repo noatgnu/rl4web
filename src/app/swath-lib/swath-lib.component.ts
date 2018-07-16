@@ -197,4 +197,8 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     this.anSer.Announce('Finished.');
   }
+
+  rounding(n: number): number {
+    return Math.round(n * 10000) / 10000;
+  }
 }

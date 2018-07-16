@@ -65,6 +65,8 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
   @Input()
   set form(value: FormGroup) {
     this._form = value;
+    this.modMap = new Map<number, Modification[]>();
+    this.seqCoord = [];
     this.decorSeq();
     this.createExtraForm();
     this.protein.ion_type = this._form.value['ion-type'];
@@ -77,6 +79,7 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
   private _modSummary: Modification[];
   SendTriggerSub: Subscription;
   sendTriggerRead: Observable<boolean>;
+  conflict: Map<number, SeqCoordinate>;
   constructor(private mod: SwathLibAssetService, tooltip: NgbTooltipConfig, dropdown: NgbDropdownConfig, private modalService: NgbModal, private fb: FormBuilder, private srs: SwathResultService) {
     this.staticMods = mod.staticMods;
     this.variableMods = mod.variableMods;
@@ -91,6 +94,7 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
   private _currentCoord: SeqCoordinate;
 
   ngOnInit() {
+
     this.createExtraForm();
     this.SendTriggerSub = this.sendTriggerRead.subscribe((data) => {
       this.sent = false;
@@ -98,13 +102,17 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
       if (data) {
         this.sent = true;
         this.progress = 20;
-        this.summarize();
+        const sm = this.summarize(this.seqCoord);
+        this.modSummary = sm.modSummary;
+        this.conflict = sm.conflict;
+
         this.progress = 40;
-        const query = new SwathQuery(this.protein, this.modSummary, this.form.value['windows'], this.form.value['rt'], this.form.value['extra-mass'], this.form.value['max-charge'], this.form.value['precursor-charge']);
-        query.b_stop_at = this.b_stop_at;
-        query.y_stop_at = this.y_stop_at;
-        query.variable_format = this.form.value['variable-bracket-format'];
-        query.oxonium = this.extraForm.value['oxonium'];
+        const query = this.createQuery(this.protein, this.modSummary, this.form.value['windows'], this.form.value['rt'],
+          this.form.value['extra-mass'], this.form.value['max-charge'], this.form.value['precursor-charge'],
+          this.b_stop_at, this.y_stop_at, this.form.value['variable-bracket-format'], this.extraForm.value['oxonium'],
+          Array.from(this.conflict.values())
+        );
+        console.log(this.modSummary);
         this.srs.SendQuery(query).subscribe((response) => {
           this.progress = 60;
           const df = new DataStore(response.body['data'], true, '');
@@ -112,37 +120,98 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
           this.srs.UpdateOutput(df);
           this.progress = 100;
         });
+        /*if (this.conflict !== undefined) {
+          const conflictNum = Array.from(this.conflict.keys());
+          if (conflictNum.length > 0) {
+            const result = this.recursiveMods(conflictNum, this.conflict, true);
+            for (const m of result) {
+              const seqCoord = Object.create(this.seqCoord);
+              for (const i of conflictNum) {
+                seqCoord[conflictNum[i]] = Object.create(seqCoord[conflictNum[i]]);
+                for (const key in seqCoord[conflictNum[i]]) {
+                  seqCoord[conflictNum[i]][key] = seqCoord[conflictNum[i]][key];
+                }
+                seqCoord[conflictNum[i]].modType = m.get(conflictNum[i]).type;
+                seqCoord[conflictNum[i]].mods = [m.get(conflictNum[i])];
+              }
+              const variant = this.summarize(seqCoord);
+              const query = this.createQuery(this.protein, <Modification[]>variant[0], this.form.value['windows'], this.form.value['rt'],
+                this.form.value['extra-mass'], this.form.value['max-charge'], this.form.value['precursor-charge'],
+                this.b_stop_at, this.y_stop_at, this.form.value['variable-bracket-format'], this.extraForm.value['oxonium']
+              );
+              this.srs.SendQuery(query).subscribe((response) => {
+                const df = new DataStore(response.body['data'], true, '');
+              });
+            }
+          } else {
+            const query = this.createQuery(this.protein, this.modSummary, this.form.value['windows'], this.form.value['rt'],
+              this.form.value['extra-mass'], this.form.value['max-charge'], this.form.value['precursor-charge'],
+              this.b_stop_at, this.y_stop_at, this.form.value['variable-bracket-format'], this.extraForm.value['oxonium']
+            );
+            this.srs.SendQuery(query).subscribe((response) => {
+              this.progress = 60;
+              const df = new DataStore(response.body['data'], true, '');
+              this.progress = 80;
+              this.srs.UpdateOutput(df);
+              this.progress = 100;
+            });
+          }
+        }*/
       }
     });
   }
 
+  private createQuery(protein, modSummary, windows, rt, extramass, maxcharge, precursorcharge, b_stop_at, y_stop_at, variableformat, oxonium, conflict) {
+    const query = new SwathQuery(protein, modSummary, windows, rt, extramass, maxcharge, precursorcharge, conflict);
+    query.b_stop_at = b_stop_at;
+    query.y_stop_at = y_stop_at;
+    query.variable_format = variableformat;
+    query.oxonium = oxonium;
+    return query;
+  }
+
+  recursiveMods(conflictKeys: Array<number>, conflictMap: Map<number, SeqCoordinate>, start: boolean, resolve?: Map<number, Modification>, key?: number, result?: Array<Map<number, Modification>>) {
+    if (start) {
+      resolve = new Map<number, Modification>();
+      result = [];
+    }
+    for (const m of conflictMap.get(conflictKeys[key]).mods) {
+      resolve.set(conflictMap.get(conflictKeys[key]).coordinate, m);
+      if (key + 1 >= conflictKeys.length) {
+        result = this.recursiveMods(conflictKeys, conflictMap, false, Object.create(resolve), key + 1, result);
+      } else {
+        result.push(resolve);
+      }
+    }
+    return result;
+  }
+
   ngOnDestroy() {
     this.SendTriggerSub.unsubscribe();
-
   }
 
   decorSeq() {
-    this.modMap = new Map<number, Modification[]>();
-    this.seqCoord = [];
     if (this.form.value['static'] !== null || this.form.value['variable'] !== null || this.form.value['ytype'] !== null) {
       this.applyModification(this.protein);
     }
-    this.transformSequence();
+    this.transformSequence(this.protein);
   }
 
-  transformSequence() {
+  transformSequence(protein: Protein) {
     this.modSummary = [];
     this.seqCoord = [];
-    for (let i = 0; i < this.protein.sequence.length; i++) {
-      const s = new SeqCoordinate(this.protein.sequence[i], i, '', []);
+    for (let i = 0; i < protein.sequence.length; i++) {
+      const s = new SeqCoordinate(protein.sequence[i], i, '', []);
       this.setMod(i, s);
       this.seqCoord.push(s);
     }
 
-    this.summarize();
+    const sm = this.summarize(this.seqCoord);
+    this.modSummary = sm.modSummary;
+    this.conflict = sm.conflict;
   }
 
-  private setMod(i: number, s) {
+  private setMod(i: number, s: SeqCoordinate) {
     if (this.modMap !== undefined) {
       if (this.modMap.has(i)) {
         for (const m of this.modMap.get(i)) {
@@ -200,27 +269,31 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
     }
   }
 
-  summarize() {
-    this.modSummary = [];
+  summarize(seqCoord: SeqCoordinate[]) {
+    const modSummary = [];
+    const conflict = new Map<number, SeqCoordinate>();
     const summaryMap = new Map<string, number>();
-    let count = 0;
-    for (const i of this.seqCoord) {
-      if (i.mods.length > 0) {
 
+    let count = 0;
+    for (const i of seqCoord) {
+      if (i.mods.length > 0) {
+        if (i.modType === 'conflicted') {
+          conflict.set(i.coordinate, i);
+        }
         for (const m of i.mods) {
           if (summaryMap.has(m.name + m.Ytype)) {
             const sumIndex = summaryMap.get(m.name + m.Ytype);
-            this.modSummary[sumIndex].positions.push(i.coordinate);
+            modSummary[sumIndex].positions.push(i.coordinate);
           } else {
             const newMod = Object.create(m);
             for (const key in newMod) {
               newMod[key] = newMod[key];
             }
-            this.modSummary.push(newMod);
-            this.modSummary[count].positions = [];
-            this.modSummary[count].positions.push(i.coordinate);
+            modSummary.push(newMod);
+            modSummary[count].positions = [];
+            modSummary[count].positions.push(i.coordinate);
             if (m.status !== false) {
-              this.modSummary[count].status = m.status;
+              modSummary[count].status = m.status;
             }
             summaryMap.set(m.name + m.Ytype, count);
             count ++;
@@ -228,6 +301,7 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
         }
       }
     }
+    return {modSummary, conflict};
   }
 
   selectCoordinates(coordinates: number[]) {
@@ -329,7 +403,9 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
           this.addModForm.value['display_label']
           ));
     }
-    this.summarize();
+    const sm = this.summarize(this.seqCoord);
+    this.modSummary = sm.modSummary;
+    this.conflict = sm.conflict;
   }
 
   private helperPremade(m) {
@@ -413,7 +489,9 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
         }
       }
       this.currentCoord.modType = temp;
-      this.summarize();
+      const sm = this.summarize(this.seqCoord);
+      this.modSummary = sm.modSummary;
+      this.conflict = sm.conflict;
     }
   }
 
@@ -422,7 +500,9 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
       s.modType = undefined;
       s.mods = [];
     }
-    this.summarize();
+    const sm = this.summarize(this.seqCoord);
+    this.modSummary = sm.modSummary;
+    this.conflict = sm.conflict;
   }
 
   saveProtein() {

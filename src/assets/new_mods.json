@@ -97,6 +97,18 @@
       "m_label": ""
     },
     {
+      "name": "Methylated Carboxylation",
+      "label": "m",
+      "mass": 58.00548,
+      "regex": "E",
+      "type": "variable",
+      "auto_allocation": "FALSE",
+      "Ytype": "",
+      "multiple_pattern": false,
+      "status": false,
+      "m_label": ""
+    },
+    {
       "name": "Propionamide",
       "label": "c",
       "mass": 71.037114,
