@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {DataStore, Result} from './data-row';
+import {DataRow, DataStore, Result} from './data-row';
 import {FileHandlerService} from './file-handler.service';
 import {Subject} from 'rxjs/Subject';
+import {UniprotResult} from './helper/uniprot-result';
 
 @Injectable()
 export class UniprotService {
@@ -14,8 +15,11 @@ export class UniprotService {
 
   results: string[] = [];
 
-  private _ResultSource = new Subject<Result[]>();
+  private _ResultSource = new Subject<UniprotResult>();
   UniprotResult = this._ResultSource.asObservable();
+
+  private _RemainSource = new Subject<DataRow[][]>();
+  Remain = this._RemainSource.asObservable();
 
   private _resultStatusSource = new Subject<boolean>();
   ResultStatus = this._resultStatusSource.asObservable();
@@ -35,7 +39,7 @@ export class UniprotService {
     return pArray.join('&');
   }
 
-  updateUniprotResult(result: Result[]) {
+  updateUniprotResult(result: UniprotResult) {
     this._ResultSource.next(result);
   }
 
@@ -46,36 +50,39 @@ export class UniprotService {
   UniProtParseGet(accList: string[], goStats: boolean) {
     this.updateResultStatus(false);
     const result: Result[] = [];
-    const options: Map<string, string> = new Map<string, string>([
-      ['from', 'ACC+ID'],
-      ['to', 'ACC'],
-      ['query', accList.join(' ')],
-      ['format', 'tab'],
-      ['columns', 'id,entry name,reviewed,protein names,genes,organism,length,database(RefSeq),organism-id,go-id,feature(GLYCOSYLATION),comment(MASS SPECTROMETRY),sequence'],
-      ['compress', 'no'],
-      ['force', 'no'],
-      ['sort', 'score'],
-      ['desc', ''],
-      ['fil', '']
-    ]);
-    const uniprotUrl = this.base + this.toolEndpoint + this.toParamString(options);
-    console.log(uniprotUrl);
+    const maxLength = accList.length;
 
-    this.getUniprot(uniprotUrl).subscribe((data) => {
-      const df = this._fh.fileHandlerNoE(data.body);
-      df.fileName = 'uniprot_parsed.txt';
-      const s = DataStore.filterRow(accList, 0, df.data);
-      result.push(DataStore.toCSV(df.header, s[0], df.fileName, 'Uniprot Parsing Completed'));
-      if (s[1].length > 0) {
-        result.push(DataStore.toCSV(['Entry'], s[1], 'remaining_accession_' + df.fileName, 'Unsuccessful Match'));
+    for (let i = 0; i < maxLength; i += 300) {
+      let l: string[];
+      if (i + 300 < maxLength) {
+        l = accList.slice(i, i + 300);
+      } else {
+        l = accList.slice(i);
       }
-      if (goStats) {
-        const go = DataStore.getGO(df.header, df.data);
-        result.push(DataStore.toCSV(go.header, go.data, 'gostats_' + df.fileName, 'GOStats Association File'));
-      }
-      this.updateResultStatus(true);
-      this.updateUniprotResult(result);
-    });
+
+      const options: Map<string, string> = new Map<string, string>([
+        ['from', 'ACC+ID'],
+        ['to', 'ACC'],
+        ['query', l.join(' ')],
+        ['format', 'tab'],
+        ['columns', 'id,entry name,reviewed,protein names,genes,organism,length,database(RefSeq),organism-id,go-id,comment(SUBCELLULAR LOCATION),feature(TOPOLOGICAL_DOMAIN),feature(GLYCOSYLATION),comment(MASS SPECTROMETRY),sequence'],
+        ['compress', 'no'],
+        ['force', 'no'],
+        ['sort', 'score'],
+        ['desc', ''],
+        ['fil', '']
+      ]);
+      const uniprotUrl = this.base + this.toolEndpoint + this.toParamString(options);
+      console.log(uniprotUrl);
+      this.getUniprot(uniprotUrl).subscribe((data) => {
+
+        const df = this._fh.fileHandlerNoE(data.body);
+        df.fileName = 'uniprot_parsed.txt';
+        const ur = new UniprotResult(df, l);
+
+        this.updateUniprotResult(ur);
+      });
+    }
   }
 
   /*mainUniprotParse(accList: string[], goStats: boolean) {

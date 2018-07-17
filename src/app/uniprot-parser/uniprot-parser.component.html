@@ -30,11 +30,14 @@
     <div *ngIf="status|async; else loading; let status">
       <div *ngIf="status===true; else loading">
         <h6 class="card-subtitle mb-2 text-success">Finished <i class="fa fa-check-circle-o" aria-hidden="true"></i></h6>
+        <div class="row">
+          Query finished on {{currentTime|date:'full'}}
+        </div>
       </div>
     </div>
-    <div class="result-link" *ngIf="uniprot|async; let uniprot">
+    <div class="result-link" *ngIf="result.length > 0">
       <ngb-tabset>
-        <ngb-tab *ngFor="let link of uniprot">
+        <ngb-tab *ngFor="let link of result">
           <ng-template ngbTabTitle>{{link.jobName}} <span class="badge badge-primary">{{link.length}}</span></ng-template>
           <ng-template ngbTabContent>
             <p class="card-text text-center mt-4">
