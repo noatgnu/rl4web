@@ -38,8 +38,8 @@ export class BarChartComponent implements OnInit, AfterViewInit {
     x.domain(this.data.map(function (d) {return d.name; }));
     const xAxis = d3.axisBottom(x).scale(x);
     svg = d3.select(this.parentNativeElement).append('svg')
-      //.attr('width', frame.width)
-      //.attr('height', frame.height)
+      // .attr('width', frame.width)
+      // .attr('height', frame.height)
       .attr('viewBox', '0 0 ' + frame.width + ' ' + frame.height);
 
     const graphBlock = svg.append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
@@ -53,9 +53,32 @@ export class BarChartComponent implements OnInit, AfterViewInit {
     bar.transition().duration(500).ease(this.d3.easeLinear).attr('height', function(d) {
       return height - y(d.value);
     });
+    barBlocks.on('mouseover', this.MouseOver(d3)).on('mouseout', this.MouseOut(d3));
+
+
+
     const xaxis = graphBlock.append('g')
       .attr('class', 'bottom-axis')
       .attr('transform', 'translate(0,' + height + ')').call(xAxis);
     const yaxis = graphBlock.append('g').call(d3.axisLeft(y));
+  }
+
+  MouseOver(d3): (d, i) => void {
+    return (d, i) => {
+      const bar = d3.select(d3.event.currentTarget).select('rect');
+      const transOptic = () => {
+        bar.transition().duration(500).style('fill-opacity', 0.3).on('end', () => {
+          bar.transition().duration(500).style('fill-opacity', 1).on('end', transOptic);
+        });
+      };
+      transOptic();
+    };
+  }
+
+  MouseOut(d3): (d, i) => void {
+    return (d, i) => {
+      const bar = d3.select(d3.event.currentTarget).select('rect');
+      bar.transition().duration(500).style('fill-opacity', 1);
+    };
   }
 }

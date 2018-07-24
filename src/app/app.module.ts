@@ -30,6 +30,7 @@ import { SwathLibHelpComponent } from './swath-lib/swath-lib-help/swath-lib-help
 import { SubcellularLocationComponent } from './subcellular-location/subcellular-location.component';
 import {D3Service} from 'd3-ng2-service';
 import { BarChartComponent } from './bar-chart/bar-chart.component';
+import { PieChartComponent } from './pie-chart/pie-chart.component';
 
 const appRoutes: Routes = [
   {path: '', component: HomeComponent},
@@ -58,7 +59,8 @@ const appRoutes: Routes = [
     GlycanPositionExpComponent,
     SwathLibHelpComponent,
     SubcellularLocationComponent,
-    BarChartComponent
+    BarChartComponent,
+    PieChartComponent
   ],
   imports: [
     NgbModule.forRoot(),
