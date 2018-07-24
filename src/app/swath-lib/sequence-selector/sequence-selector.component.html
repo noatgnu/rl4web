@@ -73,7 +73,7 @@
           </div>
         </div>
         <div class="mt-4" *ngIf="sent">
-          <ngb-progressbar type="info" [animated]="true" [striped]="true" [value]="progress"></ngb-progressbar>
+          <ngb-progressbar [type]="progressStage" [animated]="true" [striped]="true" [value]="progress"></ngb-progressbar>
         </div>
       </div>
     </div>

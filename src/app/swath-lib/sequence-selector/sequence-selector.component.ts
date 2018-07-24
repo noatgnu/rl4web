@@ -37,6 +37,7 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
   progress: number;
   b_stop_at = -1;
   y_stop_at = -1;
+  progressStage = 'info';
   get currentCoord(): SeqCoordinate {
     return this._currentCoord;
   }
@@ -94,9 +95,9 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
   private _currentCoord: SeqCoordinate;
 
   ngOnInit() {
-
     this.createExtraForm();
     this.SendTriggerSub = this.sendTriggerRead.subscribe((data) => {
+      this.progressStage = 'info';
       this.sent = false;
       this.progress = 0;
       if (data) {
@@ -119,6 +120,14 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
           this.progress = 80;
           this.srs.UpdateOutput(df);
           this.progress = 100;
+          this.progressStage = 'success';
+        }, (error) => {
+          this.progressStage = 'error';
+          if (error.error instanceof ErrorEvent) {
+            console.error(error.error.message);
+          } else {
+            console.error(`Backend returned code ${error.status}, body was: ${error.error}`);
+          }
         });
         /*if (this.conflict !== undefined) {
           const conflictNum = Array.from(this.conflict.keys());

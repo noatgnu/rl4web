@@ -5,7 +5,7 @@ import {FileHandlerService} from '../file-handler.service';
 import {DataRow, DataStore, Result} from '../data-row';
 import {Subscription} from 'rxjs/Subscription';
 import {Observable} from 'rxjs/Observable';
-import {modelGroupProvider} from '@angular/forms/src/directives/ng_model_group';
+import {AnnoucementService} from "../helper/annoucement.service";
 
 @Component({
   selector: 'app-uniprot-parser',
@@ -28,7 +28,7 @@ export class UniprotParserComponent implements OnInit, OnDestroy {
   go: DataStore;
   count = 0;
   currentTime;
-  constructor(private _uniprot: UniprotService, private _fh: FileHandlerService) {
+  constructor(private _uniprot: UniprotService, private _fh: FileHandlerService, private anSer: AnnoucementService) {
     this.fileDownloader = _fh.saveFile;
     this.status = _uniprot.ResultStatus;
   }
@@ -40,9 +40,12 @@ export class UniprotParserComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.findf = new DataStore([], false, `Uniprot_Parsed.txt`);
     this.remain = new DataStore([], false, `Uniprot_Parsed.txt`);
+    let processed = 0;
     this.resultSub = this._uniprot.UniprotResult.subscribe((data) => {
       const s = DataStore.filterRow(data.Entries, 0, data.DataFrame.data);
       this.count -= data.Entries.length;
+      processed += data.Entries.length;
+      this.anSer.Announce(`Processed ${processed} entries`);
       if (data.DataFrame.header.length > 0) {
         this.findf.header = data.DataFrame.header;
       }
@@ -50,6 +53,7 @@ export class UniprotParserComponent implements OnInit, OnDestroy {
       if (s[1].length > 0) {
         this.remain.data.extend(s[1]);
       }
+
       console.log(this.count);
       if (this.count === 0) {
         this.result.push(DataStore.toCSV(this.findf.header, this.findf.data, data.DataFrame.fileName, 'Uniprot Parsing Completed'));
@@ -60,6 +64,7 @@ export class UniprotParserComponent implements OnInit, OnDestroy {
         }
         this._uniprot.updateResultStatus(true);
         this.currentTime = this.getCurrentDate();
+        this.anSer.Announce(`Finished parsing ${processed} entries`);
       }
     });
 
@@ -70,7 +75,6 @@ export class UniprotParserComponent implements OnInit, OnDestroy {
   }
 
   onSubmit(f: NgForm) {
-    console.log(f.value.uniprotList);
     if (f.valid && f.value.uniprotList !== '') {
       this.findf = new DataStore([], false, `Uniprot_Parsed.txt`);
       this.remain = new DataStore([], false, `Uniprot_Parsed.txt`);
@@ -85,12 +89,14 @@ export class UniprotParserComponent implements OnInit, OnDestroy {
           acL.push(accession[0]);
         }
       }
+      this.anSer.Announce(`Loaded ${acL.length} entries.`);
       this.count = acL.length;
       try {
         this._uniprot.UniProtParseGet(acL, f.value.goStats);
         // this._uniprot.mainUniprotParse(ulArray, f.value.goStats);
       } catch (e) {
         console.log(e);
+        this.anSer.Announce('Error.');
       }
       this.processing = false;
       this.finished = true;

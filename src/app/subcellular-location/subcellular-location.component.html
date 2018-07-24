@@ -1,0 +1,83 @@
+<div class="container">
+  <div class="card mt-4">
+    <div class="card-body">
+      <h4 class="card-title">Subcellular Location Ranking Filter</h4>
+      <h6 class="card-subtitle mb-2 text-muted">A javascript based categorization with ranking of mass spectrometry ion fragment by their precursor protein subcellular locations.</h6>
+      <hr class="my-4">
+      <form #f="ngForm" (ngSubmit)="onSubmit(f)">
+
+
+        <div class="form-group">
+          <div class="input-group">
+            <span class="input-group-addon" id="label-peptide">Peptide Summary</span>
+            <input type="file" class="form-control" aria-label="peptide-summary" aria-describedby="label-peptide" (change)="loadFile($event, 'peptide')" required>
+          </div>
+        </div>
+
+        <div class="form-group form-row">
+          <label for="peptideColumn" class="col-sm-3 col-form-label">Peptide Accession ID Column Name:</label>
+          <div class="col-sm-4">
+            <input type="text" class="form-control" id="peptideColumn" name="peptideColumn" [(ngModel)]="PeptideEntryColumnName" #peptideColumn="ngModel">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="input-group">
+            <span class="input-group-addon" id="label-protein">Protein Summary</span>
+            <input type="file" class="form-control" aria-label="protein-summary" aria-describedby="label-protein" (change)="loadFile($event, 'protein')" required>
+          </div>
+        </div>
+
+        <div class="form-group form-row">
+          <label for="proteinColumn" class="col-sm-3 col-form-label">Protein Accession ID Column Name:</label>
+          <div class="col-sm-4">
+            <input type="text" class="form-control" id="proteinColumn" name="proteinColumn" [(ngModel)]="ProteinEntryColumnName" #proteinColumn="ngModel">
+          </div>
+        </div>
+
+        <div class="form-group form-row">
+          <label for="subcellColumn" class="col-sm-3 col-form-label">Subcellular Location Column Name:</label>
+          <div class="col-sm-4">
+            <input type="text" class="form-control" id="subcellColumn" name="subcellColumn" [(ngModel)]="SubcellColumnName" #subcellColumn="ngModel" required>
+          </div>
+          <div [hidden]="subcellColumn.valid" class="alert alert-danger mt-2">
+            Subcellular location column name is required
+          </div>
+        </div>
+        <div class="form-group form-row">
+          <label for="sbc" class="col-sm-3 col-form-label">Subcellular keywords for categorization:</label>
+          <div class="col-sm-4">
+            <input type="text" class="form-control" id="sbc" name="sbc" [(ngModel)]="topdom" #sbc="ngModel" required>
+            <div [hidden]="sbc.valid" class="alert alert-danger mt-2">
+              Subcellular keywords are needed
+            </div>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Process File</button>
+      </form>
+    </div>
+  </div>
+  <div class="card mt-2" *ngIf="graphData.length > 0">
+    <div class="card-body">
+      <div class="row">
+        <div class="col-sm-6">
+          <app-bar-chart [data]="graphData" [GridSize]="20"></app-bar-chart>
+        </div>
+        <div class="col-sm-6">
+          <ul class="list-group">
+            <li class="list-group-item" *ngFor="let s of selected">
+              <div class="row">
+                <div class="col-sm-8">
+                  {{s}}
+                </div>
+                <div class="col-sm-4 text-right"><button class="btn btn-primary" (click)="downloadFile(s)">Download</button></div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+</div>
