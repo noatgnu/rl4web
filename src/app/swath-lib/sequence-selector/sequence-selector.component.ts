@@ -17,6 +17,7 @@ import {SwathQuery} from '../../helper/swath-query';
 import {Subscription} from 'rxjs/Subscription';
 import {DataStore} from '../../data-row';
 import {Oxonium} from '../../helper/oxonium';
+import {AnnoucementService} from "../../helper/annoucement.service";
 
 @Component({
   selector: 'app-sequence-selector',
@@ -81,7 +82,7 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
   SendTriggerSub: Subscription;
   sendTriggerRead: Observable<boolean>;
   conflict: Map<number, SeqCoordinate>;
-  constructor(private mod: SwathLibAssetService, tooltip: NgbTooltipConfig, dropdown: NgbDropdownConfig, private modalService: NgbModal, private fb: FormBuilder, private srs: SwathResultService) {
+  constructor(private mod: SwathLibAssetService, tooltip: NgbTooltipConfig, dropdown: NgbDropdownConfig, private modalService: NgbModal, private fb: FormBuilder, private srs: SwathResultService, private ans: AnnoucementService) {
     this.staticMods = mod.staticMods;
     this.variableMods = mod.variableMods;
     this.Ymods = mod.YtypeMods;
@@ -123,8 +124,10 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
           this.progressStage = 'success';
         }, (error) => {
           this.progressStage = 'error';
+          this.ans.AnnounceError(true);
           if (error.error instanceof ErrorEvent) {
             console.error(error.error.message);
+
           } else {
             console.error(`Backend returned code ${error.status}, body was: ${error.error}`);
           }

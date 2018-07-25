@@ -1,6 +1,7 @@
-import { Component, OnInit, Input, AfterViewInit, ElementRef } from '@angular/core';
+import {Component, OnInit, Input, AfterViewInit, ElementRef, ViewChild} from '@angular/core';
 import {GraphData} from '../helper/graph-data';
 import {D3Service, D3, ScaleLinear, Selection, Transition, Axis} from 'd3-ng2-service';
+import {NgbTooltip, NgbTooltipConfig} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
   selector: 'app-bar-chart',
@@ -14,9 +15,11 @@ export class BarChartComponent implements OnInit, AfterViewInit {
   private parentNativeElement: any;
   private d3Svg: Selection<SVGSVGElement, any, null, undefined>;
 
-  constructor(element: ElementRef, d3Service: D3Service) {
+  constructor(element: ElementRef, d3Service: D3Service, config: NgbTooltipConfig) {
     this.d3 = d3Service.getD3();
     this.parentNativeElement = element.nativeElement;
+    config.placement = 'top';
+    config.triggers = 'hover';
   }
 
   ngOnInit() {
@@ -49,13 +52,16 @@ export class BarChartComponent implements OnInit, AfterViewInit {
     const bar = barBlocks.append('rect').style('fill', '#E85285')
       .attr('x', function (d) {return x(d.name); }).attr('y', function (d) {
         return  y(d.value);
-      }).attr('width', x.bandwidth()).attr('height', y(0));
+      }).attr('width', x.bandwidth()).attr('height', y(0)).attr('ngbTooltip', function (d) {
+        return d.value;
+      });
+    bar.append('title').text(function (d) {
+      return d.value;
+    });
     bar.transition().duration(500).ease(this.d3.easeLinear).attr('height', function(d) {
       return height - y(d.value);
     });
     barBlocks.on('mouseover', this.MouseOver(d3)).on('mouseout', this.MouseOut(d3));
-
-
 
     const xaxis = graphBlock.append('g')
       .attr('class', 'bottom-axis')
@@ -65,13 +71,22 @@ export class BarChartComponent implements OnInit, AfterViewInit {
 
   MouseOver(d3): (d, i) => void {
     return (d, i) => {
-      const bar = d3.select(d3.event.currentTarget).select('rect');
+      const parent = d3.select(d3.event.currentTarget);
+      const bar = parent.select('rect');
       const transOptic = () => {
         bar.transition().duration(500).style('fill-opacity', 0.3).on('end', () => {
           bar.transition().duration(500).style('fill-opacity', 1).on('end', transOptic);
         });
       };
       transOptic();
+
+      /*const fo = parent.append('foreignObject')
+        .attr('x', x(d.name))
+        .attr('y', height - y(d.value))
+        .attr('width', 40)
+        .attr('class', 'bsTooltip');
+      const tooltip = fo.append('xhtml:div').attr('ngbTooltip', d.value);
+      console.log(tooltip);*/
     };
   }
 
@@ -79,6 +94,8 @@ export class BarChartComponent implements OnInit, AfterViewInit {
     return (d, i) => {
       const bar = d3.select(d3.event.currentTarget).select('rect');
       bar.transition().duration(500).style('fill-opacity', 1);
+      /*const parent = d3.select(d3.event.currentTarget);
+      parent.selectAll('.bsTooltip').remove();*/
     };
   }
 }

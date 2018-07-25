@@ -50,6 +50,7 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
   passForm: FormGroup;
   findf: DataStore;
   bu = new BaseUrl();
+  errSub: Subscription;
   constructor(private mod: SwathLibAssetService, private fastaFile: FastaFileService, private fb: FormBuilder, private srs: SwathResultService, private _fh: FileHandlerService, private anSer: AnnoucementService) {
     this.staticMods = mod.staticMods;
     this.variableMods = mod.variableMods;
@@ -74,7 +75,6 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
     this._fh.setMitmLocation(location.protocol + '//' + 'schulzlab.glycoproteo.me' + '/assets/StreamSaver.js/mitm.html');
     this._fh.mitmLocation();
     console.log(this._fh.checkSaveStreamSupport());
-
     this.mod.getAssets('assets/new_mods.json').subscribe((resp) => {
       this.mod.updateMods(resp.body['data']);
     });
@@ -83,6 +83,12 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
     });
     this.mod.getAssets('assets/oxonium_ions.json').subscribe((resp) => {
       this.mod.updateOxonium(resp.body['data']);
+    });
+    this.errSub = this.anSer.errorReader.subscribe((data) => {
+      if (data) {
+        this.anSer.Announce('Error.');
+        this.collectTrigger = false;
+      }
     });
     this.outputSubscription = this.resultReader.subscribe((data) => {
       if (this.collectTrigger) {
@@ -100,6 +106,7 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnDestroy() {
     this.outputSubscription.unsubscribe();
+    this.errSub.unsubscribe();
   }
 
   createForm() {
