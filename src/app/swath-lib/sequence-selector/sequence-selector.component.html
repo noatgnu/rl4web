@@ -29,6 +29,10 @@
             </div>
           </div>
           <div class="col-3">
+            <div class="row mt-2 in-line form-inline">
+              <input type="checkbox" class="form-control form-control-sm" id="by_run" [(ngModel)]="by_run">
+              <label for="by_run"> <i>b,y</i>-run only static mods</label>
+            </div>
             <div *ngIf="modSummary.length > 0">
               <div class="mt-2" *ngFor="let m of modSummary">
                 <div class="row in-line" [ngSwitch]="m.type">

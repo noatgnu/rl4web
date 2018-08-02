@@ -44,8 +44,10 @@ export class SubcellularLocationComponent implements OnInit {
   getSubMap(info: DataStore, selected: string[], entryColumn: number, subColumn: number): Map<string, Map<string, DataRow>> {
     const mm: Map<string, Map<string, DataRow>> = new Map<string, Map<string, DataRow>>();
     for (const row of info.data) {
+      const lowCol = row.row[subColumn].toLowerCase();
       for (const i of selected) {
-        if (row.row[subColumn].includes(i)) {
+        const low = i.toLowerCase();
+        if (lowCol.includes(low)) {
           let m: Map<string, DataRow>;
           if (mm.has(i)) {
             m = mm.get(i);

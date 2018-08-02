@@ -40,7 +40,7 @@
           <div class="col-sm-4">
             <input type="text" class="form-control" id="subcellColumn" name="subcellColumn" [(ngModel)]="SubcellColumnName" #subcellColumn="ngModel" required>
           </div>
-          <div [hidden]="subcellColumn.valid" class="alert alert-danger mt-2">
+          <div [hidden]="subcellColumn.valid" class="alert alert-danger col-sm-5">
             Subcellular location column name is required
           </div>
         </div>
@@ -48,9 +48,9 @@
           <label for="sbc" class="col-sm-3 col-form-label">Subcellular keywords for categorization:</label>
           <div class="col-sm-4">
             <input type="text" class="form-control" id="sbc" name="sbc" [(ngModel)]="topdom" #sbc="ngModel" required>
-            <div [hidden]="sbc.valid" class="alert alert-danger mt-2">
-              Subcellular keywords are needed
-            </div>
+          </div>
+          <div [hidden]="sbc.valid" class="alert alert-danger col-sm-5">
+            Subcellular keywords are needed
           </div>
         </div>
         <button type="submit" class="btn btn-primary">Process File</button>

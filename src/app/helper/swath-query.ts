@@ -5,6 +5,13 @@ import {Oxonium} from './oxonium';
 import {SeqCoordinate} from './seq-coordinate';
 
 export class SwathQuery {
+  get by_run(): boolean {
+    return this._by_run;
+  }
+
+  set by_run(value: boolean) {
+    this._by_run = value;
+  }
   constructor(protein: Protein, modifications: Modification[], windows: SwathWindows[], rt: Array<number>, extra: number, charge: number, precursor_charge: number, conflict: SeqCoordinate[]) {
     this._protein = protein;
     this._modifications = modifications;
@@ -14,6 +21,7 @@ export class SwathQuery {
     this._charge = charge;
     this._precursor_charge = precursor_charge;
     this._conflict = conflict;
+
   }
   get conflict(): SeqCoordinate[] {
     return this._conflict;
@@ -137,4 +145,5 @@ export class SwathQuery {
   private _variable_format: string;
   private _oxonium: Oxonium[];
   private _conflict: SeqCoordinate[];
+  private _by_run: boolean;
 }

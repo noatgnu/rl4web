@@ -17,7 +17,7 @@ import {SwathQuery} from '../../helper/swath-query';
 import {Subscription} from 'rxjs/Subscription';
 import {DataStore} from '../../data-row';
 import {Oxonium} from '../../helper/oxonium';
-import {AnnoucementService} from "../../helper/annoucement.service";
+import {AnnoucementService} from '../../helper/annoucement.service';
 
 @Component({
   selector: 'app-sequence-selector',
@@ -82,6 +82,7 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
   SendTriggerSub: Subscription;
   sendTriggerRead: Observable<boolean>;
   conflict: Map<number, SeqCoordinate>;
+  by_run = false;
   constructor(private mod: SwathLibAssetService, tooltip: NgbTooltipConfig, dropdown: NgbDropdownConfig, private modalService: NgbModal, private fb: FormBuilder, private srs: SwathResultService, private ans: AnnoucementService) {
     this.staticMods = mod.staticMods;
     this.variableMods = mod.variableMods;
@@ -112,7 +113,7 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
         const query = this.createQuery(this.protein, this.modSummary, this.form.value['windows'], this.form.value['rt'],
           this.form.value['extra-mass'], this.form.value['max-charge'], this.form.value['precursor-charge'],
           this.b_stop_at, this.y_stop_at, this.form.value['variable-bracket-format'], this.extraForm.value['oxonium'],
-          Array.from(this.conflict.values())
+          Array.from(this.conflict.values()), this.by_run
         );
         console.log(this.modSummary);
         this.srs.SendQuery(query).subscribe((response) => {
@@ -173,10 +174,11 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
     });
   }
 
-  private createQuery(protein, modSummary, windows, rt, extramass, maxcharge, precursorcharge, b_stop_at, y_stop_at, variableformat, oxonium, conflict) {
+  private createQuery(protein, modSummary, windows, rt, extramass, maxcharge, precursorcharge, b_stop_at, y_stop_at, variableformat, oxonium, conflict, by_run) {
     const query = new SwathQuery(protein, modSummary, windows, rt, extramass, maxcharge, precursorcharge, conflict);
     query.b_stop_at = b_stop_at;
     query.y_stop_at = y_stop_at;
+    query.by_run = by_run;
     query.variable_format = variableformat;
     query.oxonium = oxonium;
     return query;

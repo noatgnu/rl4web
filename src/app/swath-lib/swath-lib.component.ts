@@ -51,7 +51,8 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
   findf: DataStore;
   bu = new BaseUrl();
   errSub: Subscription;
-  constructor(private mod: SwathLibAssetService, private fastaFile: FastaFileService, private fb: FormBuilder, private srs: SwathResultService, private _fh: FileHandlerService, private anSer: AnnoucementService) {
+  constructor(private mod: SwathLibAssetService, private fastaFile: FastaFileService, private fb: FormBuilder,
+              private srs: SwathResultService, private _fh: FileHandlerService, private anSer: AnnoucementService) {
     this.staticMods = mod.staticMods;
     this.variableMods = mod.variableMods;
     this.Ymods = mod.YtypeMods;

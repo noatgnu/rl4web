@@ -65,7 +65,7 @@ export class UniprotService {
         ['to', 'ACC'],
         ['query', l.join(' ')],
         ['format', 'tab'],
-        ['columns', 'id,entry name,reviewed,protein names,genes,organism,length,database(RefSeq),organism-id,go-id,comment(SUBCELLULAR LOCATION),feature(TOPOLOGICAL_DOMAIN),feature(GLYCOSYLATION),comment(MASS SPECTROMETRY),sequence'],
+        ['columns', 'id,entry name,reviewed,protein names,genes,organism,length,database(RefSeq),organism-id,go-id,go(cellular component),comment(SUBCELLULAR LOCATION),feature(TOPOLOGICAL_DOMAIN),feature(GLYCOSYLATION),comment(MASS SPECTROMETRY),sequence'],
         ['compress', 'no'],
         ['force', 'no'],
         ['sort', 'score'],
