@@ -15,12 +15,11 @@ export class SeqViewerComponent implements OnInit {
   @Input()
     set Seq(value: SeqCoordinate[]) {
     this._Seq = value;
-    const result = this.distributeRow(value, this.maxColumn);
+    const result = this.distributeRow(value, this.maxColumn, this.gridSize);
     this.data = result.data;
     this.maxRowNumber = result.maxRowNumber;
     if (this.seqBlock !== undefined) {
-      this.drawSeq(this.seqBlock, this.x, this.y, this.gridSize, this.maxColumn);
-      this.drawAnnotation(this.x, this.y, this.gridSize, this.seqBlock, this.data, this.annotationType, this.maxColumn);
+      this.drawSeq(this.seqBlock, this.x, this.y, this.gridSize, this.maxColumn, this.d3Annotate);
     }
   }
   get Seq(): SeqCoordinate[] {
@@ -43,8 +42,8 @@ export class SeqViewerComponent implements OnInit {
     this.d3Annotate = annotation.GetD3Annotation();
     this.annotationType = this.d3Annotate.annotationCustomType(this.d3Annotate.annotationCalloutCircle,
       {'className': 'custom', // 'connector': {'end': 'dot'},
-        //'note': {'align': 'dynamic',
-            //'lineType': 'horizontal'}
+        // 'note': {'align': 'dynamic',
+            // 'lineType': 'horizontal'}
         });
   }
 
@@ -81,10 +80,8 @@ export class SeqViewerComponent implements OnInit {
     this.y = y;
     const seqBlock = graphBlock.append('g').attr('class', 'seqBlock');
     this.seqBlock = seqBlock;
-    const tooltips = d3.select('body').append('div').attr('class', 'aaToolTip');
-    this.tooltips = tooltips;
-    this.drawSeq(this.seqBlock, this.x, this.y, this.gridSize, this.maxColumn);
-    this.drawAnnotation(x, y, gridSize, seqBlock, this.data, this.annotationType, this.maxColumn);
+    const getAnnotations = this.prepareAnnotation(this.data, x, y, gridSize, this.maxColumn);
+    this.drawSeq(this.seqBlock, this.x, this.y, this.gridSize, this.maxColumn, this.d3Annotate);
   }
 
   private drawAnnotation(x, y, gridSize, svg: any, data, annotationType, maxColumn) {
@@ -104,7 +101,7 @@ export class SeqViewerComponent implements OnInit {
     }
   }
 
-  private drawSeq(seqBlock, x, y, gridSize: number, columnNumber) {
+  private drawSeq(seqBlock, x, y, gridSize: number, columnNumber, d3Annotation) {
     seqBlock.selectAll('*').remove();
     const aas = seqBlock.selectAll('.aa').data(this.data);
     aas.exit().remove();
@@ -128,6 +125,20 @@ export class SeqViewerComponent implements OnInit {
     }).text(function (d) {
       return d.aa.aa;
     });
+
+    aaBlock.append('g').attr('class', 'annotation-group')
+      .call(function (d) {
+        
+      return d3Annotation
+        .annotation()
+        .editMode(true)
+        .type(d3Annotation.annotationLabel).accessors({
+        x: d => x(d.column + 1) + gridSize / 2,
+        y: d => y(d.row ) + gridSize + gridSize / 2,
+          dx: gridSize * xMod,
+          dy: gridSize * 2 * yMod,
+      })
+    })
     /*aaBlock.on('mouseover', function (d) {
       tooltips.transition().duration(200).style('opacity', 0.9);
       tooltips.html('Position:' + d.aa.coordinate).style('left', (d3.event.pageX) + 'px').style('top', (d3.event.pageY) + 'px');
@@ -136,7 +147,7 @@ export class SeqViewerComponent implements OnInit {
     });*/
   }
 
-  distributeRow(seqCoord: SeqCoordinate[], maxColumn: number) {
+  distributeRow(seqCoord: SeqCoordinate[], maxColumn: number, gridSize) {
     const data = [];
     let rowNumber = 0;
     let columnNumber = 0;
@@ -145,7 +156,29 @@ export class SeqViewerComponent implements OnInit {
         rowNumber ++;
         columnNumber = 0;
       }
-      data.push({column: columnNumber, row: rowNumber, aa: seqCoord[i]});
+      data.push(
+        {column: columnNumber,
+          row: rowNumber,
+          aa: seqCoord[i],
+          annotation: {
+            note: {
+              label: seqCoord[i].modType,
+              title: (seqCoord[i].coordinate + 1) + seqCoord[i].aa,
+              align: 'dynamics',
+              lineType: 'horizontal'
+            },
+            // x: x(d.column + 1) + gridSize / 2,
+            // y: y(d.row * maxColumn) + gridSize + gridSize / 2,
+
+            data: {column: columnNumber, row: rowNumber},
+            color: '#E8336D',
+            className: 'show-bg',
+            subject: {
+              radius: 5,
+              // radiusPadding: 10
+            },
+          }
+        });
       columnNumber ++;
     }
     return {data: data, maxRowNumber: rowNumber};
@@ -154,7 +187,7 @@ export class SeqViewerComponent implements OnInit {
   prepareAnnotation(data, x, y, gridSize, maxColumn) {
     const annotations = [];
     for (const d of data) {
-      if (d.aa.modType !== '') {
+      // if (d.aa.modType !== '') {
         let xMod = 1;
         const yMod = 1;
         if (d.aa.coordinate > 10) {
@@ -180,7 +213,7 @@ export class SeqViewerComponent implements OnInit {
             // radiusPadding: 10
           },
         });
-      }
+      // }
     }
     return annotations;
   }
