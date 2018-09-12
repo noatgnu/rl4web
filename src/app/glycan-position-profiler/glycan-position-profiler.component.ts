@@ -11,7 +11,7 @@ import {GppResult} from "../helper/gpp-result";
 @Component({
   selector: 'app-glycan-position-profiler',
   templateUrl: './glycan-position-profiler.component.html',
-  styleUrls: ['./glycan-position-profiler.component.css'],
+  styleUrls: ['./glycan-position-profiler.component.scss'],
   providers: [FastaFileService, GlycanProfilerService]
 })
 export class GlycanPositionProfilerComponent implements OnInit {

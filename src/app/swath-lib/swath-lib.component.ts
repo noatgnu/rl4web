@@ -21,7 +21,7 @@ import {BaseUrl} from '../helper/base-url';
 @Component({
   selector: 'app-swath-lib',
   templateUrl: './swath-lib.component.html',
-  styleUrls: ['./swath-lib.component.css'],
+  styleUrls: ['./swath-lib.component.scss'],
   providers: [FastaFileService],
 })
 export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {

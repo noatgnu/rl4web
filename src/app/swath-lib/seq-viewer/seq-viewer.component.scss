@@ -1,0 +1,54 @@
+/deep/ g.aa {
+  rect {
+    fill: white;
+    stroke: black;
+    &.Ytype {
+      fill: green;
+    }
+    &.conflicted {
+      fill: red;
+    }
+    &.variable {
+      fill: blue;
+    }
+    &.static {
+      fill: yellow;
+    }
+  }
+}
+
+/deep/ text.aaId {
+  font-family: Arial;
+  font-size: 8pt;
+  fill: black;
+  text-anchor: middle;
+  alignment-baseline: central;
+  &.Ytype {
+    fill: white;
+  }
+  &.conflicted {
+    fill: white;
+  }
+  &.variable {
+    fill: white;
+  }
+}
+
+/deep/ div.aaToolTip {
+  opacity: 0;
+  position: absolute;
+  text-align: center;
+  width: 100px;
+  height: 56px;
+  padding: 2px;
+  font-family: Arial;
+  font-size: 6pt;
+  background: lightsteelblue;
+  border: 0;
+  border-radius: 8px;
+  pointer-events: none;
+}
+
+/deep/ g.annotation-note {
+  font-size: 8pt;
+}

@@ -6,7 +6,7 @@ import {GrantService} from '../grant.service';
 @Component({
   selector: 'app-grant',
   templateUrl: './grant.component.html',
-  styleUrls: ['./grant.component.css']
+  styleUrls: ['./grant.component.scss']
 })
 export class GrantComponent implements OnInit {
   grant: Observable<Map<string, Grant[]>>;

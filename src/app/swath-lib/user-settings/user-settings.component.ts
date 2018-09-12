@@ -7,7 +7,7 @@ import {FileHandlerService} from '../../file-handler.service';
 @Component({
   selector: 'app-user-settings',
   templateUrl: './user-settings.component.html',
-  styleUrls: ['./user-settings.component.css']
+  styleUrls: ['./user-settings.component.scss']
 })
 export class UserSettingsComponent implements OnInit {
   sf;

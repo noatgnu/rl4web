@@ -6,7 +6,7 @@ import {NgbTooltip, NgbTooltipConfig} from "@ng-bootstrap/ng-bootstrap";
 @Component({
   selector: 'app-bar-chart',
   templateUrl: './bar-chart.component.html',
-  styleUrls: ['./bar-chart.component.css']
+  styleUrls: ['./bar-chart.component.scss']
 })
 export class BarChartComponent implements OnInit, AfterViewInit {
   @Input() data: GraphData[];

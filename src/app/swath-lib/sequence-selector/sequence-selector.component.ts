@@ -22,7 +22,7 @@ import {AnnoucementService} from '../../helper/annoucement.service';
 @Component({
   selector: 'app-sequence-selector',
   templateUrl: './sequence-selector.component.html',
-  styleUrls: ['./sequence-selector.component.css'],
+  styleUrls: ['./sequence-selector.component.scss'],
   providers: [NgbTooltipConfig, NgbDropdownConfig]
 })
 export class SequenceSelectorComponent implements OnInit, OnDestroy {

@@ -31,6 +31,8 @@ import { SubcellularLocationComponent } from './subcellular-location/subcellular
 import {D3Service} from 'd3-ng2-service';
 import { BarChartComponent } from './bar-chart/bar-chart.component';
 import { PieChartComponent } from './pie-chart/pie-chart.component';
+import { SeqViewerComponent } from './swath-lib/seq-viewer/seq-viewer.component';
+import {SvgAnnotationService} from "./helper/svg-annotation.service";
 
 const appRoutes: Routes = [
   {path: '', component: HomeComponent},
@@ -60,12 +62,13 @@ const appRoutes: Routes = [
     SwathLibHelpComponent,
     SubcellularLocationComponent,
     BarChartComponent,
-    PieChartComponent
+    PieChartComponent,
+    SeqViewerComponent
   ],
   imports: [
     NgbModule.forRoot(),
     RouterModule.forRoot(
-      appRoutes
+      appRoutes, {useHash: true}
     ),
     FormsModule,
     BrowserModule,
@@ -81,7 +84,8 @@ const appRoutes: Routes = [
     PublicationService,
     GrantService,
     SwathLibAssetService,
-    SwathResultService
+    SwathResultService,
+    SvgAnnotationService,
   ],
   bootstrap: [AppComponent]
 })

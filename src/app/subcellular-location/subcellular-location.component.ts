@@ -8,7 +8,7 @@ import {GraphData} from '../helper/graph-data';
 @Component({
   selector: 'app-subcellular-location',
   templateUrl: './subcellular-location.component.html',
-  styleUrls: ['./subcellular-location.component.css']
+  styleUrls: ['./subcellular-location.component.scss']
 })
 export class SubcellularLocationComponent implements OnInit {
   private ProteinInfo: DataStore;

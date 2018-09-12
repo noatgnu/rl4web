@@ -10,7 +10,7 @@ import {AnnoucementService} from "../helper/annoucement.service";
 @Component({
   selector: 'app-uniprot-parser',
   templateUrl: './uniprot-parser.component.html',
-  styleUrls: ['./uniprot-parser.component.css']
+  styleUrls: ['./uniprot-parser.component.scss']
 })
 export class UniprotParserComponent implements OnInit, OnDestroy {
   model = {uniprotList: '', goStats: true};

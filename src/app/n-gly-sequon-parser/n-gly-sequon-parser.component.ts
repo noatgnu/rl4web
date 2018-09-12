@@ -8,13 +8,13 @@ import {Observable} from 'rxjs/Observable';
 @Component({
   selector: 'app-n-gly-sequon-parser',
   templateUrl: './n-gly-sequon-parser.component.html',
-  styleUrls: ['./n-gly-sequon-parser.component.css'],
+  styleUrls: ['./n-gly-sequon-parser.component.scss'],
   providers: [FileHandlerService, NglycoService]
 })
 export class NGlySequonParserComponent implements OnInit {
   fileHandler;
   result: DataStore;
-  model = {columnName: 'Sequence', ignoreMod: true, modFilter: false, modColumn: 'ProteinModifications', mod: 'HexNAc'};
+  model = {columnName: 'Sequence', ignoreMod: true, modFilter: false, modColumn: 'ProteinModifications', mod: 'HexNAc', annoSeq: false};
   loadHeader = true;
   started = false;
   processing = false;

@@ -6,7 +6,7 @@ import {Publication, RefData} from '../publication';
 @Component({
   selector: 'app-publication',
   templateUrl: './publication.component.html',
-  styleUrls: ['./publication.component.css']
+  styleUrls: ['./publication.component.scss']
 })
 export class PublicationComponent implements OnInit {
   publication: Observable<RefData>;

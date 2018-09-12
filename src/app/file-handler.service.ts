@@ -5,13 +5,14 @@ import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 import * as FileSaver from 'file-saver';
 import * as StreamSaver from 'streamsaver';
+import {AnnoucementService} from "./helper/annoucement.service";
 
 @Injectable()
 export class FileHandlerService {
   _resultFileSource: Subject<DataStore[]> = new Subject<DataStore[]>();
   resultFileEmitter: Observable<DataStore[]> = this._resultFileSource.asObservable();
 
-  constructor() { }
+  constructor(private announceSer: AnnoucementService) { }
 
   async fileHandler(e, loadHeader) {
     return new Promise<DataStore>((resolve, reject) => {
@@ -20,8 +21,9 @@ export class FileHandlerService {
       const result: DataRow[] = [];
       reader.onload = (event) => {
         const loadedFile = reader.result;
-        console.log();
-        const lines = loadedFile.split(/\r\n|\n/);
+
+        const lines = loadedFile.split(/\r\n|\r|\n/);
+
         lines.map((line) => {
           if (line.length > 0) {
             result.push(new DataRow(line.split(/\t/)));
@@ -35,7 +37,7 @@ export class FileHandlerService {
 
   fileHandlerNoE(data) {
     const d: DataRow[] = [];
-    const lines = data.split(/\r\n|\n/);
+    const lines = data.split(/\r\n|\r|\n/);
     if (lines.length > 1) {
       for (const line of lines) {
         if (line.length > 0) {

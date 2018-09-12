@@ -33,6 +33,12 @@
         </div>
         <div class="form-check">
           <label class="form-check-label">
+            <input type="checkbox" class="form-check-input" name="annoSeq" [(ngModel)]="model.annoSeq">
+            Sequence Annotated
+          </label>
+        </div>
+        <div class="form-check">
+          <label class="form-check-label">
             <input type="checkbox" class="form-check-input" name="modFilter" [(ngModel)]="model.modFilter">
             Filter Modifications
           </label>
@@ -45,9 +51,10 @@
           <div class="form-group col-md-6">
             <label for="modColumn">Protein Modifications:</label>
             <input type="text" class="form-control" id="mod" name="mod" [(ngModel)]="model.mod" [disabled]="!model.modFilter">
-            <small class="form-text text-muted">Separated by commas.</small>
+            <small class="form-text text-muted">Separated by commas. * Modification filter only look for modification existence within the column and does not identify the position of the modification on the sequence.</small>
           </div>
         </div>
+
 
         <button type="submit" class="btn btn-primary">Process File</button>
       </form>
