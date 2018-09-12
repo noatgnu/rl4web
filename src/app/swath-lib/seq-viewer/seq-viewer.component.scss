@@ -14,7 +14,16 @@
     &.static {
       fill: yellow;
     }
+  :hover {
+    & g.annotation-note {
+      opacity: 1;
+    };
+    & g.annotation-connector {
+      opacity: 1;
+    };
   }
+  }
+
 }
 
 /deep/ text.aaId {
@@ -48,6 +57,7 @@
   border-radius: 8px;
   pointer-events: none;
 }
+
 
 /deep/ g.annotation-note {
   font-size: 8pt;

@@ -19,7 +19,8 @@ export class SeqViewerComponent implements OnInit {
     this.data = result.data;
     this.maxRowNumber = result.maxRowNumber;
     if (this.seqBlock !== undefined) {
-      this.drawSeq(this.seqBlock, this.x, this.y, this.gridSize, this.maxColumn, this.d3Annotate);
+      this.prepareAnnotation(this.data, this.x, this.y, this.gridSize, this.maxColumn);
+      this.drawSeq(this.seqBlock, this.x, this.y, this.gridSize, this.maxColumn, this.d3Annotate, this.d3, this.annotationType);
     }
   }
   get Seq(): SeqCoordinate[] {
@@ -40,10 +41,10 @@ export class SeqViewerComponent implements OnInit {
     this.parentNativeElement = element.nativeElement;
     this.d3 = d3Service.getD3();
     this.d3Annotate = annotation.GetD3Annotation();
-    this.annotationType = this.d3Annotate.annotationCustomType(this.d3Annotate.annotationCalloutCircle,
-      {'className': 'custom', // 'connector': {'end': 'dot'},
-        // 'note': {'align': 'dynamic',
-            // 'lineType': 'horizontal'}
+    this.annotationType = this.d3Annotate.annotationCustomType(this.d3Annotate.annotationLabel,
+      {'className': 'custom', 'connector': {'end': 'dot'},
+        'note': {'align': 'dynamic',
+            'lineType': 'horizontal'}
         });
   }
 
@@ -80,8 +81,9 @@ export class SeqViewerComponent implements OnInit {
     this.y = y;
     const seqBlock = graphBlock.append('g').attr('class', 'seqBlock');
     this.seqBlock = seqBlock;
-    const getAnnotations = this.prepareAnnotation(this.data, x, y, gridSize, this.maxColumn);
-    this.drawSeq(this.seqBlock, this.x, this.y, this.gridSize, this.maxColumn, this.d3Annotate);
+    this.prepareAnnotation(this.data, x, y, gridSize, this.maxColumn);
+    this.drawSeq(this.seqBlock, this.x, this.y, this.gridSize, this.maxColumn, this.d3Annotate, d3, this.annotationType);
+    // svg.selectAll('g.annotation-connector, g.annotation-note').style('opacity', 0);
   }
 
   private drawAnnotation(x, y, gridSize, svg: any, data, annotationType, maxColumn) {
@@ -94,19 +96,31 @@ export class SeqViewerComponent implements OnInit {
       }).on('subjectout', function(annotation) {
         annotation.type.a.selectAll('g.annotation-connector, g.annotation-note').style('opacity', 0);
         });
-      console.log(makeAnnotations.collection());
       const graphAnnotations = svg.append('g').attr('class', 'annotation-group').call(makeAnnotations);
-      svg.selectAll('g.annotation-connector, g.annotation-note').style('opacity', 0);
-      console.log(graphAnnotations);
     }
   }
 
-  private drawSeq(seqBlock, x, y, gridSize: number, columnNumber, d3Annotation) {
+  private drawSeq(seqBlock, x, y, gridSize: number, columnNumber, d3Annotation, d3, annotationType) {
     seqBlock.selectAll('*').remove();
     const aas = seqBlock.selectAll('.aa').data(this.data);
     aas.exit().remove();
-    const aaBlock = aas.enter().append('g').attr('class', 'aa');
-    aaBlock.append('rect')
+    const aaBlock = aas.enter().append('g');
+    const aaTextBlock = aaBlock.append('g').attr('class', 'aa');
+    aaBlock.each(function (d, i, n) {
+      const annotation = d3.select(n[i]).append('g').attr('class', 'annotation-group')
+        .call(d3Annotation
+          .annotation()
+          .editMode(false)
+          .type(annotationType)
+          /*.accessors({
+            x: d => x(d.column + 1) + gridSize / 2,
+            y: d => y(d.row * maxColumn) + gridSize + gridSize / 2,
+          })*/
+          .annotations([d.annotation]));
+      annotation.selectAll('g.annotation-connector, g.annotation-note').style('opacity', 0);
+    });
+
+    aaTextBlock.append('rect')
       .attr('class', function (d) {
         return d.aa.modType;
       }).attr('x', function (d) {
@@ -116,7 +130,7 @@ export class SeqViewerComponent implements OnInit {
       }).attr('rx', 2).attr('ry', 2)
       .attr('height', gridSize).attr('width', gridSize)
     ;
-    const aaText = aaBlock.append('text').attr('class', function (d) {
+    const aaText = aaTextBlock.append('text').attr('class', function (d) {
       return 'aaId ' + d.aa.modType;
     }).attr('x', function (d) {
       return x(d.column + 1);
@@ -126,10 +140,33 @@ export class SeqViewerComponent implements OnInit {
       return d.aa.aa;
     });
 
-    aaBlock.append('g').attr('class', 'annotation-group')
-      .call(function (d) {
-        
-      return d3Annotation
+    aaTextBlock.on('mouseover', function (d) {
+      const current = d3.select(d3.event.currentTarget.parentNode);
+      console.log(current);
+      current.selectAll('g.annotation-connector, g.annotation-note').style('opacity', 1);
+    }).on('mouseout', function (d) {
+      const current = d3.select(d3.event.currentTarget.parentNode);
+      current.selectAll('g.annotation-connector, g.annotation-note').style('opacity', 0);
+    });
+
+
+    console.log(aaBlock);
+
+    /*const annotation = aaBlock.append('g').attr('class', 'annotation-group')
+      .call(function (d, i) {
+        console.log(i);
+        return d3Annotation
+          .annotation()
+          .editMode(true)
+          .type(d3Annotation.annotationLabel).annotations([d.annotation]);
+      });
+    console.log(aaBlock);*/
+    /*aaBlock.on('mouseover', function (d) {
+      tooltips.transition().duration(200).style('opacity', 0.9);
+      tooltips.html('Position:' + d.aa.coordinate).style('left', (d3.event.pageX) + 'px').style('top', (d3.event.pageY) + 'px');
+    }).on('mouseout', function (d) {
+      tooltips.style('opacity', 0);
+      d3Annotation
         .annotation()
         .editMode(true)
         .type(d3Annotation.annotationLabel).accessors({
@@ -138,12 +175,6 @@ export class SeqViewerComponent implements OnInit {
           dx: gridSize * xMod,
           dy: gridSize * 2 * yMod,
       })
-    })
-    /*aaBlock.on('mouseover', function (d) {
-      tooltips.transition().duration(200).style('opacity', 0.9);
-      tooltips.html('Position:' + d.aa.coordinate).style('left', (d3.event.pageX) + 'px').style('top', (d3.event.pageY) + 'px');
-    }).on('mouseout', function (d) {
-      tooltips.style('opacity', 0);
     });*/
   }
 
@@ -186,14 +217,18 @@ export class SeqViewerComponent implements OnInit {
 
   prepareAnnotation(data, x, y, gridSize, maxColumn) {
     const annotations = [];
-    for (const d of data) {
+    for (let i = 0; i < data.length; i ++ ) {
       // if (d.aa.modType !== '') {
         let xMod = 1;
         const yMod = 1;
-        if (d.aa.coordinate > 10) {
+        if ((data[i].aa.coordinate - data[i].row * maxColumn) > 11) {
           xMod = -1;
         }
-        annotations.push({
+      data[i].annotation['x'] = x(data[i].column + 1) + gridSize / 2;
+      data[i].annotation['y'] = y(data[i].row * maxColumn) + gridSize + gridSize / 2;
+      data[i].annotation['dx'] = gridSize * xMod;
+      data[i].annotation['dy'] = gridSize * 2 * yMod;
+        /*annotations.push({
           note: {
             label: d.aa.modType,
             title: (d.aa.coordinate + 1) + d.aa.aa,
@@ -212,9 +247,10 @@ export class SeqViewerComponent implements OnInit {
             radius: 5,
             // radiusPadding: 10
           },
-        });
+        });*/
       // }
     }
     return annotations;
   }
+
 }
