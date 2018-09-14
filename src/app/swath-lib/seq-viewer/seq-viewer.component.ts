@@ -1,19 +1,25 @@
-import {Component, ElementRef, Input, OnInit, AfterViewInit, OnChanges} from '@angular/core';
+import {Component, ElementRef, Input, OnInit, AfterViewInit, OnChanges, Output, EventEmitter, OnDestroy} from '@angular/core';
 import {D3Service, D3} from 'd3-ng2-service';
 import {SeqCoordinate} from '../../helper/seq-coordinate';
 import {SvgAnnotationService} from '../../helper/svg-annotation.service';
+import {SvgContextMenuService} from '../../helper/svg-context-menu.service';
+import {Observable, Subscription} from 'rxjs';
+import {SwathLibHelperService} from '../../helper/swath-lib-helper.service';
 
 @Component({
   selector: 'app-seq-viewer',
   templateUrl: './seq-viewer.component.html',
   styleUrls: ['./seq-viewer.component.scss']
 })
-export class SeqViewerComponent implements OnInit {
+export class SeqViewerComponent implements OnInit, OnDestroy {
   private _Seq: SeqCoordinate[];
   gridSize = 20;
+  @Input() unique_id: string;
+  @Output() contextEvent: EventEmitter<any> = new EventEmitter<any>();
   @Input() maxColumn: number;
   @Input()
     set Seq(value: SeqCoordinate[]) {
+    console.log('changed');
     this._Seq = value;
     const result = this.distributeRow(value, this.maxColumn, this.gridSize);
     this.data = result.data;
@@ -37,21 +43,66 @@ export class SeqViewerComponent implements OnInit {
   d3Annotate;
   svg;
   annotationType;
-  constructor(element: ElementRef, private d3Service: D3Service, private annotation: SvgAnnotationService) {
+  d3Context;
+  menu;
+  contextMenu;
+  changeSubscribe: Subscription;
+  selectedSubscribe: Subscription;
+  commObject;
+  constructor(element: ElementRef, private d3Service: D3Service, private annotation: SvgAnnotationService, private cm: SvgContextMenuService, private libHelper: SwathLibHelperService) {
     this.parentNativeElement = element.nativeElement;
     this.d3 = d3Service.getD3();
     this.d3Annotate = annotation.GetD3Annotation();
+    this.d3Context = cm.GetContextMenu();
     this.annotationType = this.d3Annotate.annotationCustomType(this.d3Annotate.annotationLabel,
-      {'className': 'custom', 'connector': {'end': 'dot'},
-        'note': {'align': 'dynamic',
-            'lineType': 'horizontal'}
-        });
+      {connector: {end: 'dot'},
+      note:
+        {
+        lineType: 'horizontal',
+      },
+
+        className: 'show-bg',
+    });
+
+    this.contextMenu = this.d3Context(this.d3);
+    console.log(this.contextMenu);
+  }
+
+  ngOnDestroy() {
+    this.changeSubscribe.unsubscribe();
+    this.selectedSubscribe.unsubscribe();
+  }
+
+  CreateMenu() {
+    const emit = this.contextEvent;
+    this.menu = [
+      {
+        title: 'Edit Residue',
+        action: function(elm, d, i) {
+          emit.emit({residue: elm.aa.coordinate, event: 'edit'});
+        }
+      },
+      {
+        title: 'b-series Stop',
+        action: function(elm, d, i) {
+          emit.emit({residue: elm.aa.coordinate, event: 'bstop'});
+        }
+      },
+      {
+        title: 'y-series Stop',
+        action: function(elm, d, i) {
+          emit.emit({residue: elm.aa.coordinate, event: 'ystop'});
+        }
+      }
+    ];
   }
 
   ngOnInit() {
+    this.CreateMenu();
+    this.commObject = this.libHelper.SequenceMap.get(this.unique_id);
     const gridSize = this.gridSize;
-    const frame = {width: 640, height: 25 + gridSize + gridSize * (this.maxRowNumber + 5)};
-    const margin = {top: 20, right: 10, bottom: 5, left: 40};
+    const frame = {width: 640, height: 25 + gridSize + gridSize * (this.maxRowNumber + 7)};
+    const margin = {top: 20, right: 20, bottom: 5, left: 40};
     const d3 = this.d3;
     let svg: any;
     const width = frame.width - margin.left - margin.right;
@@ -60,7 +111,7 @@ export class SeqViewerComponent implements OnInit {
     const x = d3.scaleLinear().range([0, width]).domain([0, this.maxColumn]);
     const y = d3.scaleLinear().range([0, seqHeight]).domain([0, (this.maxRowNumber + 1) * this.maxColumn ]);
     const xAxis = d3.axisTop(x).scale(x).tickValues(d3.range(1, this.maxColumn + 1, 1));
-    const yTicks = d3.range(0, (this.maxRowNumber + 2) * this.maxColumn, this.maxColumn);
+    const yTicks = d3.range(1, (this.maxRowNumber + 1) * this.maxColumn, this.maxColumn);
     const yAxis = d3.axisLeft(y).scale(y)
       // .ticks(this.maxRowNumber + 1)
       .tickValues(yTicks);
@@ -72,6 +123,7 @@ export class SeqViewerComponent implements OnInit {
     const xaxis = graphBlock.append('g')
       .attr('class', 'top-axis')
       .call(xAxis);
+
     const yaxis = graphBlock
       .append('g')
       .attr('class', 'left-axis')
@@ -82,42 +134,50 @@ export class SeqViewerComponent implements OnInit {
     const seqBlock = graphBlock.append('g').attr('class', 'seqBlock');
     this.seqBlock = seqBlock;
     this.prepareAnnotation(this.data, x, y, gridSize, this.maxColumn);
+
     this.drawSeq(this.seqBlock, this.x, this.y, this.gridSize, this.maxColumn, this.d3Annotate, d3, this.annotationType);
     // svg.selectAll('g.annotation-connector, g.annotation-note').style('opacity', 0);
-  }
-
-  private drawAnnotation(x, y, gridSize, svg: any, data, annotationType, maxColumn) {
-    const getAnnotations = this.prepareAnnotation(data, x, y, gridSize, maxColumn);
-    if (getAnnotations.length > 0) {
-      const makeAnnotations = this.d3Annotate.annotation().editMode(true).type(annotationType)
-        .annotations(getAnnotations)
-        .on('subjectover', function(annotation) {
-        annotation.type.a.selectAll('g.annotation-connector, g.annotation-note').style('opacity', 1);
-      }).on('subjectout', function(annotation) {
-        annotation.type.a.selectAll('g.annotation-connector, g.annotation-note').style('opacity', 0);
-        });
-      const graphAnnotations = svg.append('g').attr('class', 'annotation-group').call(makeAnnotations);
+    if (this.commObject) {
+      this.changeSubscribe = this.commObject.change.asObservable().subscribe((data) => {
+        if (data) {
+          if (this.seqBlock !== undefined) {
+            this.prepareAnnotation(this.data, this.x, this.y, this.gridSize, this.maxColumn);
+            this.drawSeq(this.seqBlock, this.x, this.y, this.gridSize, this.maxColumn, this.d3Annotate, this.d3, this.annotationType);
+          }
+        }
+      });
+    }
+    if (this.commObject) {
+      this.selectedSubscribe = this.commObject.selected.asObservable().subscribe((data: number[]) => {
+        const dataLength = this.data.length;
+        const aaBlock = this.seqBlock.selectAll('g.aaBlock');
+        aaBlock.each(
+          function (d, i, n) {
+            if (data.includes(dataLength - i - 1)) {
+              d3.select(n[i]).select('.annotation-group').selectAll('g.annotation-connector, g.annotation-note').style('opacity', 1);
+            }
+          }
+        );
+      });
     }
   }
 
   private drawSeq(seqBlock, x, y, gridSize: number, columnNumber, d3Annotation, d3, annotationType) {
+    console.log(this.data);
     seqBlock.selectAll('*').remove();
-    const aas = seqBlock.selectAll('.aa').data(this.data);
+    const aas = seqBlock.selectAll('.aa').data(this.data.reverse());
     aas.exit().remove();
-    const aaBlock = aas.enter().append('g');
+    const aaBlock = aas.enter().append('g').attr('class', 'aaBlock');
     const aaTextBlock = aaBlock.append('g').attr('class', 'aa');
     aaBlock.each(function (d, i, n) {
-      const annotation = d3.select(n[i]).append('g').attr('class', 'annotation-group')
+      const annotation = d3.select(n[i]).append('g').attr('class', 'annotation-group').style('font-size', '12px')
         .call(d3Annotation
           .annotation()
-          .editMode(false)
+          .editMode(true)
           .type(annotationType)
-          /*.accessors({
-            x: d => x(d.column + 1) + gridSize / 2,
-            y: d => y(d.row * maxColumn) + gridSize + gridSize / 2,
-          })*/
           .annotations([d.annotation]));
       annotation.selectAll('g.annotation-connector, g.annotation-note').style('opacity', 0);
+      // console.log(annotation.selectAll('g.annotation-note'));
     });
 
     aaTextBlock.append('rect')
@@ -142,15 +202,17 @@ export class SeqViewerComponent implements OnInit {
 
     aaTextBlock.on('mouseover', function (d) {
       const current = d3.select(d3.event.currentTarget.parentNode);
-      console.log(current);
       current.selectAll('g.annotation-connector, g.annotation-note').style('opacity', 1);
     }).on('mouseout', function (d) {
       const current = d3.select(d3.event.currentTarget.parentNode);
       current.selectAll('g.annotation-connector, g.annotation-note').style('opacity', 0);
-    });
+    })
+    ;
 
+    if (this.menu) {
+      aaTextBlock.on('contextmenu', this.d3Context(this.menu));
+    }
 
-    console.log(aaBlock);
 
     /*const annotation = aaBlock.append('g').attr('class', 'annotation-group')
       .call(function (d, i) {
@@ -187,28 +249,15 @@ export class SeqViewerComponent implements OnInit {
         rowNumber ++;
         columnNumber = 0;
       }
+      let label = '';
+      for (let m = 0; m < seqCoord[i].mods.length; m ++) {
+        label += `- ${seqCoord[i].mods[m].name}(${seqCoord[i].mods[m].type}` + ('' || ` ${seqCoord[i].mods[m].Ytype}`) + ')\n';
+      }
+      console.log(label);
       data.push(
         {column: columnNumber,
           row: rowNumber,
           aa: seqCoord[i],
-          annotation: {
-            note: {
-              label: seqCoord[i].modType,
-              title: (seqCoord[i].coordinate + 1) + seqCoord[i].aa,
-              align: 'dynamics',
-              lineType: 'horizontal'
-            },
-            // x: x(d.column + 1) + gridSize / 2,
-            // y: y(d.row * maxColumn) + gridSize + gridSize / 2,
-
-            data: {column: columnNumber, row: rowNumber},
-            color: '#E8336D',
-            className: 'show-bg',
-            subject: {
-              radius: 5,
-              // radiusPadding: 10
-            },
-          }
         });
       columnNumber ++;
     }
@@ -221,13 +270,35 @@ export class SeqViewerComponent implements OnInit {
       // if (d.aa.modType !== '') {
         let xMod = 1;
         const yMod = 1;
+        let align = 'left';
         if ((data[i].aa.coordinate - data[i].row * maxColumn) > 11) {
           xMod = -1;
+          align = 'right';
         }
-      data[i].annotation['x'] = x(data[i].column + 1) + gridSize / 2;
-      data[i].annotation['y'] = y(data[i].row * maxColumn) + gridSize + gridSize / 2;
-      data[i].annotation['dx'] = gridSize * xMod;
-      data[i].annotation['dy'] = gridSize * 2 * yMod;
+      let label = '';
+      for (let m = 0; m < data[i].aa.mods.length; m ++) {
+        label += `- ${data[i].aa.mods[m].name}(${data[i].aa.mods[m].type}` + ('' || ` ${data[i].aa.mods[m].Ytype}`) + ')\n';
+      }
+      data[i]['annotation'] = {
+        note: {
+          label: 'Residue Modifications:\n' + (label || 'None'),
+          title: (data[i].aa.coordinate + 1) + data[i].aa.aa,
+          // wrap: 150,
+          wrapSplitter: /\n/,
+          align: align
+        },
+        x: x(data[i].column + 1) + gridSize / 2 * xMod,
+        y: y(data[i].row * maxColumn) + gridSize + gridSize / 2,
+        dx: gridSize * xMod,
+        dy: gridSize * 2 * yMod,
+        data: {column: data[i].column, row: data[i].row},
+        color: '#E8336D',
+          subject: {
+          radius: 5,
+          // radiusPadding: 10
+        },
+      };
+
         /*annotations.push({
           note: {
             label: d.aa.modType,

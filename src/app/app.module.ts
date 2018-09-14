@@ -33,6 +33,8 @@ import { BarChartComponent } from './bar-chart/bar-chart.component';
 import { PieChartComponent } from './pie-chart/pie-chart.component';
 import { SeqViewerComponent } from './swath-lib/seq-viewer/seq-viewer.component';
 import {SvgAnnotationService} from "./helper/svg-annotation.service";
+import {SvgContextMenuService} from "./helper/svg-context-menu.service";
+import {SwathLibHelperService} from "./helper/swath-lib-helper.service";
 
 const appRoutes: Routes = [
   {path: '', component: HomeComponent},
@@ -86,6 +88,8 @@ const appRoutes: Routes = [
     SwathLibAssetService,
     SwathResultService,
     SvgAnnotationService,
+    SvgContextMenuService,
+    // SwathLibHelperService
   ],
   bootstrap: [AppComponent]
 })

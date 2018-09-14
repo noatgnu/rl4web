@@ -15,7 +15,7 @@
         </div>
         <div class="row">
           <div class="col-9">
-            <div class="inline-seq" ngbDropdown #contextM="ngbDropdown" *ngFor="let aa of seqCoord" [ngSwitch]="aa.modType">
+            <!--<div class="inline-seq" ngbDropdown #contextM="ngbDropdown" *ngFor="let aa of seqCoord" [ngSwitch]="aa.modType">
               <button type="button" class="btn btn-sm btn-light mr-1 mb-1 mt-1 custom" *ngSwitchDefault placement="top" ngbTooltip="{{aa.coordinate+1}}" [id]="protein.unique_id+aa.coordinate" #t="ngbTooltip" (click)="clickEvent(t)" ngbDropdownAnchor (contextmenu)="contextClick(contextM)">{{aa.aa}}</button>
               <button type="button" class="btn btn-sm btn-danger mr-1 mb-1 mt-1 custom" *ngSwitchCase="'conflicted'" placement="top" ngbTooltip="{{aa.coordinate+1}}" [id]="protein.unique_id+aa.coordinate" #t="ngbTooltip" (click)="clickEvent(t)" ngbDropdownAnchor (contextmenu)="contextClick(contextM)">{{aa.aa}}</button>
               <button type="button" class="btn btn-sm btn-success mr-1 mb-1 mt-1 custom" *ngSwitchCase="'Ytype'" placement="top" ngbTooltip="{{aa.coordinate+1}}" [id]="protein.unique_id+aa.coordinate" #t="ngbTooltip" (click)="clickEvent(t)" ngbDropdownAnchor (contextmenu)="contextClick(contextM)">{{aa.aa}}</button>
@@ -26,13 +26,17 @@
                 <button class="dropdown-item" (click)="y_stop_at=aa.coordinate">Set y-series stop</button>
                 <button class="dropdown-item" (click)="b_stop_at=aa.coordinate">Set b-series stop</button>
               </div>
-            </div>
-            <app-seq-viewer [Seq]="seqCoord" [maxColumn]="20"></app-seq-viewer>
+            </div>-->
+            <app-seq-viewer [Seq]="seqCoord" [maxColumn]="20" [unique_id]="protein.unique_id" (contextEvent)="eventHandler($event)"></app-seq-viewer>
           </div>
           <div class="col-3">
             <div class="row mt-2 in-line form-inline">
               <input type="checkbox" class="form-control form-control-sm" id="by_run" [(ngModel)]="by_run">
               <label for="by_run"> <i>b,y</i>-run only static mods</label>
+            </div>
+            <div class="row mt-2 in-line form-inline">
+              <input type="checkbox" class="form-control form-control-sm" id="oxonium_only" [(ngModel)]="oxonium_only">
+              <label for="oxonium_only"> Generate only for oxonium ion</label>
             </div>
             <div *ngIf="modSummary.length > 0">
               <div class="mt-2" *ngFor="let m of modSummary">

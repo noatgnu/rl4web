@@ -14,23 +14,16 @@
     &.static {
       fill: yellow;
     }
-  :hover {
-    & g.annotation-note {
-      opacity: 1;
-    };
-    & g.annotation-connector {
-      opacity: 1;
-    };
-  }
   }
 
 }
 
 /deep/ text.aaId {
-  font-family: Arial;
-  font-size: 8pt;
+  font-family: Verdana, Helvetica, Arial, sans-serif;
+  font-size: 12px;
   fill: black;
   text-anchor: middle;
+  vertical-align: middle;
   alignment-baseline: central;
   &.Ytype {
     fill: white;
@@ -43,22 +36,18 @@
   }
 }
 
-/deep/ div.aaToolTip {
-  opacity: 0;
-  position: absolute;
-  text-align: center;
-  width: 100px;
-  height: 56px;
-  padding: 2px;
-  font-family: Arial;
-  font-size: 6pt;
-  background: lightsteelblue;
-  border: 0;
-  border-radius: 8px;
-  pointer-events: none;
+/deep/ g.top-axis {
+  & path {
+    opacity: 0
+  }
 }
 
+/deep/ g.left-axis {
+  & path {
+    opacity: 0
+  }
+}
 
-/deep/ g.annotation-note {
+/*/deep/ g.annotation-note {
   font-size: 8pt;
-}
+}*/

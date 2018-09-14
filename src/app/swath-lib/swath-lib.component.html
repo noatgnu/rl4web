@@ -5,6 +5,16 @@
   <ngb-tabset>
     <ngb-tab title="Main">
       <ng-template ngbTabContent>
+        <div class="form-group mt-2">
+          <label for="FastaRaw">Fasta Content:</label>
+          <textarea class="form-control" id="FastaRaw" name="FastaRaw" [(ngModel)]="fastaRaw" required row="10">
+              </textarea>
+        </div>
+
+        <h4 class="text-muted">
+          OR.
+        </h4>
+
         <form class="mt-4" [formGroup]="form">
           <div class="form-group">
             <div class="input-group">

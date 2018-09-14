@@ -44,6 +44,7 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
   result: Observable<SwathResponse>;
   fastaContent: FastaFile;
   resultReader: Observable<DataStore>;
+  digestRules: Observable<any>;
   outputSubscription: Subscription;
   collectTrigger = false;
   rt = [];
@@ -51,6 +52,7 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
   findf: DataStore;
   bu = new BaseUrl();
   errSub: Subscription;
+  fastaRaw;
   constructor(private mod: SwathLibAssetService, private fastaFile: FastaFileService, private fb: FormBuilder,
               private srs: SwathResultService, private _fh: FileHandlerService, private anSer: AnnoucementService) {
     this.staticMods = mod.staticMods;
@@ -65,6 +67,7 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
     this.createForm();
     this.fasta = this.fastaFile.fastaFileReader;
     this.resultReader = srs.OutputReader;
+    this.digestRules = this.mod.digestRulesReader;
     for (let i = 1; i <= 60; i++) {
       this.rt.push(i);
     }
@@ -84,6 +87,9 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
     });
     this.mod.getAssets('assets/oxonium_ions.json').subscribe((resp) => {
       this.mod.updateOxonium(resp.body['data']);
+    });
+    this.mod.getAssets('assets/digest_rules.json').subscribe((resp) => {
+      this.mod.updateDigestRules(resp.body['data']);
     });
     this.errSub = this.anSer.errorReader.subscribe((data) => {
       if (data) {

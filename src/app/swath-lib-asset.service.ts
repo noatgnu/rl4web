@@ -8,6 +8,7 @@ import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {SwathWindows} from "./helper/swath-windows";
 import {Oxonium} from "./helper/oxonium";
 import {BaseUrl} from "./helper/base-url";
+import {SeqCoordinate} from "./helper/seq-coordinate";
 
 
 @Injectable()
@@ -29,10 +30,16 @@ export class SwathLibAssetService {
   private resultURL = this.url.url + ':9000/api/swathlib/result/';
   private _statusSource = new BehaviorSubject<boolean>(false);
   statusReader = this._statusSource.asObservable();
+  private _digestRulesSource = new BehaviorSubject<any>(null);
+  digestRulesReader = this._digestRulesSource.asObservable();
   constructor(private http: HttpClient) { }
 
   getAssets(url) {
     return this.http.get(url, {observe: 'response'});
+  }
+
+  updateDigestRules(data) {
+    this._digestRulesSource.next(data);
   }
 
   uploadForm(form: FormData) {

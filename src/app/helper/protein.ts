@@ -59,4 +59,33 @@ export class Protein {
   private _ion_type: string;
   private _extra: number;
   private _unique_id: string;
+
+  Digest(ruleMap: Map<string, number[]>, misCleave: number[]) {
+    const positionMap = new Map<number, number[]>();
+    for (let i = 0; i < this.sequence.length; i++) {
+      if (ruleMap.has(this.sequence[i])) {
+        if (!positionMap.has(i)) {
+          positionMap.set(i, []);
+        }
+        for (const n of ruleMap.get(this.sequence[i])) {
+          positionMap.get(i).push(i + n);
+        }
+      }
+    }
+    const a = Array.from(positionMap.keys());
+    return this.RecursiveDigest(a, positionMap, 0, 0, this.sequence, []);
+  }
+
+  RecursiveDigest(positionArray, positionMap, positionNumber, previous, sequence, result) {
+    for (const p of positionMap.get(positionArray[positionNumber])) {
+      const fragment = sequence.slice(previous, p);
+      if (fragment !== '') {
+        result.push(fragment);
+      }
+      if (positionNumber + 1 < positionArray.length) {
+        result = this.RecursiveDigest(positionArray, positionMap, positionNumber + 1, p, sequence, result);
+      }
+    }
+    return result;
+  }
 }

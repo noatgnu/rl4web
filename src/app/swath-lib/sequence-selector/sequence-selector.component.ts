@@ -1,4 +1,4 @@
-import {Component, OnInit, Input, OnDestroy} from '@angular/core';
+import {Component, OnInit, Input, OnDestroy, ViewChild} from '@angular/core';
 import {Protein} from '../../helper/protein';
 import {SeqCoordinate} from '../../helper/seq-coordinate';
 import {Modification} from '../../helper/modification';
@@ -18,6 +18,8 @@ import {Subscription} from 'rxjs/Subscription';
 import {DataStore} from '../../data-row';
 import {Oxonium} from '../../helper/oxonium';
 import {AnnoucementService} from '../../helper/annoucement.service';
+import {Subject} from 'rxjs';
+import {SwathLibHelperService} from '../../helper/swath-lib-helper.service';
 
 @Component({
   selector: 'app-sequence-selector',
@@ -39,6 +41,8 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
   b_stop_at = -1;
   y_stop_at = -1;
   progressStage = 'info';
+  @ViewChild('coordEditor') coordEditor;
+
   get currentCoord(): SeqCoordinate {
     return this._currentCoord;
   }
@@ -67,6 +71,10 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
   @Input()
   set form(value: FormGroup) {
     this._form = value;
+    if (!this.libHelper.SequenceMap.has(this.protein.unique_id)) {
+      this.libHelper.AddMap(this.protein.unique_id);
+    }
+
     this.modMap = new Map<number, Modification[]>();
     this.seqCoord = [];
     this.decorSeq();
@@ -83,20 +91,31 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
   sendTriggerRead: Observable<boolean>;
   conflict: Map<number, SeqCoordinate>;
   by_run = false;
-  constructor(private mod: SwathLibAssetService, tooltip: NgbTooltipConfig, dropdown: NgbDropdownConfig, private modalService: NgbModal, private fb: FormBuilder, private srs: SwathResultService, private ans: AnnoucementService) {
+  service;
+  oxonium_only = false;
+  constructor(private mod: SwathLibAssetService,
+              tooltip: NgbTooltipConfig,
+              dropdown: NgbDropdownConfig,
+              private modalService: NgbModal,
+              private fb: FormBuilder,
+              private srs: SwathResultService,
+              private ans: AnnoucementService,
+              private libHelper: SwathLibHelperService) {
     this.staticMods = mod.staticMods;
     this.variableMods = mod.variableMods;
     this.Ymods = mod.YtypeMods;
     this.oxonium = mod.oxoniumReader;
     this.sendTriggerRead = this.srs.sendTriggerReader;
-
     tooltip.placement = 'top';
     tooltip.triggers = 'hover';
+
   }
 
   private _currentCoord: SeqCoordinate;
 
   ngOnInit() {
+
+    console.log(this.libHelper.SequenceMap);
     this.createExtraForm();
     this.SendTriggerSub = this.sendTriggerRead.subscribe((data) => {
       this.progressStage = 'info';
@@ -113,9 +132,8 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
         const query = this.createQuery(this.protein, this.modSummary, this.form.value['windows'], this.form.value['rt'],
           this.form.value['extra-mass'], this.form.value['max-charge'], this.form.value['precursor-charge'],
           this.b_stop_at, this.y_stop_at, this.form.value['variable-bracket-format'], this.extraForm.value['oxonium'],
-          Array.from(this.conflict.values()), this.by_run
+          Array.from(this.conflict.values()), this.by_run, this.oxonium_only
         );
-        console.log(this.modSummary);
         this.srs.SendQuery(query).subscribe((response) => {
           this.progress = 60;
           const df = new DataStore(response.body['data'], true, '');
@@ -174,13 +192,14 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
     });
   }
 
-  private createQuery(protein, modSummary, windows, rt, extramass, maxcharge, precursorcharge, b_stop_at, y_stop_at, variableformat, oxonium, conflict, by_run) {
+  private createQuery(protein, modSummary, windows, rt, extramass, maxcharge, precursorcharge, b_stop_at, y_stop_at, variableformat, oxonium, conflict, by_run, oxonium_only) {
     const query = new SwathQuery(protein, modSummary, windows, rt, extramass, maxcharge, precursorcharge, conflict);
     query.b_stop_at = b_stop_at;
     query.y_stop_at = y_stop_at;
     query.by_run = by_run;
     query.variable_format = variableformat;
     query.oxonium = oxonium;
+    query.oxonium_only = oxonium_only;
     return query;
   }
 
@@ -315,14 +334,17 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
         }
       }
     }
+    this.libHelper.Change(this.protein.unique_id, true);
     return {modSummary, conflict};
   }
 
   selectCoordinates(coordinates: number[]) {
-    for (const c of coordinates) {
+    /*for (const c of coordinates) {
       const el = this.getElement(this.protein.unique_id + c);
       el.click();
-    }
+    }*/
+    console.log(coordinates);
+    this.libHelper.Selected(this.protein.unique_id, coordinates);
   }
 
   getElement(id) {
@@ -417,6 +439,7 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
           this.addModForm.value['display_label']
           ));
     }
+
     const sm = this.summarize(this.seqCoord);
     this.modSummary = sm.modSummary;
     this.conflict = sm.conflict;
@@ -526,5 +549,20 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
 
   trackbyCoord(index, item) {
     return item.coordinate;
+  }
+
+  eventHandler(event) {
+    switch (event.event) {
+      case 'edit':
+        this.openEditModal(this.coordEditor, event.residue);
+        break;
+      case 'bstop':
+        this.b_stop_at = event.residue;
+        break;
+      case 'ystop':
+        this.y_stop_at = event.residue;
+        break;
+    }
+    console.log(event);
   }
 }
