@@ -231,6 +231,7 @@
     </button>
   </div>
   <div class="modal-body">
+
     <div class="container-fluid">
       <ul class="list-group">
         <li class="list-group-item list-group-item-secondary">
@@ -256,7 +257,7 @@
         <li class="list-group-item list-group-item{{colorMap.get(digestMap[f.unique_id].accept)}} list-group-item-action sequence" *ngFor="let f of fastaContent.content">
           <div class="row">
             <div class="col-1">
-              <input type="checkbox" [(ngModel)]="digestMap[f.unique_id].accept">
+              <input type="checkbox" [(ngModel)]="digestMap[f.unique_id].accept" (change)="changeAccept(f.unique_id)">
             </div>
             <div class="col-2">
               <p>
@@ -315,6 +316,6 @@
     </div>
     <button type="button" class="btn btn-warning ml-auto" (click)="fetchUniprot()">Fetch Uniprot Sequence</button>
     <button type="button" class="btn btn-secondary" (click)="exportFasta()">Export Fasta File</button>
-    <button type="button" class="btn btn-primary" (click)="acceptContent()">Accept</button>
+    <button type="button" class="btn btn-primary" (click)="acceptContent()">Accept <span class="badge badge-light">{{acceptTrack}}</span></button>
   </div>
 </ng-template>

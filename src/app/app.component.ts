@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {SwathLibAssetService} from './swath-lib-asset.service';
 import {Observable} from "rxjs/Observable";
 import {AnnoucementService} from "./helper/annoucement.service";
+import {ConnectorService} from "./helper/connector.service";
 
 @Component({
   selector: 'app-root',
@@ -16,7 +17,7 @@ export class AppComponent implements OnInit {
   footer = '';
   serverStatus: Observable<boolean>;
   annoucement: Observable<string>;
-  constructor (private mod: SwathLibAssetService, private anServ: AnnoucementService) {
+  constructor (private mod: SwathLibAssetService, private anServ: AnnoucementService, private connector: ConnectorService) {
     this.serverStatus = this.mod.statusReader;
     this.annoucement = this.anServ.annoucementReader;
   }
@@ -39,5 +40,9 @@ export class AppComponent implements OnInit {
   randomString() {
     const randomNumb = Math.floor(Math.random() * this.stringArray.length);
     this.footer = this.stringArray[randomNumb];
+  }
+
+  OpenConnectorModal() {
+    this.connector.SendModalSignal(true);
   }
 }

@@ -39,11 +39,14 @@
     <div *ngIf="serverStatus|async; let serverStatus">
       <span class="badge badge-success" *ngIf="serverStatus==true">Connected</span>
     </div>
+    <span>
+      <button type='button' class="btn btn-outline-light" (click)="OpenConnectorModal()"><span class="fa fa-connectdevelop"></span></button>
+    </span>
   </div>
 </nav>
 
 <router-outlet></router-outlet>
-
+<app-connector></app-connector>
 
 <div class="container">
   <hr>

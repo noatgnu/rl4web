@@ -21,7 +21,7 @@ import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {Protein} from '../helper/protein';
 import {SwathLibHelperService} from '../helper/swath-lib-helper.service';
 import {AARule, DigestRule} from '../helper/digest-rule';
-import {UniprotService} from "../uniprot.service";
+import {UniprotService} from '../uniprot.service';
 
 @Component({
   selector: 'app-swath-lib',
@@ -61,7 +61,6 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
   errSub: Subscription;
   fastaRaw = '';
   file;
-  proteinMap: Map<string, boolean>;
   digestMap;
   fileName = '';
   tempFastaContent;
@@ -70,6 +69,7 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
   colorMap: Map<boolean, string> = new Map<boolean, string>([[true, '-primary'], [false, '']]);
   regexFilter;
   filterChoice;
+  acceptTrack = 0;
   constructor(private mod: SwathLibAssetService, private fastaFile: FastaFileService, private fb: FormBuilder,
               private srs: SwathResultService, private _fh: FileHandlerService, private anSer: AnnoucementService,
               private modalService: NgbModal, private swathHelper: SwathLibHelperService, private uniprot: UniprotService) {
@@ -275,6 +275,8 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
     for (const f of this.fastaContent.content) {
       this.digestMap[f.unique_id] = {autoCleave: false, misCleave: '', rules: {}, accept: true};
     }
+
+    this.acceptTrack = this.fastaContent.content.length;
     this.modalService.open(this.trypticDigest, {size: 'lg'});
     // this.updateContent();
   }
@@ -350,10 +352,19 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     }
     this.fastaContent = new FastaFile(this.fastaContent.name, newContent);
-    this.digestMap = {};
+    const dm = {};
+    this.acceptTrack = 0;
     for (const f of this.fastaContent.content) {
-      this.digestMap[f.unique_id] = {autoCleave: false, misCleave: '', rules: {}, accept: true};
+      if (this.digestMap[f.unique_id]) {
+        dm[f.unique_id] = this.digestMap[f.unique_id];
+      } else {
+        dm[f.unique_id] = {autoCleave: false, misCleave: '', rules: {}, accept: true};
+      }
+      if (dm[f.unique_id].accept) {
+        this.acceptTrack ++;
+      }
     }
+    this.digestMap = dm;
   }
 
   getCleavedSeq(position, positionMap, combination, protein, sequences?) {
@@ -400,10 +411,16 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
     this.currentAllBoxes = !this.currentAllBoxes;
     for (const b of Object.keys(this.digestMap)) {
       if (this.digestMap[b]) {
+        if (this.digestMap[b]['accept'] !== this.currentAllBoxes) {
+          if (this.digestMap[b].accept) {
+            this.acceptTrack --;
+          } else {
+            this.acceptTrack ++;
+          }
+        }
         this.digestMap[b]['accept'] = this.currentAllBoxes;
       }
     }
-
   }
 
   exportFasta() {
@@ -438,8 +455,19 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
       for (let i = 0; i < this.fastaContent.content.length; i ++) {
         if (this.digestMap[this.fastaContent.content[i].unique_id].accept) {
           this.digestMap[this.fastaContent.content[i].unique_id].accept = !!this.filterChoice.pattern.test(this.fastaContent.content[i].sequence);
+          if (!this.digestMap[this.fastaContent.content[i].unique_id].accept) {
+            this.acceptTrack --;
+          }
         }
       }
+    }
+  }
+
+  changeAccept(id) {
+    if (this.digestMap[id].accept) {
+      this.acceptTrack ++;
+    } else {
+      this.acceptTrack --;
     }
   }
 }

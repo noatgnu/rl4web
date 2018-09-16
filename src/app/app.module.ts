@@ -35,6 +35,8 @@ import { SeqViewerComponent } from './swath-lib/seq-viewer/seq-viewer.component'
 import {SvgAnnotationService} from "./helper/svg-annotation.service";
 import {SvgContextMenuService} from "./helper/svg-context-menu.service";
 import {SwathLibHelperService} from "./helper/swath-lib-helper.service";
+import {ConnectorService} from "./helper/connector.service";
+import { ConnectorComponent } from './connector/connector.component';
 
 const appRoutes: Routes = [
   {path: '', component: HomeComponent},
@@ -65,7 +67,8 @@ const appRoutes: Routes = [
     SubcellularLocationComponent,
     BarChartComponent,
     PieChartComponent,
-    SeqViewerComponent
+    SeqViewerComponent,
+    ConnectorComponent
   ],
   imports: [
     NgbModule.forRoot(),
@@ -89,6 +92,7 @@ const appRoutes: Routes = [
     SwathResultService,
     SvgAnnotationService,
     SvgContextMenuService,
+    ConnectorService,
     // SwathLibHelperService
   ],
   bootstrap: [AppComponent]
