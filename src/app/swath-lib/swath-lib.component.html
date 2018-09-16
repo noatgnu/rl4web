@@ -1,32 +1,49 @@
 <div class="container mt-4">
+
   <ngb-alert type="warning" [dismissible]="false">
     For large library, Chrome is recommended due to Blob size limitation.
   </ngb-alert>
   <ngb-tabset>
     <ngb-tab title="Main">
       <ng-template ngbTabContent>
-        <div class="form-group mt-2">
-          <label for="FastaRaw">Fasta Content:</label>
-          <textarea class="form-control" id="FastaRaw" name="FastaRaw" [(ngModel)]="fastaRaw" required row="10">
+        <div class="card mt-2">
+          <div class="card-body">
+            <div class="form-group">
+              <label for="FastaRaw">Fasta Content:</label>
+              <textarea class="form-control" id="FastaRaw" name="FastaRaw" [(ngModel)]="fastaRaw" required row="10">
               </textarea>
-        </div>
-
-        <h4 class="text-muted">
-          OR.
-        </h4>
-
-        <form class="mt-4" [formGroup]="form">
-          <div class="form-group">
-            <div class="input-group">
-              <span class="input-group-addon" id="label-fasta-input">Fasta Input:</span>
-              <input type="file" class="form-control" aria-label="fasta-input" aria-describedby="label-fasta-input" (change)="loadFasta($event)" required>
             </div>
-            <div *ngIf="fasta|async; let fasta">
-              <small id="peptide-summary-rows" class="form-text text-muted">
-                {{fasta.content.length}} peptides have been loaded.
-              </small>
+            <h4 class="text-muted">
+              OR.
+            </h4>
+            <div class="form-group">
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <span class="input-group-addon" id="label-fasta-input">Fasta Input:</span>
+                </div>
+                <div class="custom-file">
+                  <input type="file" class="custom-file-input" aria-label="fasta-input" aria-describedby="label-fasta-input" (change)="handleFile($event)" required>
+                  <label class="custom-file-label" for="label-fasta-input">{{fileName||'Select File'}}</label>
+                </div>
+
+              </div>
+              <div *ngIf="fasta|async; let fasta">
+                <small id="peptide-summary-rows" class="form-text text-muted">
+                  {{fasta.content.length}} peptides have been loaded.
+                </small>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-9"></div>
+              <div class="col-3 text-right">
+                <button class="btn btn-primary" (click)="processFastaContent()">
+                  Process Input
+                </button>
+              </div>
             </div>
           </div>
+        </div>
+        <form class="mt-4" [formGroup]="form">
           <div class="form-group">
             <div class="card">
               <div class="card-body">
@@ -204,4 +221,100 @@
 </ng-template>
 <ng-template #OutFormat>
   <b>Output Format</b> The content within the brackets for variable modifications within the sequence. If there are no variable modifications, a bracket containing this content would be placed at the end of the sequence.
+</ng-template>
+
+<ng-template #trypticDigest let-c="close" let-d="dismiss">
+  <div class="modal-header">
+    <h4 class="modal-title">Protein Input</h4>
+    <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="container-fluid">
+      <ul class="list-group">
+        <li class="list-group-item list-group-item-secondary">
+          <div class="row">
+            <div class="col-1">
+              <input type="checkbox" (click)="changeAllBox()" [(ngModel)]="currentAllBoxes">
+            </div>
+            <div class="col-2">
+              <p>
+                Sequence Name
+              </p>
+            </div>
+            <div class="col-6">
+              <p>
+                Sequence
+              </p>
+            </div>
+            <div class="col-3">
+              Tryptic Digestion
+            </div>
+          </div>
+        </li>
+        <li class="list-group-item list-group-item{{colorMap.get(digestMap[f.unique_id].accept)}} list-group-item-action sequence" *ngFor="let f of fastaContent.content">
+          <div class="row">
+            <div class="col-1">
+              <input type="checkbox" [(ngModel)]="digestMap[f.unique_id].accept">
+            </div>
+            <div class="col-2">
+              <p>
+                {{f.id}}
+              </p>
+            </div>
+            <div class="col-6">
+              <p>
+                {{f.sequence}}
+              </p>
+            </div>
+            <div class="col-3">
+              <div *ngIf="digestRules|async; let digestRules">
+                <div>
+                  <div class="input-group-sm">
+                    <input type="text" class="form-control" placeholder="Fixed-miscleaved sites" [(ngModel)]="digestMap[f.unique_id].misCleave">
+                  </div>
+                </div>
+
+                <div class="input-group mt-2">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">Auto miscleavages</span>
+                  </div>
+                  <div class="input-group-append">
+                    <div class="input-group-text">
+                      <input [(ngModel)]="digestMap[f.unique_id].autoCleave" type="checkbox">
+                    </div>
+                  </div>
+                </div>
+
+                <div class="input-group mt-2">
+                  <select class="custom-select" id="digestRules" [(ngModel)]="digestMap[f.unique_id].rules">
+                    <option *ngFor="let d of digestRules" [ngValue]="d">
+                      {{d.name}}
+                    </option>
+                  </select>
+                  <span class="input-group-btn">
+                    <button type="button" class="btn btn-danger" (click)="digest(f)">Digest</button>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <div class="input-group">
+      <select class="custom-select" id="filterRegex" [(ngModel)]="filterChoice">
+        <option *ngFor="let f of regexFilter" [ngValue]="f">{{f.name}}</option>
+      </select>
+      <span class="input-group-btn">
+        <button type="button" class="btn btn-danger" (click)="filterSeq()">Filter Selected</button>
+      </span>
+    </div>
+    <button type="button" class="btn btn-warning ml-auto" (click)="fetchUniprot()">Fetch Uniprot Sequence</button>
+    <button type="button" class="btn btn-secondary" (click)="exportFasta()">Export Fasta File</button>
+    <button type="button" class="btn btn-primary" (click)="acceptContent()">Accept</button>
+  </div>
 </ng-template>

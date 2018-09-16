@@ -9,6 +9,7 @@ import {SwathWindows} from "./helper/swath-windows";
 import {Oxonium} from "./helper/oxonium";
 import {BaseUrl} from "./helper/base-url";
 import {SeqCoordinate} from "./helper/seq-coordinate";
+import {DigestRule} from "./helper/digest-rule";
 
 
 @Injectable()
@@ -30,7 +31,7 @@ export class SwathLibAssetService {
   private resultURL = this.url.url + ':9000/api/swathlib/result/';
   private _statusSource = new BehaviorSubject<boolean>(false);
   statusReader = this._statusSource.asObservable();
-  private _digestRulesSource = new BehaviorSubject<any>(null);
+  private _digestRulesSource = new BehaviorSubject<DigestRule[]>(null);
   digestRulesReader = this._digestRulesSource.asObservable();
   constructor(private http: HttpClient) { }
 

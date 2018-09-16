@@ -1,4 +1,4 @@
-import {Component, OnInit, AfterViewInit, OnDestroy} from '@angular/core';
+import {Component, OnInit, AfterViewInit, OnDestroy, ViewChild} from '@angular/core';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {SwathLibAssetService, SwathResponse} from '../swath-lib-asset.service';
 import {Observable} from 'rxjs/Observable';
@@ -17,14 +17,21 @@ import {Oxonium} from '../helper/oxonium';
 import {AnnoucementService} from '../helper/annoucement.service';
 import * as TextEncoding from 'text-encoding';
 import {BaseUrl} from '../helper/base-url';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {Protein} from '../helper/protein';
+import {SwathLibHelperService} from '../helper/swath-lib-helper.service';
+import {AARule, DigestRule} from '../helper/digest-rule';
+import {UniprotService} from "../uniprot.service";
 
 @Component({
   selector: 'app-swath-lib',
   templateUrl: './swath-lib.component.html',
   styleUrls: ['./swath-lib.component.scss'],
-  providers: [FastaFileService],
+  providers: [FastaFileService, UniprotService],
 })
 export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild('trypticDigest') trypticDigest;
+  currentAllBoxes = true;
   finishedTime;
   fileDownloader;
   queryCollection: SwathQuery[] = [];
@@ -52,9 +59,20 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
   findf: DataStore;
   bu = new BaseUrl();
   errSub: Subscription;
-  fastaRaw;
+  fastaRaw = '';
+  file;
+  proteinMap: Map<string, boolean>;
+  digestMap;
+  fileName = '';
+  tempFastaContent;
+  uniprotSub: Subscription;
+  uniprotMap: Map<string, Protein>;
+  colorMap: Map<boolean, string> = new Map<boolean, string>([[true, '-primary'], [false, '']]);
+  regexFilter;
+  filterChoice;
   constructor(private mod: SwathLibAssetService, private fastaFile: FastaFileService, private fb: FormBuilder,
-              private srs: SwathResultService, private _fh: FileHandlerService, private anSer: AnnoucementService) {
+              private srs: SwathResultService, private _fh: FileHandlerService, private anSer: AnnoucementService,
+              private modalService: NgbModal, private swathHelper: SwathLibHelperService, private uniprot: UniprotService) {
     this.staticMods = mod.staticMods;
     this.variableMods = mod.variableMods;
     this.Ymods = mod.YtypeMods;
@@ -72,6 +90,7 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
       this.rt.push(i);
     }
     this.fileDownloader = this._fh.saveFile;
+    this.regexFilter = this.swathHelper.regexFilter;
   }
 
   ngOnInit() {
@@ -109,11 +128,22 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       }
     });
+    this.uniprotSub = this.uniprot.UniprotResult.subscribe((data) => {
+      const resultMap = new Map<string, string>();
+      if (data.DataFrame) {
+        const seqColumn = data.DataFrame.columnMap.get('Sequence');
+        const idColumn = data.DataFrame.columnMap.get('Entry');
+        for (const r of data.DataFrame.data) {
+          this.uniprotMap.get(r.row[idColumn]).sequence = r.row[seqColumn];
+        }
+      }
+    });
   }
 
   ngOnDestroy() {
     this.outputSubscription.unsubscribe();
     this.errSub.unsubscribe();
+    this.uniprotSub.unsubscribe();
   }
 
   createForm() {
@@ -146,12 +176,28 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
     return Date.now();
   }
 
+  handleFile(e) {
+    if (e.target) {
+      this.file = e;
+      this.fileName = e.target.files[0].name;
+    }
+  }
+
   async loadFasta(e) {
     if (e) {
       this.fastaContent = await this.ff(e);
-      this.passForm = Object.create(this.form);
-      this.fastaFile.UpdateFastaSource(Object.create(this.fastaContent));
     }
+  }
+
+  private updateContent() {
+    this.passForm = Object.create(this.form);
+    const accept = [];
+    for (const i of this.fastaContent.content) {
+      if (this.digestMap[i.unique_id].accept) {
+        accept.push(i);
+      }
+    }
+    this.fastaFile.UpdateFastaSource(new FastaFile(this.fastaContent.name, accept));
   }
 
   SendQueries() {
@@ -214,5 +260,186 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
 
   rounding(n: number): number {
     return Math.round(n * 10000) / 10000;
+  }
+
+  async processFastaContent() {
+    console.log('started');
+    if (this.fastaRaw !== '') {
+      this.fastaContent = await this.fastaFile.readRawFasta(this.fastaRaw);
+      // this.passForm = Object.create(this.form);
+      // this.fastaFile.UpdateFastaSource(Object.create(this.fastaContent));
+    } else {
+      await this.loadFasta(this.file);
+    }
+    this.digestMap = {};
+    for (const f of this.fastaContent.content) {
+      this.digestMap[f.unique_id] = {autoCleave: false, misCleave: '', rules: {}, accept: true};
+    }
+    this.modalService.open(this.trypticDigest, {size: 'lg'});
+    // this.updateContent();
+  }
+
+  acceptContent() {
+    this.updateContent();
+    this.modalService.dismissAll();
+  }
+
+  digest(protein: Protein) {
+    const digestMap = this.swathHelper.mapDigestRule(this.digestMap[protein.unique_id].rules);
+    const a = this.digestMap[protein.unique_id].misCleave.split(',');
+    const numa = [];
+    for (const n of a) {
+      numa.push(parseInt(n, 10) - 1);
+    }
+    const positionMap = protein.Digest(digestMap, numa);
+    const p = Array.from(positionMap.keys());
+    const comb = [];
+    let sequences = [];
+    if (this.digestMap[protein.unique_id].autoCleave) {
+      if (p.length > 0) {
+        if (p.length > 1) {
+          for (let i = 0; i <= p.length; i ++) {
+            const res1 = [];
+            let nTrue = 0;
+            while (nTrue < p.length - i) {
+              res1.push(true);
+              nTrue ++;
+            }
+
+            let nFalse = p.length;
+            while (nFalse > p.length - i) {
+              res1.push(false);
+              nFalse --;
+            }
+            if (nTrue === p.length || nFalse === 0) {
+              sequences = this.getCleavedSeq(p, positionMap, res1, protein, sequences);
+            } else {
+              const perm = this.swathHelper.permutations(res1);
+              for (const i3 of perm) {
+                const combination = JSON.parse(i3);
+                sequences = this.getCleavedSeq(p, positionMap, combination, protein, sequences);
+                // console.log(sequences);
+              }
+            }
+          }
+        } else {
+          sequences = this.getCleavedSeq(p, positionMap, [true], protein, sequences);
+          sequences = this.getCleavedSeq(p, positionMap, [false], protein, sequences);
+        }
+      }
+    } else {
+      const c = [];
+      for (const b of p) {
+        c.push(true);
+      }
+      sequences = this.getCleavedSeq(p, positionMap, c, protein, sequences);
+    }
+    // console.log(sequences);
+    this.tempFastaContent = new FastaFile(this.fastaContent.name, this.fastaContent.content.slice());
+    const newContent = [];
+    for (let i = 0; i < this.fastaContent.content.length; i ++) {
+      if (this.fastaContent.content[i].unique_id !== protein.unique_id) {
+        newContent.push(this.fastaContent.content[i]);
+      } else {
+        for (let i2 = 0; i2 < sequences.length; i2 ++) {
+          const pr = new Protein(protein.id + '_' + (i2 + 1), sequences[i2], new Map<string, Modification>());
+          pr.unique_id = protein.unique_id + '_' + (i2 + 1);
+          pr.original = false;
+          newContent.push(pr);
+        }
+      }
+    }
+    this.fastaContent = new FastaFile(this.fastaContent.name, newContent);
+    this.digestMap = {};
+    for (const f of this.fastaContent.content) {
+      this.digestMap[f.unique_id] = {autoCleave: false, misCleave: '', rules: {}, accept: true};
+    }
+  }
+
+  getCleavedSeq(position, positionMap, combination, protein, sequences?) {
+    let currentPos = 0;
+    if (sequences === undefined) {
+      sequences = [];
+    }
+
+    for (let i = 0; i < position.length; i ++) {
+      if (combination[i]) {
+        switch (positionMap.get(position[i])) {
+          case 'N':
+            if (position[i] > 0) {
+              const s = protein.sequence.slice(currentPos, position[i]);
+              if (!sequences.includes(s)) {
+                sequences.push(s);
+              }
+              currentPos = position[i];
+            }
+            break;
+          case 'C':
+            if (position[i] < protein.sequence.length - 1) {
+              const s = protein.sequence.slice(currentPos, position[i] + 1);
+              if (!sequences.includes(s)) {
+                sequences.push(s);
+              }
+              currentPos = position[i] + 1;
+            }
+            console.log(sequences);
+            break;
+        }
+      }
+    }
+    const p = protein.sequence.slice(currentPos);
+    if (p !== '') {
+      if (!sequences.includes(p)) {
+        sequences.push(p);
+      }
+    }
+    return sequences;
+  }
+
+  changeAllBox() {
+    this.currentAllBoxes = !this.currentAllBoxes;
+    for (const b of Object.keys(this.digestMap)) {
+      if (this.digestMap[b]) {
+        this.digestMap[b]['accept'] = this.currentAllBoxes;
+      }
+    }
+
+  }
+
+  exportFasta() {
+    let txtContent = '';
+    for (const i of this.fastaContent.content) {
+      if (this.digestMap[i.unique_id].accept) {
+        txtContent += i.ToFasta();
+      }
+    }
+    this._fh.saveFile(new Blob([txtContent], {'type': 'text/plain;charset=utf-8;'}), this.fastaContent.name);
+  }
+
+  fetchUniprot() {
+    const allId = [];
+    this.uniprotMap = new Map<string, Protein>();
+    for (let i = 0; i < this.fastaContent.content.length; i ++) {
+      if (this.digestMap[this.fastaContent.content[i].unique_id].accept) {
+        const accession = this.uniprot.Re.exec(this.fastaContent.content[i].id);
+        if (accession !== null) {
+          allId.push(accession[0]);
+          this.uniprotMap.set(accession[0], this.fastaContent.content[i]);
+        }
+      }
+    }
+    if (allId.length > 0) {
+      this.uniprot.UniProtParseGet(allId, false);
+    }
+  }
+
+  filterSeq() {
+    if (this.filterChoice !== undefined) {
+      for (let i = 0; i < this.fastaContent.content.length; i ++) {
+        if (this.digestMap[this.fastaContent.content[i].unique_id].accept) {
+          this.digestMap[this.fastaContent.content[i].unique_id].accept = !!this.filterChoice.pattern.test(this.fastaContent.content[i].sequence);
+        }
+      }
+    }
   }
 }

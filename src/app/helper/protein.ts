@@ -1,6 +1,8 @@
-import {Modification} from "./modification";
+import {Modification} from './modification';
+import {AARule} from './digest-rule';
 
 export class Protein {
+  original = true;
   get unique_id(): string {
     return this._unique_id;
   }
@@ -60,20 +62,43 @@ export class Protein {
   private _extra: number;
   private _unique_id: string;
 
-  Digest(ruleMap: Map<string, number[]>, misCleave: number[]) {
-    const positionMap = new Map<number, number[]>();
+  Digest(ruleMap: Map<string, AARule>, misCleave: number[]) {
+    return this.digestSiteMap(ruleMap, misCleave);
+    // return this.RecursiveDigest(a, positionMap, 0, 0, this.sequence, []);
+  }
+
+  private digestSiteMap(ruleMap: Map<string, AARule>, misCleave: number[]) {
+    if (misCleave === undefined) {
+      misCleave = [];
+    }
+    const positionMap = new Map<number, string>();
     for (let i = 0; i < this.sequence.length; i++) {
       if (ruleMap.has(this.sequence[i])) {
-        if (!positionMap.has(i)) {
-          positionMap.set(i, []);
-        }
-        for (const n of ruleMap.get(this.sequence[i])) {
-          positionMap.get(i).push(i + n);
+        if (!misCleave.includes(i)) {
+          for (const r of ['N', 'C']) {
+            const m = ruleMap.get(this.sequence[i]);
+            if (m[r] !== undefined) {
+              let except = false;
+              if (m[r].except.length > 0) {
+                for (const n of m[r].except) {
+                  if (i + n.offset < this.sequence.length) {
+                    if (this.sequence[i + n.offset] === n.aa) {
+                      except = true;
+                      break;
+                    }
+                  }
+                }
+              }
+              if (!except) {
+                positionMap.set(i, r);
+              }
+            }
+          }
         }
       }
     }
-    const a = Array.from(positionMap.keys());
-    return this.RecursiveDigest(a, positionMap, 0, 0, this.sequence, []);
+
+    return positionMap;
   }
 
   RecursiveDigest(positionArray, positionMap, positionNumber, previous, sequence, result) {
@@ -87,5 +112,9 @@ export class Protein {
       }
     }
     return result;
+  }
+
+  ToFasta() {
+    return '>' + this.id + '\n' + this.sequence + '\n';
   }
 }

@@ -37,7 +37,7 @@ export class FastaFileService {
               currentP.sequence += line;
             }
           }
-          console.log(currentP);
+          // console.log(currentP);
         });
         currentP.unique_id = unique_id.toString();
         result.push(currentP);
@@ -45,6 +45,63 @@ export class FastaFileService {
       };
       reader.readAsText(file);
     });
+  }
+
+  private ProcessFastaFormat(loadedFile, currentP, unique_id: number, result: Protein[], resolve, fileName) {
+
+    const lines = loadedFile.split(/\r\n|\n/);
+    lines.map((line) => {
+      console.log(line);
+      if (line.length > 0) {
+        if (line.startsWith('>', 0)) {
+          if (currentP.id !== '') {
+            currentP.unique_id = unique_id.toString();
+            result.push(currentP);
+            currentP = new Protein(line.slice(1), '', new Map<string, Modification>());
+            unique_id += 1;
+          } else {
+            currentP.id = line.slice(1);
+          }
+        } else {
+          currentP.sequence += line;
+        }
+      }
+      // console.log(currentP);
+    });
+    currentP.unique_id = unique_id.toString();
+    result.push(currentP);
+    resolve(new FastaFile(fileName, result));
+  }
+
+  readRawFasta(rawFasta: string) {
+    let unique_id = 1;
+    let currentP = new Protein('', '', new Map<string, Modification>());
+    return new Promise<FastaFile>((resolve, reject) => {
+      const result: Protein[] = [];
+      const lines = rawFasta.split(/\r\n|\n/);
+      lines.map((line) => {
+        console.log(line);
+        if (line.length > 0) {
+          if (line.startsWith('>', 0)) {
+            if (currentP.id !== '') {
+              currentP.unique_id = unique_id.toString();
+              result.push(currentP);
+              currentP = new Protein(line.slice(1), '', new Map<string, Modification>());
+              unique_id += 1;
+            } else {
+              currentP.id = line.slice(1);
+            }
+          } else {
+            currentP.sequence += line;
+          }
+        }
+        // console.log(currentP);
+      });
+      currentP.unique_id = unique_id.toString();
+      result.push(currentP);
+      resolve(new FastaFile('libary.fasta', result));
+    });
+
   }
 
   UpdateFastaSource(data) {
