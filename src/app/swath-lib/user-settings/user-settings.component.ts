@@ -26,7 +26,7 @@ export class UserSettingsComponent implements OnInit {
         console.log(content.columnMap);
         console.log(content.data);
         for (const r of content.data) {
-          const m = new Modification([], false, false, r.row[content.columnMap.get('Ytype')], 'FALSE', r.row[content.columnMap.get('type')], parseFloat(r.row[content.columnMap.get('mass')]), r.row[content.columnMap.get('regex')], r.row[content.columnMap.get('label')], r.row[content.columnMap.get('name')], r.row[content.columnMap.get('m_label')]);
+          const m = new Modification([], false, false, r.row[content.columnMap.get('Ytype')], 'FALSE', r.row[content.columnMap.get('type')], parseFloat(r.row[content.columnMap.get('mass')]), r.row[content.columnMap.get('regex')], r.row[content.columnMap.get('label')], r.row[content.columnMap.get('name')], r.row[content.columnMap.get('m_label')], 0);
           mods.push(m);
         }
         console.log(mods);

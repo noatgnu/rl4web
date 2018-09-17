@@ -153,6 +153,7 @@ export class SeqViewerComponent implements OnInit, OnDestroy {
         const aaBlock = this.seqBlock.selectAll('g.aaBlock');
         aaBlock.each(
           function (d, i, n) {
+            console.log(i, data);
             if (data.includes(dataLength - i - 1)) {
               d3.select(n[i]).select('.annotation-group').selectAll('g.annotation-connector, g.annotation-note').style('opacity', 1);
             }

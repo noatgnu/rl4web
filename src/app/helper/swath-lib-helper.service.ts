@@ -11,7 +11,7 @@ export class SwathLibHelperService {
   private _selectedSource = new Subject<number[]>();
   selectedObservable = this._selectedSource.asObservable();
   SequenceMap: Map<string, any> = new Map();
-  regexFilter = [{name: 'N-Glycosylation', pattern: /N[^XP][S|T]/}];
+  regexFilter = [{name: 'N-Glycosylation', pattern: /N[^XP][S|T]/, offset: 2}];
   constructor() { }
 
   AddMap(id) {

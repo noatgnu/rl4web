@@ -280,7 +280,15 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
     if (this.form.value[modCat] !== null) {
       for (const m of this.form.value[modCat]) {
         const reg = new RegExp(m.regex, 'g');
-        let match = reg.exec(f.sequence);
+        let seq = f.sequence;
+        if (f.metadata !== undefined) {
+          if (m.offset !== 0) {
+            if (f.metadata.originalEnd + m.offset <= f.metadata.original.sequence.length) {
+              seq = f.metadata.original.sequence.slice(f.metadata.originalStart, f.metadata.originalEnd + m.offset);
+            }
+          }
+        }
+        let match = reg.exec(seq);
         while (match != null) {
           const newMod = Object.create(m);
           for (const key in newMod) {
@@ -296,7 +304,7 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
             n.push(newMod);
             this.modMap.set(match.index, n);
           }
-          match = reg.exec(f.sequence);
+          match = reg.exec(seq);
         }
       }
     }
@@ -436,7 +444,8 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
           this.addModForm.value['regex'],
           this.addModForm.value['label'],
           this.addModForm.value['name'],
-          this.addModForm.value['display_label']
+          this.addModForm.value['display_label'],
+          0
           ));
     }
 

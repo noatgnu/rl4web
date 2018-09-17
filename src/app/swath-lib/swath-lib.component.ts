@@ -57,7 +57,6 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
   rt = [];
   passForm: FormGroup;
   findf: DataStore;
-  bu = new BaseUrl();
   errSub: Subscription;
   fastaRaw = '';
   file;
@@ -70,6 +69,7 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
   regexFilter;
   filterChoice;
   acceptTrack = 0;
+  acceptedProtein = [];
   constructor(private mod: SwathLibAssetService, private fastaFile: FastaFileService, private fb: FormBuilder,
               private srs: SwathResultService, private _fh: FileHandlerService, private anSer: AnnoucementService,
               private modalService: NgbModal, private swathHelper: SwathLibHelperService, private uniprot: UniprotService) {
@@ -119,8 +119,8 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
     this.outputSubscription = this.resultReader.subscribe((data) => {
       if (this.collectTrigger) {
         this.resultCollection.push(data);
-        this.anSer.Announce(`Processed ${this.resultCollection.length} of ${this.fastaContent.content.length}`);
-        if (this.resultCollection.length === this.fastaContent.content.length) {
+        this.anSer.Announce(`Processed ${this.resultCollection.length} of ${this.acceptedProtein.length}`);
+        if (this.resultCollection.length === this.acceptedProtein.length) {
           this.finishedTime = this.getCurrentDate();
           this.finished = true;
           this.collectTrigger = false;
@@ -165,7 +165,7 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
   applyModification() {
     console.log(this.form.value);
     this.passForm = Object.create(this.form);
-    this.fastaFile.UpdateFastaSource(Object.create(this.fastaContent));
+    this.fastaFile.UpdateFastaSource(new FastaFile(this.fastaContent.name, this.acceptedProtein));
   }
 
   ngAfterViewInit() {
@@ -197,6 +197,7 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
         accept.push(i);
       }
     }
+    this.acceptedProtein = accept;
     this.fastaFile.UpdateFastaSource(new FastaFile(this.fastaContent.name, accept));
   }
 
@@ -344,14 +345,17 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
         newContent.push(this.fastaContent.content[i]);
       } else {
         for (let i2 = 0; i2 < sequences.length; i2 ++) {
-          const pr = new Protein(protein.id + '_' + (i2 + 1), sequences[i2], new Map<string, Modification>());
+          const coord = JSON.parse(sequences[i2]);
+          const pr = new Protein(protein.id + '_' + (coord[0] + 1) + '_' + coord[1],
+            this.fastaContent.content[i].sequence.slice(coord[0], coord[1]), new Map<string, Modification>());
+          pr.metadata = {original: this.fastaContent.content[i], originalStart: coord[0], originalEnd: coord[1]};
           pr.unique_id = protein.unique_id + '_' + (i2 + 1);
           pr.original = false;
           newContent.push(pr);
         }
       }
     }
-    this.fastaContent = new FastaFile(this.fastaContent.name, newContent);
+    this.fastaContent.content = newContent;
     const dm = {};
     this.acceptTrack = 0;
     for (const f of this.fastaContent.content) {
@@ -378,16 +382,16 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
         switch (positionMap.get(position[i])) {
           case 'N':
             if (position[i] > 0) {
-              const s = protein.sequence.slice(currentPos, position[i]);
+              const s = JSON.stringify([currentPos, position[i]]);
               if (!sequences.includes(s)) {
-                sequences.push(s);
+                sequences.push();
               }
               currentPos = position[i];
             }
             break;
           case 'C':
             if (position[i] < protein.sequence.length - 1) {
-              const s = protein.sequence.slice(currentPos, position[i] + 1);
+              const s = JSON.stringify([currentPos, position[i] + 1]);
               if (!sequences.includes(s)) {
                 sequences.push(s);
               }
@@ -400,8 +404,9 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     const p = protein.sequence.slice(currentPos);
     if (p !== '') {
-      if (!sequences.includes(p)) {
-        sequences.push(p);
+      const s = JSON.stringify([currentPos, protein.sequence.length]);
+      if (!sequences.includes(s)) {
+        sequences.push(s);
       }
     }
     return sequences;
@@ -437,8 +442,9 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
     const allId = [];
     this.uniprotMap = new Map<string, Protein>();
     for (let i = 0; i < this.fastaContent.content.length; i ++) {
+      console.log('fetching ' + this.fastaContent.content[i].id);
       if (this.digestMap[this.fastaContent.content[i].unique_id].accept) {
-        const accession = this.uniprot.Re.exec(this.fastaContent.content[i].id);
+        const accession = this.uniprot.Re.exec(this.fastaContent.content[i].id.toUpperCase());
         if (accession !== null) {
           allId.push(accession[0]);
           this.uniprotMap.set(accession[0], this.fastaContent.content[i]);
@@ -454,9 +460,16 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.filterChoice !== undefined) {
       for (let i = 0; i < this.fastaContent.content.length; i ++) {
         if (this.digestMap[this.fastaContent.content[i].unique_id].accept) {
-          this.digestMap[this.fastaContent.content[i].unique_id].accept = !!this.filterChoice.pattern.test(this.fastaContent.content[i].sequence);
-          if (!this.digestMap[this.fastaContent.content[i].unique_id].accept) {
-            this.acceptTrack --;
+          if (this.fastaContent.content[i].metadata.originalEnd + this.filterChoice.offset < this.fastaContent.content[i].metadata.original.sequence.length) {
+            this.digestMap[this.fastaContent.content[i].unique_id].accept = !!this.filterChoice.pattern.test(this.fastaContent.content[i].metadata.original.sequence.slice(this.fastaContent.content[i].metadata.originalStart, this.fastaContent.content[i].metadata.originalEnd + this.filterChoice.offset));
+            if (!this.digestMap[this.fastaContent.content[i].unique_id].accept) {
+              this.acceptTrack --;
+            }
+          } else {
+            this.digestMap[this.fastaContent.content[i].unique_id].accept = !!this.filterChoice.pattern.test(this.fastaContent.content[i].sequence);
+            if (!this.digestMap[this.fastaContent.content[i].unique_id].accept) {
+              this.acceptTrack --;
+            }
           }
         }
       }

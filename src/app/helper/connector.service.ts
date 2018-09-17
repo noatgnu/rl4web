@@ -19,6 +19,7 @@ export class ConnectorService {
   }
 
   CheckURL(u: string) {
+    console.log(u);
     return this.http.get(u, {observe: 'response'});
   }
 

@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import {SwathLibAssetService} from './swath-lib-asset.service';
-import {Observable} from "rxjs/Observable";
-import {AnnoucementService} from "./helper/annoucement.service";
-import {ConnectorService} from "./helper/connector.service";
+import {Observable} from 'rxjs/Observable';
+import {AnnoucementService} from './helper/annoucement.service';
+import {ConnectorService} from './helper/connector.service';
 
 @Component({
   selector: 'app-root',
@@ -30,6 +30,8 @@ export class AppComponent implements OnInit {
       } else {
         this.mod.updateServerStatus(false);
       }
+    }, (err) => {
+      this.mod.updateServerStatus(false);
     });
   }
 

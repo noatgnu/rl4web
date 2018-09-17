@@ -33,13 +33,13 @@
         <a class="nav-link" routerLink="/grant" routerLinkActive="active">Grants</a>
       </li>
     </ul>
-    <div *ngIf="annoucement|async; let announcement" class="nav-item text-light mr-4">
+    <div *ngIf="annoucement|async; let announcement" class="nav-item text-light">
       {{announcement}}
     </div>
-    <div *ngIf="serverStatus|async; let serverStatus">
+    <div *ngIf="serverStatus|async; let serverStatus" class="ml-2">
       <span class="badge badge-success" *ngIf="serverStatus==true">Connected</span>
     </div>
-    <span>
+    <span class="ml-2">
       <button type='button' class="btn btn-outline-light" (click)="OpenConnectorModal()"><span class="fa fa-connectdevelop"></span></button>
     </span>
   </div>

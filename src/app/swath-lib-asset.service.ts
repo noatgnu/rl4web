@@ -5,11 +5,11 @@ import {StaticMod} from './static-mod';
 import {VariableMod} from './variable-mod';
 import {Modification} from './helper/modification';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
-import {SwathWindows} from "./helper/swath-windows";
-import {Oxonium} from "./helper/oxonium";
-import {BaseUrl} from "./helper/base-url";
-import {SeqCoordinate} from "./helper/seq-coordinate";
-import {DigestRule} from "./helper/digest-rule";
+import {SwathWindows} from './helper/swath-windows';
+import {Oxonium} from './helper/oxonium';
+import {BaseUrl} from './helper/base-url';
+import {SeqCoordinate} from './helper/seq-coordinate';
+import {DigestRule} from './helper/digest-rule';
 
 
 @Injectable()

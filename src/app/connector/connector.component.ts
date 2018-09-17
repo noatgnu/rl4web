@@ -3,7 +3,7 @@ import {ConnectorService} from '../helper/connector.service';
 import {Observable, Subscription} from 'rxjs';
 import {NgbModal, NgbModalRef} from '@ng-bootstrap/ng-bootstrap';
 import 'rxjs/add/operator/catch';
-import {ConnectorUrl} from "../helper/connector-url";
+import {ConnectorUrl} from '../helper/connector-url';
 
 @Component({
   selector: 'app-connector',
@@ -42,11 +42,14 @@ export class ConnectorComponent implements OnInit, OnDestroy {
     });
   }
 
-  checkUrl(url) {
-    this.connector.CheckURL(url).subscribe((resp) => {
-      this.urlStatusMap.get(url).status = resp.status === 200;
+  checkUrl(u: ConnectorUrl) {
+    if (!this.urlStatusMap.has(u.url)) {
+      this.urlStatusMap.set(u.url, u);
+    }
+    this.connector.CheckURL(u.url).subscribe((resp) => {
+      this.urlStatusMap.get(u.url).status = resp['status'] === 200;
     }, (err) => {
-      this.urlStatusMap.get(url).status = false;
+      this.urlStatusMap.get(u.url).status = false;
     });
   }
 

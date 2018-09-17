@@ -10,7 +10,8 @@
       "Ytype": "Y0",
       "multiple_pattern": false,
       "status": false,
-      "m_label": ""
+      "m_label": "",
+      "offset": 0
     },
     {
       "name": "O-Mannose",
@@ -22,7 +23,8 @@
       "Ytype": "Y1",
       "multiple_pattern": false,
       "status": false,
-      "m_label": ""
+      "m_label": "",
+      "offset": 0
     },
     {
       "name": "HexNAc",
@@ -34,7 +36,8 @@
       "Ytype": "Y0",
       "multiple_pattern": false,
       "status": false,
-      "m_label": ""
+      "m_label": "",
+      "offset": 2
     },
     {
       "name": "HexNAc",
@@ -46,7 +49,8 @@
       "Ytype": "Y1",
       "multiple_pattern": false,
       "status": false,
-      "m_label": ""
+      "m_label": "",
+      "offset": 2
     },
     {
       "name": "HexNAc",
@@ -58,7 +62,8 @@
       "Ytype": "Y2",
       "multiple_pattern": false,
       "status": false,
-      "m_label": ""
+      "m_label": "",
+      "offset": 2
     },
     {
       "name": "Phosphorylation",
@@ -70,7 +75,8 @@
       "Ytype": "",
       "multiple_pattern": false,
       "status": false,
-      "m_label": ""
+      "m_label": "",
+      "offset": 0
     },
     {
       "name": "Sulfation",
@@ -82,7 +88,8 @@
       "Ytype": "",
       "multiple_pattern": false,
       "status": false,
-      "m_label": ""
+      "m_label": "",
+      "offset": 0
     },
     {
       "name": "Carboxylation",
@@ -94,7 +101,8 @@
       "Ytype": "",
       "multiple_pattern": false,
       "status": false,
-      "m_label": ""
+      "m_label": "",
+      "offset": 0
     },
     {
       "name": "Methylated Carboxylation",
@@ -106,7 +114,8 @@
       "Ytype": "",
       "multiple_pattern": false,
       "status": false,
-      "m_label": ""
+      "m_label": "",
+      "offset": 0
     },
     {
       "name": "Propionamide",
@@ -118,7 +127,8 @@
       "Ytype": "",
       "multiple_pattern": false,
       "status": false,
-      "m_label": "PPa"
+      "m_label": "PPa",
+      "offset": 0
     },
     {
       "name": "Carbamidomethyl",
@@ -130,7 +140,8 @@
       "Ytype": "",
       "multiple_pattern": false,
       "status": false,
-      "m_label": ""
+      "m_label": "",
+      "offset": 0
     }
   ]
 }

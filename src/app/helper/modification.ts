@@ -1,4 +1,11 @@
 export class Modification {
+  get offset(): number {
+    return this._offset;
+  }
+
+  set offset(value: number) {
+    this._offset = value;
+  }
   get m_label(): string {
     return this._m_label;
   }
@@ -102,7 +109,7 @@ export class Modification {
   private _mass: number;
   private _regex: string;
 
-  constructor(positions: Array<number>, status: boolean, multiple_pattern: boolean, Ytype: string, auto_allocation: string, type: string, mass: number, regex: string, label: string, name: string, m_label: string) {
+  constructor(positions: Array<number>, status: boolean, multiple_pattern: boolean, Ytype: string, auto_allocation: string, type: string, mass: number, regex: string, label: string, name: string, m_label: string, offset: number) {
     this._positions = positions;
     this._status = status;
     this._multiple_pattern = multiple_pattern;
@@ -114,6 +121,7 @@ export class Modification {
     this._label = label;
     this._name = name;
     this._m_label = m_label;
+    this._offset = offset;
     this.forErase = false;
   }
 
@@ -121,4 +129,5 @@ export class Modification {
   private _name: string;
   private _forErase: boolean;
   private _m_label: string;
+  private _offset: number;
 }

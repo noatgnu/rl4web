@@ -3,6 +3,14 @@ import {AARule} from './digest-rule';
 
 export class Protein {
   original = true;
+  get metadata() {
+    return this._metadata;
+  }
+
+  set metadata(value) {
+    this._metadata = value;
+  }
+  private _metadata;
   get unique_id(): string {
     return this._unique_id;
   }
