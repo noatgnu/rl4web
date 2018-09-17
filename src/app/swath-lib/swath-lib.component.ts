@@ -300,36 +300,34 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
     let sequences = [];
     if (p.length > 0) {
       if (this.digestMap[protein.unique_id].autoCleave) {
-        if (p.length > 0) {
-          if (p.length > 1) {
-            for (let i = 0; i <= p.length; i ++) {
-              const res1 = [];
-              let nTrue = 0;
-              while (nTrue < p.length - i) {
-                res1.push(true);
-                nTrue ++;
-              }
+        if (p.length > 1) {
+          for (let i = 0; i <= p.length; i ++) {
+            const res1 = [];
+            let nTrue = 0;
+            while (nTrue < p.length - i) {
+              res1.push(true);
+              nTrue ++;
+            }
 
-              let nFalse = p.length;
-              while (nFalse > p.length - i) {
-                res1.push(false);
-                nFalse --;
-              }
-              if (nTrue === p.length || nFalse === 0) {
-                sequences = this.getCleavedSeq(p, positionMap, res1, protein, sequences);
-              } else {
-                const perm = this.swathHelper.permutations(res1);
-                for (const i3 of perm) {
-                  const combination = JSON.parse(i3);
-                  sequences = this.getCleavedSeq(p, positionMap, combination, protein, sequences);
-                  // console.log(sequences);
-                }
+            let nFalse = p.length;
+            while (nFalse > p.length - i) {
+              res1.push(false);
+              nFalse --;
+            }
+            if (nTrue === p.length || nFalse === 0) {
+              sequences = this.getCleavedSeq(p, positionMap, res1, protein, sequences);
+            } else {
+              const perm = this.swathHelper.permutations(res1);
+              for (const i3 of perm) {
+                const combination = JSON.parse(i3);
+                sequences = this.getCleavedSeq(p, positionMap, combination, protein, sequences);
+                // console.log(sequences);
               }
             }
-          } else {
-            sequences = this.getCleavedSeq(p, positionMap, [true], protein, sequences);
-            sequences = this.getCleavedSeq(p, positionMap, [false], protein, sequences);
           }
+        } else {
+          sequences = this.getCleavedSeq(p, positionMap, [true], protein, sequences);
+          sequences = this.getCleavedSeq(p, positionMap, [false], protein, sequences);
         }
       } else {
         const c = [];
