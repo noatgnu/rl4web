@@ -98,7 +98,12 @@ export class Protein {
                 }
               }
               if (!except) {
-                positionMap.set(i, r);
+                if (r === 'C' && (this.sequence.length - 1) !== i) {
+                  positionMap.set(i, r);
+                } else if (r === 'N' && i !== 0) {
+                  positionMap.set(i, r);
+                }
+
               }
             }
           }

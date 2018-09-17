@@ -296,79 +296,91 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     const positionMap = protein.Digest(digestMap, numa);
     const p = Array.from(positionMap.keys());
-    const comb = [];
+    console.log(p);
     let sequences = [];
-    if (this.digestMap[protein.unique_id].autoCleave) {
-      if (p.length > 0) {
-        if (p.length > 1) {
-          for (let i = 0; i <= p.length; i ++) {
-            const res1 = [];
-            let nTrue = 0;
-            while (nTrue < p.length - i) {
-              res1.push(true);
-              nTrue ++;
-            }
+    if (p.length > 0) {
+      if (this.digestMap[protein.unique_id].autoCleave) {
+        if (p.length > 0) {
+          if (p.length > 1) {
+            for (let i = 0; i <= p.length; i ++) {
+              const res1 = [];
+              let nTrue = 0;
+              while (nTrue < p.length - i) {
+                res1.push(true);
+                nTrue ++;
+              }
 
-            let nFalse = p.length;
-            while (nFalse > p.length - i) {
-              res1.push(false);
-              nFalse --;
-            }
-            if (nTrue === p.length || nFalse === 0) {
-              sequences = this.getCleavedSeq(p, positionMap, res1, protein, sequences);
-            } else {
-              const perm = this.swathHelper.permutations(res1);
-              for (const i3 of perm) {
-                const combination = JSON.parse(i3);
-                sequences = this.getCleavedSeq(p, positionMap, combination, protein, sequences);
-                // console.log(sequences);
+              let nFalse = p.length;
+              while (nFalse > p.length - i) {
+                res1.push(false);
+                nFalse --;
+              }
+              if (nTrue === p.length || nFalse === 0) {
+                sequences = this.getCleavedSeq(p, positionMap, res1, protein, sequences);
+              } else {
+                const perm = this.swathHelper.permutations(res1);
+                for (const i3 of perm) {
+                  const combination = JSON.parse(i3);
+                  sequences = this.getCleavedSeq(p, positionMap, combination, protein, sequences);
+                  // console.log(sequences);
+                }
               }
             }
+          } else {
+            sequences = this.getCleavedSeq(p, positionMap, [true], protein, sequences);
+            sequences = this.getCleavedSeq(p, positionMap, [false], protein, sequences);
           }
+        }
+      } else {
+        const c = [];
+        for (const b of p) {
+          c.push(true);
+        }
+        sequences = this.getCleavedSeq(p, positionMap, c, protein, sequences);
+      }
+      // console.log(sequences);
+      this.tempFastaContent = new FastaFile(this.fastaContent.name, this.fastaContent.content.slice());
+      const newContent = [];
+      for (let i = 0; i < this.fastaContent.content.length; i ++) {
+        if (this.fastaContent.content[i].unique_id !== protein.unique_id) {
+          newContent.push(this.fastaContent.content[i]);
         } else {
-          sequences = this.getCleavedSeq(p, positionMap, [true], protein, sequences);
-          sequences = this.getCleavedSeq(p, positionMap, [false], protein, sequences);
+          for (let i2 = 0; i2 < sequences.length; i2 ++) {
+            const coord = JSON.parse(sequences[i2]);
+            const pr = new Protein(protein.id,
+              this.fastaContent.content[i].sequence.slice(coord[0], coord[1]), new Map<string, Modification>());
+            if (this.fastaContent.content[i].metadata !== undefined) {
+              pr.metadata = {};
+              pr.metadata.original = this.fastaContent.content[i].metadata.original;
+              pr.metadata.originalStart = this.fastaContent.content[i].metadata.originalStart + coord[0];
+              pr.metadata.originalEnd = this.fastaContent.content[i].metadata.originalStart + coord[1];
+              pr.id = pr.id + '_' + (pr.metadata.originalStart + 1) + '_' + pr.metadata.originalEnd;
+            } else {
+              pr.metadata = {original: this.fastaContent.content[i], originalStart: coord[0], originalEnd: coord[1]};
+              pr.id = pr.id + '_' + (pr.metadata.originalStart + 1) + '_' + pr.metadata.originalEnd;
+            }
+            pr.unique_id = protein.unique_id + '_' + (i2 + 1);
+            pr.original = false;
+            newContent.push(pr);
+          }
         }
       }
-    } else {
-      const c = [];
-      for (const b of p) {
-        c.push(true);
-      }
-      sequences = this.getCleavedSeq(p, positionMap, c, protein, sequences);
-    }
-    // console.log(sequences);
-    this.tempFastaContent = new FastaFile(this.fastaContent.name, this.fastaContent.content.slice());
-    const newContent = [];
-    for (let i = 0; i < this.fastaContent.content.length; i ++) {
-      if (this.fastaContent.content[i].unique_id !== protein.unique_id) {
-        newContent.push(this.fastaContent.content[i]);
-      } else {
-        for (let i2 = 0; i2 < sequences.length; i2 ++) {
-          const coord = JSON.parse(sequences[i2]);
-          const pr = new Protein(protein.id + '_' + (coord[0] + 1) + '_' + coord[1],
-            this.fastaContent.content[i].sequence.slice(coord[0], coord[1]), new Map<string, Modification>());
-          pr.metadata = {original: this.fastaContent.content[i], originalStart: coord[0], originalEnd: coord[1]};
-          pr.unique_id = protein.unique_id + '_' + (i2 + 1);
-          pr.original = false;
-          newContent.push(pr);
+      this.fastaContent.content = newContent;
+      const dm = {};
+      this.acceptTrack = 0;
+      for (const f of this.fastaContent.content) {
+        if (this.digestMap[f.unique_id]) {
+          dm[f.unique_id] = this.digestMap[f.unique_id];
+        } else {
+          dm[f.unique_id] = {autoCleave: false, misCleave: '', rules: {}, accept: true};
+        }
+        if (dm[f.unique_id].accept) {
+          this.acceptTrack ++;
         }
       }
+      this.digestMap = dm;
     }
-    this.fastaContent.content = newContent;
-    const dm = {};
-    this.acceptTrack = 0;
-    for (const f of this.fastaContent.content) {
-      if (this.digestMap[f.unique_id]) {
-        dm[f.unique_id] = this.digestMap[f.unique_id];
-      } else {
-        dm[f.unique_id] = {autoCleave: false, misCleave: '', rules: {}, accept: true};
-      }
-      if (dm[f.unique_id].accept) {
-        this.acceptTrack ++;
-      }
-    }
-    this.digestMap = dm;
+
   }
 
   getCleavedSeq(position, positionMap, combination, protein, sequences?) {
