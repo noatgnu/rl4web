@@ -194,7 +194,9 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
     const accept = [];
     for (const i of this.fastaContent.content) {
       if (this.digestMap[i.unique_id].accept) {
-        accept.push(i);
+        if (i.sequence !== '') {
+          accept.push(i);
+        }
       }
     }
     this.acceptedProtein = accept;
