@@ -108,4 +108,31 @@ export class FastaFileService {
     this._fastaSource.next(data);
     console.log(data);
   }
+
+  CalculateScore(window: number, sequence: string, moddedPositions: number[] = [], seqId, score = []): Array<number> {
+    moddedPositions = moddedPositions.sort((a, b) => a - b);
+    const seqLength = sequence.length;
+    const windowHalf = (window - 1) / 2;
+    for (let i = 0; i < seqLength; i++) {
+      let backward = 0;
+      if (i > windowHalf) {
+        backward = i - windowHalf;
+      }
+      let forward = 0;
+      if (i + 1 > seqLength - windowHalf) {
+        forward = seqLength;
+      } else {
+        forward = i + windowHalf + 1;
+      }
+      const seq = sequence.slice(backward, forward);
+      let count = 0;
+      for (let m = 0; m < moddedPositions.length; m ++) {
+        if (backward <= moddedPositions[m] && moddedPositions[m] < forward) {
+          count++;
+        }
+      }
+      score.push({seq: seqId, aa: sequence[i], value: count / seq.length, position: i});
+    }
+    return score;
+  }
 }

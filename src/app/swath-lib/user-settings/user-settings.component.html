@@ -1,14 +1,24 @@
 <form class="mt-4">
   <div class="form-group">
     <div class="input-group">
-      <span class="input-group-addon" id="mod-lib">Custom Modification Library:</span>
-      <input type="file" class="form-control" aria-label="mod-lib" aria-describedby="mod-lib" (change)="loadSettings($event, 'mod-lib')" required>
+      <div class="input-group-prepend">
+        <span class="input-group-addon" id="mod-lib">Custom Modification Library:</span>
+      </div>
+      <div class="custom-file">
+        <input type="file" class="custom-file-input" aria-label="mod-lib" aria-describedby="mod-lib" (change)="loadSettings($event, 'mod-lib')" required>
+        <label class="custom-file-label" for="mod-lib">{{FileName.mod||'Select File'}}</label>
+      </div>
     </div>
   </div>
   <div class="form-group">
     <div class="input-group">
-      <span class="input-group-addon" id="swath-win">Custom SWATH Windows Range:</span>
-      <input type="file" class="form-control" aria-label="swath-win" aria-describedby="swath-win" (change)="loadSettings($event, 'swath-win')" required>
+      <div class="input-group-prepend">
+        <span class="input-group-addon" id="swath-win">Custom SWATH Windows Range:</span>
+      </div>
+      <div class="custom-file">
+        <input type="file" class="custom-file-input" aria-label="swath-win" aria-describedby="swath-win" (change)="loadSettings($event, 'swath-win')" required>
+        <label class="custom-file-label" for="swath-win">{{FileName.windows||'Select File'}}</label>
+      </div>
     </div>
   </div>
 </form>

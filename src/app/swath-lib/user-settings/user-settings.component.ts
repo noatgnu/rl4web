@@ -11,6 +11,7 @@ import {FileHandlerService} from '../../file-handler.service';
 })
 export class UserSettingsComponent implements OnInit {
   sf;
+  FileName = {'windows': '', 'mod': ''};
   constructor(private mod: SwathLibAssetService, private _fh: FileHandlerService) {
     this.sf = this._fh.fileHandler;
   }
@@ -22,6 +23,7 @@ export class UserSettingsComponent implements OnInit {
     const content = await this.sf(e, true);
     switch (settingCat) {
       case 'mod-lib':
+        this.FileName.mod = e.target.files[0].name;
         const mods: Modification[] = [];
         console.log(content.columnMap);
         console.log(content.data);
@@ -33,6 +35,7 @@ export class UserSettingsComponent implements OnInit {
         this.mod.updateMods(mods);
         break;
       case 'swath-win':
+        this.FileName.windows = e.target.files[0].name;
         const windows = [];
         for (const r of content.data) {
           windows.push(new SwathWindows(parseInt(r.row[0], 10), parseInt(r.row[1], 10)));

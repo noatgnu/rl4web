@@ -37,6 +37,9 @@ import {SvgContextMenuService} from "./helper/svg-context-menu.service";
 import {SwathLibHelperService} from "./helper/swath-lib-helper.service";
 import {ConnectorService} from "./helper/connector.service";
 import { ConnectorComponent } from './connector/connector.component';
+import {GraphService} from "./helper/graph.service";
+import { SequenceHeatmapComponent } from './sequence-heatmap/sequence-heatmap.component';
+import { SequenceVisualizerComponent } from './sequence-visualizer/sequence-visualizer.component';
 
 const appRoutes: Routes = [
   {path: '', component: HomeComponent},
@@ -47,6 +50,7 @@ const appRoutes: Routes = [
   {path: 'pub', component: PublicationComponent},
   {path: 'grant', component: GrantComponent},
   {path: 'subcell', component: SubcellularLocationComponent},
+  {path: 'seqvis', component: SequenceVisualizerComponent}
 ];
 
 @NgModule({
@@ -68,7 +72,9 @@ const appRoutes: Routes = [
     BarChartComponent,
     PieChartComponent,
     SeqViewerComponent,
-    ConnectorComponent
+    ConnectorComponent,
+    SequenceHeatmapComponent,
+    SequenceVisualizerComponent
   ],
   imports: [
     NgbModule.forRoot(),
@@ -93,6 +99,7 @@ const appRoutes: Routes = [
     SvgAnnotationService,
     SvgContextMenuService,
     ConnectorService,
+    GraphService
     // SwathLibHelperService
   ],
   bootstrap: [AppComponent]

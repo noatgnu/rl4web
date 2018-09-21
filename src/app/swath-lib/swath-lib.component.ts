@@ -472,10 +472,17 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.filterChoice !== undefined) {
       for (let i = 0; i < this.fastaContent.content.length; i ++) {
         if (this.digestMap[this.fastaContent.content[i].unique_id].accept) {
-          if (this.fastaContent.content[i].metadata.originalEnd + this.filterChoice.offset < this.fastaContent.content[i].metadata.original.sequence.length) {
-            this.digestMap[this.fastaContent.content[i].unique_id].accept = !!this.filterChoice.pattern.test(this.fastaContent.content[i].metadata.original.sequence.slice(this.fastaContent.content[i].metadata.originalStart, this.fastaContent.content[i].metadata.originalEnd + this.filterChoice.offset));
-            if (!this.digestMap[this.fastaContent.content[i].unique_id].accept) {
-              this.acceptTrack --;
+          if (this.fastaContent.content[i].metadata) {
+            if (this.fastaContent.content[i].metadata.originalEnd + this.filterChoice.offset < this.fastaContent.content[i].metadata.original.sequence.length) {
+              this.digestMap[this.fastaContent.content[i].unique_id].accept = !!this.filterChoice.pattern.test(this.fastaContent.content[i].metadata.original.sequence.slice(this.fastaContent.content[i].metadata.originalStart, this.fastaContent.content[i].metadata.originalEnd + this.filterChoice.offset));
+              if (!this.digestMap[this.fastaContent.content[i].unique_id].accept) {
+                this.acceptTrack--;
+              }
+            } else {
+              this.digestMap[this.fastaContent.content[i].unique_id].accept = !!this.filterChoice.pattern.test(this.fastaContent.content[i].sequence);
+              if (!this.digestMap[this.fastaContent.content[i].unique_id].accept) {
+                this.acceptTrack --;
+              }
             }
           } else {
             this.digestMap[this.fastaContent.content[i].unique_id].accept = !!this.filterChoice.pattern.test(this.fastaContent.content[i].sequence);
