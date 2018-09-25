@@ -40,6 +40,7 @@ import { ConnectorComponent } from './connector/connector.component';
 import {GraphService} from "./helper/graph.service";
 import { SequenceHeatmapComponent } from './sequence-heatmap/sequence-heatmap.component';
 import { SequenceVisualizerComponent } from './sequence-visualizer/sequence-visualizer.component';
+import { FileSelectorComponent } from './file-selector/file-selector.component';
 
 const appRoutes: Routes = [
   {path: '', component: HomeComponent},
@@ -74,7 +75,8 @@ const appRoutes: Routes = [
     SeqViewerComponent,
     ConnectorComponent,
     SequenceHeatmapComponent,
-    SequenceVisualizerComponent
+    SequenceVisualizerComponent,
+    FileSelectorComponent
   ],
   imports: [
     NgbModule.forRoot(),

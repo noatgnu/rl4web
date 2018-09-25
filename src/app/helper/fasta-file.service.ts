@@ -113,6 +113,7 @@ export class FastaFileService {
     moddedPositions = moddedPositions.sort((a, b) => a - b);
     const seqLength = sequence.length;
     const windowHalf = (window - 1) / 2;
+    let currentBlock = {seq: seqId, aa: [], value: 0, position: [], gap: false, start: 0, end: 0};
     for (let i = 0; i < seqLength; i++) {
       let backward = 0;
       if (i > windowHalf) {
@@ -131,8 +132,41 @@ export class FastaFileService {
           count++;
         }
       }
-      score.push({seq: seqId, aa: sequence[i], value: count / seq.length, position: i});
+      const value = count / seq.length;
+      if (sequence[i] === '-') {
+        if (!currentBlock.gap) {
+          score.push(Object.assign({}, currentBlock));
+          currentBlock = {seq: seqId, aa: ['-'], value: value, position: [i], gap: true, start: i, end: i + 1};
+        } else {
+          if (value !== currentBlock.value) {
+            score.push(Object.assign({}, currentBlock));
+            currentBlock = {seq: seqId, aa: ['-'], value: value, position: [i], gap: true, start: i, end: i + 1};
+          } else {
+            currentBlock.aa.push('-');
+            currentBlock.position.push(i);
+            currentBlock.end = i + 1;
+          }
+        }
+      } else {
+        if (currentBlock.gap) {
+          score.push(Object.assign({}, currentBlock));
+          currentBlock = {seq: seqId, aa: [sequence[i]], value: value, position: [i], gap: false, start: i, end: i + 1};
+        } else {
+          if (value !== currentBlock.value) {
+            score.push(Object.assign({}, currentBlock));
+            currentBlock = {seq: seqId, aa: [sequence[i]], value: value, position: [i], gap: false, start: i, end: i + 1};
+          } else {
+            currentBlock.end = i + 1;
+            currentBlock.aa.push(sequence[i]);
+            currentBlock.position.push(i);
+          }
+
+        }
+      }
+      // console.log(currentBlock);
+      // score.push({seq: seqId, aa: [sequence[i]], value: count / seq.length, position: [i], gap: sequence[i] === '-', start: i, end: i + 1});
     }
+    score.push(Object.assign({}, currentBlock));
     return score;
   }
 }

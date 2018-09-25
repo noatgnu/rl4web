@@ -12,7 +12,9 @@ export class GraphService {
   CreateColorScale(d3: D3, colors: string[], scaleDomain) {
     const colourRange = d3.range(0, 1, 1.0 / (colors.length - 1));
     colourRange.push(1);
-    const colorSc = d3.scaleLinear<string>().domain(colourRange).range(colors).interpolate(d3.interpolateHcl);
+    const colorSc = d3.scaleLinear<string>().domain(colourRange).range(colors)
+      .interpolate(d3.interpolateHcl)
+    ;
     const colorInterpolate = d3.scaleLinear().domain(scaleDomain).range([0, 1]);
     return {colorInterpolate, colorSc};
   }
@@ -39,14 +41,14 @@ export class GraphService {
   CreateColorsGradientLegend(svg: any, legendXPosition: number, legendYPosition: number, d3: D3, legendWidth: number, legendHeight: number, gradientName: string, scaleDomain: number[]) {
     const legendBlock = svg.append('g').attr('transform', 'translate(' + legendXPosition + ',' + legendYPosition + ')');
     const legend = legendBlock.append('rect')
-      .attr('x', -legendWidth / 2)
+      .attr('x', 0)
       .attr('y', 0)
       .attr('width', legendWidth)
       .attr('height', legendHeight)
       .style('fill', 'url(#' + gradientName + ')');
-    const legendScale = d3.scaleLinear().range([-legendWidth / 2, legendWidth / 2]).domain(scaleDomain);
+    const legendScale = d3.scaleLinear().range([0, legendWidth]).domain(scaleDomain);
     const legendAxis = d3.axisBottom(legendScale)
-      .ticks(5)
+      .ticks(10)
       .tickSize(1)
       .scale(legendScale);
     legendBlock
