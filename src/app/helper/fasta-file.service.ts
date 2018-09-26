@@ -127,6 +127,7 @@ export class FastaFileService {
       }
       const seq = sequence.slice(backward, forward);
       let count = 0;
+
       for (let m = 0; m < moddedPositions.length; m ++) {
         if (backward <= moddedPositions[m] && moddedPositions[m] < forward) {
           count++;

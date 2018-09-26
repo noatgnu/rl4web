@@ -35,7 +35,7 @@ export class SequenceHeatmapComponent implements OnInit {
   d3: D3;
   parentNativeElement;
   drawArea;
-  margin = {left: 200, right: 10, top: 100, bottom: 100};
+  margin = {left: 200, right: 100, top: 100, bottom: 100};
   gridSizeVertical = 20;
   features;
   d3Annotate;
@@ -80,7 +80,7 @@ export class SequenceHeatmapComponent implements OnInit {
   private draw(drawArea, margin, gridSizeVertical: number, alignmentGapColor) {
     const x = this.d3.scaleBand().range([0, drawArea.width]).domain(this.d3.range(1, this.SeqLength + 1).map(function (d) {
       return (d).toString();
-    })).padding(0);
+    }));
     console.log(x.domain());
     const y = this.d3.scaleBand().range([drawArea.height, 0]).domain(this.ids);
     if (this.features.length > 0) {
@@ -98,7 +98,11 @@ export class SequenceHeatmapComponent implements OnInit {
       gradient.name,
       [0, 1]);
     const colorScale = this.graph.CreateColorScale(this.d3, this.colors, [0, 1.0]);
-    const xAxis = this.d3.axisTop(x).scale(x).tickValues(this.d3.range(1, this.SeqLength + 1, 200).map(function (d) {
+    const xRange = this.d3.range(1, this.SeqLength + 1, 200);
+    if (xRange[-1] !== this.SeqLength) {
+      xRange.push(this.SeqLength);
+    }
+    const xAxis = this.d3.axisTop(x).scale(x).tickValues(xRange.map(function (d) {
       return d.toString();
     }));
     const xAxisBlock = graphBlock.append('g').attr('class', 'top-axis')
@@ -111,10 +115,12 @@ export class SequenceHeatmapComponent implements OnInit {
     const aaDrawLocation = graphBlock.append('g').attr('class', 'aaLocation');
     const aaBlock = aaDrawLocation.selectAll('g').data(this._scores).enter().append('g').attr('class', 'aaBlock');
     const aa = aaBlock.append('rect').attr('x', function (d) {
+      console.log(d.start, x((d.start + 1).toString()), x.bandwidth() * (d.end - d.start), d.position.length);
       return x((d.start + 1).toString());
     }).attr('y', function (d) {
       return y(d.seq);
     }).attr('width', function (d) {
+      // console.log(x.bandwidth() * (d.end - d.start), d.start, d.end);
       return x.bandwidth() * (d.end - d.start);
     }).attr('height', y.bandwidth()).style('fill', function (d) {
       if (d.gap) {
@@ -131,7 +137,7 @@ export class SequenceHeatmapComponent implements OnInit {
         );
       }
     })
-      .style('stroke', function (d) {
+      /*.style('stroke', function (d) {
       if (d.gap) {
         if (alignmentGapColor.highlight) {
           return alignmentGapColor.color || 'Silver';
@@ -145,7 +151,7 @@ export class SequenceHeatmapComponent implements OnInit {
           colorScale.colorInterpolate(d.value)
         );
       }
-    })
+    })*/
     ;
     this.blockOpacity(aa, this.d3);
     if (this.features) {
