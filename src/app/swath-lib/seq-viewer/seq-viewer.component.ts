@@ -174,11 +174,11 @@ export class SeqViewerComponent implements OnInit, OnDestroy {
       const annotation = d3.select(n[i]).append('g').attr('class', 'annotation-group').style('font-size', '12px')
         .call(d3Annotation
           .annotation()
-          .editMode(true)
+          .editMode(false)
           .type(annotationType)
           .annotations([d.annotation]));
-      annotation.selectAll('g.annotation-connector, g.annotation-note').style('opacity', 0);
-      // console.log(annotation.selectAll('g.annotation-note'));
+      annotation.selectAll('g.annotation-connector, g.annotation-note').classed('hidden', true);
+
     });
 
     aaTextBlock.append('rect')
@@ -203,10 +203,10 @@ export class SeqViewerComponent implements OnInit, OnDestroy {
 
     aaTextBlock.on('mouseover', function (d) {
       const current = d3.select(d3.event.currentTarget.parentNode);
-      current.selectAll('g.annotation-connector, g.annotation-note').style('opacity', 1);
+      current.selectAll('g.annotation-connector, g.annotation-note').classed('hidden', false);
     }).on('mouseout', function (d) {
       const current = d3.select(d3.event.currentTarget.parentNode);
-      current.selectAll('g.annotation-connector, g.annotation-note').style('opacity', 0);
+      current.selectAll('g.annotation-connector, g.annotation-note').classed('hidden', true);
     })
     ;
 
@@ -286,7 +286,8 @@ export class SeqViewerComponent implements OnInit, OnDestroy {
           title: (data[i].aa.coordinate + 1) + data[i].aa.aa,
           // wrap: 150,
           wrapSplitter: /\n/,
-          align: align
+          align: align,
+          bgPadding: 20
         },
         x: x(data[i].column + 1) + gridSize / 2 * xMod,
         y: y(data[i].row * maxColumn) + gridSize + gridSize / 2,

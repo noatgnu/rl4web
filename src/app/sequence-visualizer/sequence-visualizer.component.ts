@@ -18,8 +18,10 @@ export class SequenceVisualizerComponent implements OnInit {
   ids = [];
   private result = new Subject<any>();
   fileE;
+  alignmentGapColor = {highlight: false, color: ''};
   resultObserve = this.result.asObservable();
   features = [];
+  matchPattern = String.raw`N[^XP]\-*[T|S]`;
   constructor(private fastaFile: FastaFileService, private fileHandler: FileHandlerService) { }
 
   ngOnInit() {
@@ -32,7 +34,7 @@ export class SequenceVisualizerComponent implements OnInit {
       this.features = [];
       this.fastaContent = await this.fastaFile.readRawFasta(this.fastaRaw);
       for (let f = 0; f < this.fastaContent.content.length; f ++) {
-        const reg = new RegExp('N[^XP]\-*[T|S]', 'g');
+        const reg = new RegExp(this.matchPattern, 'g');
         let match = reg.exec(this.fastaContent.content[f].sequence);
         const mods = [];
         while (match != null) {
@@ -61,7 +63,14 @@ export class SequenceVisualizerComponent implements OnInit {
           }
         }
       }
-      this.result.next({data: this.scores, length: this.fastaContent.content[0].sequence.length, number: this.fastaContent.content.length, ids: this.ids, features: this.features});
+      this.result.next(
+        {
+          data: this.scores,
+          length: this.fastaContent.content[0].sequence.length,
+          number: this.fastaContent.content.length,
+          ids: this.ids, features: this.features,
+          alignmentGapColor: this.alignmentGapColor
+        });
     }
   }
 
@@ -75,7 +84,7 @@ export class SequenceVisualizerComponent implements OnInit {
       start: e.row[featuresDF.columnMap.get('start')],
       stop: e.row[featuresDF.columnMap.get('stop')],
       title: e.row[featuresDF.columnMap.get('title')],
-      color: color
+      color: color,
     });
   }
 

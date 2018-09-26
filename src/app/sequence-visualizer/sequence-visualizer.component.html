@@ -5,11 +5,33 @@
             </textarea>
   </div>
   <div class="form-row">
+    <div class="form-group col-5">
+      <div class="input-group">
+        <div class="input-group-prepend">
+          <div class="input-group-text">
+            <input type="checkbox" aria-label="Hightlight Color" [(ngModel)]="alignmentGapColor.highlight">
+          </div>
+        </div>
+        <div class="input-group-prepend">
+          <div class="input-group-text">
+            Highlight Alignment Gap Color
+          </div>
+        </div>
+        <input type="text" class="form-control" aria-label="Highlight Color" [(ngModel)]="alignmentGapColor.color">
+      </div>
+    </div>
+  </div>
+
+  <div class="form-row">
     <div class="form-group col-3">
       <label for="window">Windows</label>
       <input type="number" class="form-control" id="window" [(ngModel)]="windows" aria-describedby="window" placeholder="10">
     </div>
-    <div class="form-group col-5">
+    <div class="form-group col-3">
+      <label>Match Regex Pattern</label>
+      <input type="text" class="form-control" aria-describedby="matchRegex" [(ngModel)]="matchPattern">
+    </div>
+    <div class="form-group col-3">
       <label>Features</label>
       <app-file-selector (file)="fileEvent($event)"></app-file-selector>
     </div>
