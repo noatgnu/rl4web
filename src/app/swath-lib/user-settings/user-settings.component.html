@@ -9,6 +9,31 @@
         <label class="custom-file-label" for="mod-lib">{{FileName.mod||'Select File'}}</label>
       </div>
     </div>
+    <div class="text-muted">
+      <small>
+        <ul>
+          Input must be a tabulated file containing columns with these name:
+          <li>
+            'Ytype' for Ytype modification,
+          </li>
+          <li>
+            'type' for type of the modification,
+          </li>
+          <li>
+            'mass' for mass of the modification,
+          </li>
+          <li>
+            'regex' for regular expression of the modification,
+          </li>
+          <li>
+            'label' for label of the modification,
+          </li>
+          <li>
+            'm_label' for final label of the modification if it is a static modification on the generated sequence
+          </li>
+        </ul>
+      </small>
+    </div>
   </div>
   <div class="form-group">
     <div class="input-group">
@@ -19,6 +44,11 @@
         <input type="file" class="custom-file-input" aria-label="swath-win" aria-describedby="swath-win" (change)="loadSettings($event, 'swath-win')" required>
         <label class="custom-file-label" for="swath-win">{{FileName.windows||'Select File'}}</label>
       </div>
+    </div>
+    <div class="text-muted">
+      <small>
+        Input must be a tabulated file where the first column is the starting mz value of the window and the second column is the ending mz value of the window
+      </small>
     </div>
   </div>
 </form>
