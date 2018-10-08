@@ -35,8 +35,12 @@ export class SwathLibAssetService {
   digestRulesReader = this._digestRulesSource.asObservable();
   constructor(private http: HttpClient) { }
 
-  getAssets(url) {
-    return this.http.get(url, {observe: 'response'});
+  getAssets(url, assetType = 'json') {
+    if (assetType === 'json') {
+      return this.http.get(url, {observe: 'response'});
+    } else if (assetType === 'text') {
+      return this.http.get(url, {observe: 'response', responseType: 'text'});
+    }
   }
 
   updateDigestRules(data) {

@@ -5,20 +5,23 @@
             </textarea>
   </div>
   <div class="form-row">
-    <div class="form-group col-5">
+    <div class="form-group col-4">
       <div class="input-group">
         <div class="input-group-prepend">
           <div class="input-group-text">
             <input type="checkbox" aria-label="Hightlight Color" [(ngModel)]="alignmentGapColor.highlight">
           </div>
         </div>
-        <div class="input-group-prepend">
+        <!--<div class="input-group-prepend">
           <div class="input-group-text">
             Highlight Alignment Gap Color
           </div>
-        </div>
-        <input type="text" class="form-control" aria-label="Highlight Color" [(ngModel)]="alignmentGapColor.color">
+        </div>-->
+        <input type="text" class="form-control" aria-label="Highlight Color" [(ngModel)]="alignmentGapColor.color" placeholder="Highlight Alignment Gap Color">
       </div>
+    </div>
+    <div class="text-right col-8">
+      <button class="btn btn-sm" (click)="getExampleAlignment()">Load example alignment</button>
     </div>
   </div>
 
@@ -34,6 +37,7 @@
     <div class="form-group col-3">
       <label>Features</label>
       <app-file-selector (file)="fileEvent($event)"></app-file-selector>
+      <button type="button" class="btn btn-sm" (click)="getExampleFeatures()">Load example features</button>
     </div>
   </div>
   <div class="form-group">
