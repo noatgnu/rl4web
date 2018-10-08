@@ -41,6 +41,7 @@ import {GraphService} from "./helper/graph.service";
 import { SequenceHeatmapComponent } from './sequence-heatmap/sequence-heatmap.component';
 import { SequenceVisualizerComponent } from './sequence-visualizer/sequence-visualizer.component';
 import { FileSelectorComponent } from './file-selector/file-selector.component';
+import {ExampleService} from "./helper/example.service";
 
 const appRoutes: Routes = [
   {path: '', component: HomeComponent},
@@ -91,6 +92,7 @@ const appRoutes: Routes = [
   providers: [
     AnnoucementService,
     D3Service,
+    ExampleService,
     FileHandlerService,
     UniprotService,
     NglycoService,
@@ -101,7 +103,7 @@ const appRoutes: Routes = [
     SvgAnnotationService,
     SvgContextMenuService,
     ConnectorService,
-    GraphService
+    GraphService,
     // SwathLibHelperService
   ],
   bootstrap: [AppComponent]

@@ -16,22 +16,33 @@ export class FileHandlerService {
 
   async fileHandler(e, loadHeader) {
     return new Promise<DataStore>((resolve, reject) => {
-      const file = e.target.files[0];
-      const reader = new FileReader();
-      const result: DataRow[] = [];
-      reader.onload = (event) => {
-        const loadedFile = reader.result;
-
-        const lines = loadedFile.split(/\r\n|\r|\n/);
-
+      if (typeof e === 'string') {
+        const lines = e.split(/\r\n|\r|\n/);
+        const result: DataRow[] = [];
         lines.map((line) => {
           if (line.length > 0) {
             result.push(new DataRow(line.split(/\t/)));
           }
         });
-        resolve(new DataStore(result, loadHeader, file.name));
-      };
-      reader.readAsText(file);
+        resolve(new DataStore(result, loadHeader, ''));
+      } else {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        const result: DataRow[] = [];
+        reader.onload = (event) => {
+          const loadedFile = reader.result;
+
+          const lines = loadedFile.split(/\r\n|\r|\n/);
+
+          lines.map((line) => {
+            if (line.length > 0) {
+              result.push(new DataRow(line.split(/\t/)));
+            }
+          });
+          resolve(new DataStore(result, loadHeader, file.name));
+        };
+        reader.readAsText(file);
+      }
     });
   }
 

@@ -81,7 +81,6 @@ export class SequenceHeatmapComponent implements OnInit {
     const x = this.d3.scaleBand().range([0, drawArea.width]).domain(this.d3.range(1, this.SeqLength + 1).map(function (d) {
       return (d).toString();
     }));
-    console.log(x.domain());
     const y = this.d3.scaleBand().range([drawArea.height, 0]).domain(this.ids);
     if (this.features.length > 0) {
       y.padding(0.7);
@@ -115,13 +114,14 @@ export class SequenceHeatmapComponent implements OnInit {
     const aaDrawLocation = graphBlock.append('g').attr('class', 'aaLocation');
     const aaBlock = aaDrawLocation.selectAll('g').data(this._scores).enter().append('g').attr('class', 'aaBlock');
     const aa = aaBlock.append('rect').attr('x', function (d) {
-      console.log(d.start, x((d.start + 1).toString()), x.bandwidth() * (d.end - d.start), d.position.length);
       return x((d.start + 1).toString());
     }).attr('y', function (d) {
       return y(d.seq);
     }).attr('width', function (d) {
       // console.log(x.bandwidth() * (d.end - d.start), d.start, d.end);
-      return x.bandwidth() * (d.end - d.start);
+      return x.bandwidth()
+        * (d.end - d.start)
+        ;
     }).attr('height', y.bandwidth()).style('fill', function (d) {
       if (d.gap) {
         if (alignmentGapColor.highlight) {
@@ -137,7 +137,7 @@ export class SequenceHeatmapComponent implements OnInit {
         );
       }
     })
-      /*.style('stroke', function (d) {
+      .style('stroke', function (d) {
       if (d.gap) {
         if (alignmentGapColor.highlight) {
           return alignmentGapColor.color || 'Silver';
@@ -151,8 +151,9 @@ export class SequenceHeatmapComponent implements OnInit {
           colorScale.colorInterpolate(d.value)
         );
       }
-    })*/
+    }).style('stroke-width', 0.5)
     ;
+    this.addHeatmapAnnotation(aaBlock, this.d3, this.d3Annotate, this.annotationType, x, y, gridSizeVertical, drawArea, this.SeqLength);
     this.blockOpacity(aa, this.d3);
     if (this.features) {
       const featuresDrawLocation = graphBlock.append('g').attr('class', 'featureLocation');
@@ -220,9 +221,52 @@ export class SequenceHeatmapComponent implements OnInit {
     aa.on('mouseover', function (d) {
       const selected = d3.select(d3.event.currentTarget);
       selected.transition().duration(500).style('opacity', 0.75);
+      d3.select(d3.event.currentTarget.parentNode).selectAll('g.annotation-connector, g.annotation-note').classed('hidden', false);
     }).on('mouseout', function (d) {
       const selected = d3.select(d3.event.currentTarget);
       selected.transition().duration(500).style('opacity', 1);
+      d3.select(d3.event.currentTarget.parentNode).selectAll('g.annotation-connector, g.annotation-note').classed('hidden', true);
+    });
+  }
+
+  private addHeatmapAnnotation(aaBlock, d3, d3Annotation, annotationType, x, y, gridSizeVertical, drawArea, seqLength) {
+    aaBlock.each(function (d, i, n) {
+      let align = 'dynamic';
+      let modifier = 1;
+      if (d.start > seqLength / 2) {
+        align = 'right';
+        modifier = -1;
+      }
+      let hmodifier = 1;
+      const ymodifier = y.bandwidth();
+      if (y(d.seq) > drawArea.height / 2) {
+        hmodifier = -1;
+        modifier = -1;
+
+      }
+      const annotation = d3.select(n[i]).append('g').attr('class', 'annotation-group').style('font-size', '12px')
+        .call(d3Annotation
+          .annotation()
+          .editMode(false)
+          .type(annotationType)
+          .annotations([
+            {
+              note: {
+                label: 'Length: ' + (d.end - d.start) + ';\n' + 'Score: ' + Math.round(d.value * 10000) / 10000,
+                title: 'Position: ' + (d.start + 1) + ' - ' + (d.end),
+                wrapSplitter: /\n/,
+                align: align,
+                bgPadding: 10
+              },
+              x: x((d.start + 1).toString()),
+              y: y(d.seq) + ymodifier,
+              dx: gridSizeVertical * modifier,
+              dy: gridSizeVertical * 1.5 * hmodifier,
+              color: '#E8336D',
+            }
+          ]));
+      annotation.selectAll('g.annotation-connector, g.annotation-note').classed('hidden', true);
+      annotation.raise();
     });
   }
 }
