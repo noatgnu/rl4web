@@ -6,7 +6,7 @@
       "dependencies": ["O-Mannose", "HexNAc"]
     },
     {
-      "components": "HexNAc-others",
+      "components": "HexNAc-(H2O)2-COH2",
       "mz": 138.054955501,
       "dependencies": ["O-Mannose","HexNAc"]
     },
