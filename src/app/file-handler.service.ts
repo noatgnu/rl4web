@@ -31,7 +31,7 @@ export class FileHandlerService {
         reader.onload = (event) => {
           const loadedFile = reader.result;
 
-          const lines = loadedFile.split(/\r\n|\r|\n/);
+          const lines = (<string>loadedFile).split(/\r\n|\r|\n/);
 
           lines.map((line) => {
             if (line.length > 0) {
