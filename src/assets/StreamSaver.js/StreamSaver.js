@@ -3,7 +3,7 @@
 	'function' == typeof define && 'object' == typeof define.amd ? define(definition) :
 	this[name] = definition()
 })('streamSaver', () => {
-	'use strict'
+	'use strict';
 
 	let
 	iframe, loaded,
@@ -12,13 +12,13 @@
 		createWriteStream,
 		supported: false,
 		version: {
-			full: '1.0.0',
-			major: 1, minor: 0, dot: 0
+			full: '1.0.5',
+			major: 1, minor: 0, dot: 5
 		}
-	}
+	};
 
 	streamSaver.mitm = 'https://jimmywarting.github.io/StreamSaver.js/mitm.html?version=' +
-		streamSaver.version.full
+		streamSaver.version.full;
 
 	try {
 		// Some browser has it but ain't allowed to construct a stream yet
@@ -32,35 +32,35 @@
 
 		// normalize arguments
 		if (Number.isFinite(queuingStrategy))
-			[size, queuingStrategy] = [queuingStrategy, size]
+			[size, queuingStrategy] = [queuingStrategy, size];
 
 		let channel = new MessageChannel,
 		popup,
 		setupChannel = () => new Promise((resolve, reject) => {
 			channel.port1.onmessage = evt => {
 				if(evt.data.download) {
-					resolve()
-					if(!secure) popup.close() // don't need the popup any longer
-					let link = document.createElement('a')
-					let click = new MouseEvent('click')
+					resolve();
+					if(!secure) popup.close(); // don't need the popup any longer
+					let link = document.createElement('a');
+					let click = new MouseEvent('click');
 
-					link.href = evt.data.download
+					link.href = evt.data.download;
 					link.dispatchEvent(click)
 				}
-			}
+			};
 
 			if(secure && !iframe) {
-				iframe = document.createElement('iframe')
-				iframe.src = streamSaver.mitm
-				iframe.hidden = true
+				iframe = document.createElement('iframe');
+				iframe.src = streamSaver.mitm;
+				iframe.hidden = true;
 				document.body.appendChild(iframe)
 			}
 
 			if(secure && !loaded) {
 				let fn;
 				iframe.addEventListener('load', fn = evt => {
-					loaded = true
-					iframe.removeEventListener('load', fn)
+					loaded = true;
+					iframe.removeEventListener('load', fn);
 					iframe.contentWindow.postMessage(
 						{filename, size}, '*', [channel.port2])
 				})
@@ -71,29 +71,29 @@
 			}
 
 			if(!secure) {
-				popup = window.open(streamSaver.mitm, Math.random())
-				let ready = false
+				popup = window.open(streamSaver.mitm, Math.random());
+				let ready = false;
         let si = setInterval(function(){
 					if (ready) {
-						popup.postMessage({filename, size}, '*', [channel.port2])
-						window.removeEventListener('message', onready)
+						popup.postMessage({filename, size}, '*', [channel.port2]);
+						window.removeEventListener('message', onready);
             clearInterval(si)
 					}
-				}, 2000)
+				}, 2000);
 				let onready = evt => {
-					console.log('mitm created')
+					console.log('mitm created');
 					if(evt.source === popup){
-						console.log('Sending message to ' + popup.name)
+						console.log('Sending message to ' + popup.name);
 						ready = true
 					}
-				}
+				};
 
 				// Another problem that cross origin don't allow is scripting
 				// so popup.onload() don't work but postMessage still dose
 				// work cross origin
 				window.addEventListener('message', onready)
 			}
-		})
+		});
 
 		return new WritableStream({
 			start(error) {
@@ -116,7 +116,7 @@
 				channel.port1.postMessage(chunk)
 			},
 			close() {
-				channel.port1.postMessage('end')
+				channel.port1.postMessage('end');
 				console.log('All data successfully read!')
 			},
 			abort(e) {
@@ -126,4 +126,4 @@
 	}
 
 	return streamSaver
-})
+});

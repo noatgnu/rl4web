@@ -16,9 +16,14 @@
 
     // Service worker only works on https, 127.0.0.1 and localhost
     // So we just redirect asap
-    if (window.location.host === host && window.location.protocol !== "https:")
+    if (window.location.hostname !== host) {
+      if (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') {
+        host = window.location.hostname;
+      }
+    }
+    else if (window.location.host === host && window.location.protocol !== "https:"){
       window.location.protocol = "https:";
-
+    }
     // message event is the first thing we need to setup a listner for
     // don't want the opener to do a random timeout - instead they can listen for
     // the ready event
@@ -55,12 +60,21 @@
       // Register the worker, then forward the dataChannel to the worker
       // So they can talk directly, so we don't have to be "the middle man" any
       // longer
-    };
+    }
+
+    if (host === 'localhost' || host === '127.0.0.1') {
+      console.log(window.location.host)
+      opener = window.parent
+      opener.postMessage('StreamSaver::loadedPopup', '*')
+    } else {
+      opener && opener.postMessage('StreamSaver::loadedPopup', '*')
+    }
     addEventListener('message', onmessage, false);
     window.parent.postMessage('test', '*');
     // The opener can't listen to onload event, so we need to help em out!
     // (telling them that we are ready to accept postMessage's)
-    opener && opener.postMessage('StreamSaver::loadedPopup', '*')
+
+
   </script>
 </head>
 <body>

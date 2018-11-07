@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {SwathWindows} from '../../helper/swath-windows';
 import {Modification} from '../../helper/modification';
 import {SwathLibAssetService} from '../../swath-lib-asset.service';
@@ -10,8 +10,10 @@ import {FileHandlerService} from '../../file-handler.service';
   styleUrls: ['./user-settings.component.scss']
 })
 export class UserSettingsComponent implements OnInit {
+  @Output() rt = new EventEmitter<number[]>();
   sf;
   FileName = {'windows': '', 'mod': ''};
+  userRT = '';
   constructor(private mod: SwathLibAssetService, private _fh: FileHandlerService) {
     this.sf = this._fh.fileHandler;
   }
@@ -44,5 +46,14 @@ export class UserSettingsComponent implements OnInit {
         this.mod.updateWindows(windows);
         break;
     }
+  }
+
+  submitManualRT() {
+    const lines = this.userRT.split(/\r\n|\n/);
+    const rt = [];
+    for (const l of lines) {
+      rt.push(parseFloat(l));
+    }
+    this.rt.emit(rt);
   }
 }

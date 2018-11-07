@@ -3,8 +3,7 @@ import {UniprotService} from '../uniprot.service';
 import {NgForm} from '@angular/forms';
 import {FileHandlerService} from '../file-handler.service';
 import {DataRow, DataStore, Result} from '../data-row';
-import {Subscription} from 'rxjs/Subscription';
-import {Observable} from 'rxjs/Observable';
+import {Subscription, Observable} from 'rxjs';
 import {AnnoucementService} from "../helper/annoucement.service";
 
 @Component({

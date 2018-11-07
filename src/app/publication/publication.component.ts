@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {PublicationService} from '../publication.service';
-import {Observable} from 'rxjs/Observable';
+import {Observable} from 'rxjs';
 import {Publication, RefData} from '../publication';
 
 @Component({

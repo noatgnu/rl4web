@@ -11,14 +11,12 @@ import {
   NgbModalRef
 } from '@ng-bootstrap/ng-bootstrap';
 import {SwathLibAssetService} from '../../swath-lib-asset.service';
-import {Observable} from 'rxjs/Observable';
+import {Observable, Subscription, Subject} from 'rxjs';
 import {SwathResultService} from '../../helper/swath-result.service';
 import {SwathQuery} from '../../helper/swath-query';
-import {Subscription} from 'rxjs/Subscription';
 import {DataStore} from '../../data-row';
 import {Oxonium} from '../../helper/oxonium';
 import {AnnoucementService} from '../../helper/annoucement.service';
-import {Subject} from 'rxjs';
 import {SwathLibHelperService} from '../../helper/swath-lib-helper.service';
 
 @Component({

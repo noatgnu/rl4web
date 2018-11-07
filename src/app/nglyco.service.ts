@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {DataStore, Result} from './data-row';
-import {Subject} from 'rxjs/Subject';
+import {Subject} from 'rxjs';
 import {NgForm} from '@angular/forms';
 
 @Injectable()

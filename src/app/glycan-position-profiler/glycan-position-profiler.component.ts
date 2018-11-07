@@ -5,7 +5,7 @@ import {GlycanProfilerService} from '../helper/glycan-profiler.service';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {GppExp} from '../helper/gpp-exp';
 import {GppQuery} from '../helper/gpp-query';
-import {Observable} from "rxjs/Observable";
+import {Observable} from "rxjs";
 import {GppResult} from "../helper/gpp-result";
 
 @Component({

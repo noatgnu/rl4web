@@ -3,7 +3,7 @@ import {FileHandlerService} from '../file-handler.service';
 import {NgForm} from '@angular/forms';
 import {DataStore, Result} from '../data-row';
 import {NglycoService} from '../nglyco.service';
-import {Observable} from 'rxjs/Observable';
+import {Observable} from 'rxjs';
 
 @Component({
   selector: 'app-n-gly-sequon-parser',

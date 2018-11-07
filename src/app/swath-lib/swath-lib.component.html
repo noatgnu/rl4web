@@ -10,8 +10,11 @@
           <div class="card-body">
             <div class="form-group">
               <label for="FastaRaw">Fasta Content:</label>
-              <textarea class="form-control" id="FastaRaw" name="FastaRaw" [(ngModel)]="fastaRaw" required row="10">
+              <div>
+                <textarea class="form-control" id="FastaRaw" name="FastaRaw" [(ngModel)]="fastaRaw" required rows="5">
               </textarea>
+              </div>
+
             </div>
             <h4 class="text-muted">
               OR.
@@ -55,7 +58,7 @@
                     <label for="staticMGen" [ngbTooltip]="StaticMod">Static Modifications <i class="fa fa-question-circle text-primary"></i></label>
                     <select multiple class="form-control" id="staticMGen" *ngIf="staticMods|async; let Mods" formControlName="static">
                       <option *ngFor="let m of Mods" [value]="m">
-                        {{m.name}} ({{rounding(m.mass)}} m/z)
+                        {{m.name}} ({{rounding(m.mass)}} Da)
                       </option>
                     </select>
                   </div>
@@ -63,7 +66,7 @@
                     <label for="variableMGen" [ngbTooltip]="NonYMod">Non-Ytype Variable Modifications <i class="fa fa-question-circle text-primary"></i></label>
                     <select multiple class="form-control" id="variableMGen" *ngIf="variableMods|async; let Mods" formControlName="variable">
                       <option *ngFor="let m of Mods" [value]="m">
-                        {{m.name}} ({{rounding(m.mass)}} m/z)
+                        {{m.name}} ({{rounding(m.mass)}} Da)
                       </option>
                     </select>
                   </div>
@@ -71,7 +74,7 @@
                     <label for="yMGen" [ngbTooltip]="YMod">Ytype Variable Modifications <i class="fa fa-question-circle text-primary"></i></label>
                     <select multiple class="form-control" id="yMGen" *ngIf="Ymods|async; let Mods" formControlName="ytype">
                       <option *ngFor="let m of Mods" [value]="m">
-                        {{m.name}} ({{m.Ytype}}) ({{rounding(m.mass)}} m/z)
+                        {{m.name}} ({{m.Ytype}}) ({{rounding(m.mass)}} Da)
                       </option>
                     </select>
                   </div>
@@ -145,7 +148,7 @@
     </ngb-tab>
     <ngb-tab title="Settings">
       <ng-template ngbTabContent>
-        <app-user-settings></app-user-settings>
+        <app-user-settings (rt)="UpdateRT($event)"></app-user-settings>
       </ng-template>
     </ngb-tab>
     <ngb-tab title="Help">

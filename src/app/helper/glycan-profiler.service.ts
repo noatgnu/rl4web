@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {Subject} from 'rxjs/Subject';
+import {Subject} from 'rxjs';
 import {GppResult} from "./gpp-result";
 import {BaseUrl} from "./base-url";
 

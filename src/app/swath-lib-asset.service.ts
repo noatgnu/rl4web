@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {Subject} from 'rxjs/Subject';
+import {Subject, BehaviorSubject} from 'rxjs';
 import {StaticMod} from './static-mod';
 import {VariableMod} from './variable-mod';
 import {Modification} from './helper/modification';
-import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {SwathWindows} from './helper/swath-windows';
 import {Oxonium} from './helper/oxonium';
 import {BaseUrl} from './helper/base-url';

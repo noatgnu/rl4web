@@ -2,7 +2,7 @@ import {Component, OnInit, ViewChild, OnDestroy} from '@angular/core';
 import {ConnectorService} from '../helper/connector.service';
 import {Observable, Subscription} from 'rxjs';
 import {NgbModal, NgbModalRef} from '@ng-bootstrap/ng-bootstrap';
-import 'rxjs/add/operator/catch';
+
 import {ConnectorUrl} from '../helper/connector-url';
 
 @Component({
@@ -32,7 +32,7 @@ export class ConnectorComponent implements OnInit, OnDestroy {
       if (data) {
         this.ref = this.modal.open(this.serverConnection);
         for (const c of this.urls) {
-          this.checkUrl(c.url);
+          this.checkUrl(c);
         }
       } else {
         if (this.ref !== undefined) {

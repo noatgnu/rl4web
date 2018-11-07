@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {SwathLibAssetService} from './swath-lib-asset.service';
-import {Observable} from 'rxjs/Observable';
+import {Observable} from 'rxjs';
 import {AnnoucementService} from './helper/annoucement.service';
 import {ConnectorService} from './helper/connector.service';
 

@@ -66,7 +66,7 @@ export class SwathQuery {
     const newOxonium = [];
     if (value) {
       for (const o of value) {
-        if (this.modifications.length > 0) {
+        /*if (this.modifications.length > 0) {
           for (const m of this.modifications) {
             if (o.dependencies.includes(m.name)) {
               if (!newOxonium.includes(o)) {
@@ -75,7 +75,8 @@ export class SwathQuery {
               break;
             }
           }
-        }
+        }*/
+        newOxonium.push(o);
       }
       if (newOxonium.length > 0) {
         this._oxonium = newOxonium;
