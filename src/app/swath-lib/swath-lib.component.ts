@@ -1,15 +1,13 @@
 import {Component, OnInit, AfterViewInit, OnDestroy, ViewChild} from '@angular/core';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {SwathLibAssetService, SwathResponse} from '../swath-lib-asset.service';
-import {Observable} from 'rxjs/Observable';
+import {Observable, Subject, Subscription} from 'rxjs';
 import {VariableMod} from '../variable-mod';
-import {Subject} from 'rxjs/Subject';
 import {FastaFileService} from '../helper/fasta-file.service';
 import {Modification} from '../helper/modification';
 import {FastaFile} from '../helper/fasta-file';
 import {SwathQuery} from '../helper/swath-query';
 import {SwathResultService} from '../helper/swath-result.service';
-import {Subscription} from 'rxjs/Subscription';
 import {SwathWindows} from '../helper/swath-windows';
 import {DataStore, Result} from '../data-row';
 import {FileHandlerService} from '../file-handler.service';
@@ -95,7 +93,10 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit() {
     // this._fh.setMitmLocation('https://jimmywarting.github.io/StreamSaver.js/mitm.html');
-    this._fh.setMitmLocation(location.protocol + '//' + 'schulzlab.glycoproteo.me' + '/assets/StreamSaver.js/mitm.html');
+    this._fh.setMitmLocation(location.protocol + '//' +
+      window.location.host +
+      //'schulzlab.glycoproteo.me' +
+      '/assets/StreamSaver.js/mitm.html');
     this._fh.mitmLocation();
     console.log(this._fh.checkSaveStreamSupport());
     this.mod.getAssets('assets/new_mods.json').subscribe((resp) => {
@@ -501,5 +502,10 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
     } else {
       this.acceptTrack --;
     }
+  }
+
+  UpdateRT(e: number[]) {
+    this.rt = e;
+    console.log(e);
   }
 }

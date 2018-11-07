@@ -9,6 +9,7 @@ export class SvgContextMenuService {
   constructor() { }
 
   GetContextMenu() {
+    console.log(contextMenuFactory);
     return contextMenuFactory;
   }
 }

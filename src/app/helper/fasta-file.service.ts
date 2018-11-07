@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import {Protein} from './protein';
 import {Modification} from './modification';
 import {FastaFile} from './fasta-file';
-import {Subject} from 'rxjs/Subject';
+import {Subject} from 'rxjs';
 
 @Injectable()
 export class FastaFileService {
@@ -20,7 +20,7 @@ export class FastaFileService {
       let currentP = new Protein('', '', new Map<string, Modification>());
       reader.onload = (event) => {
         const loadedFile = reader.result;
-        const lines = loadedFile.split(/\r\n|\n/);
+        const lines = (<string>loadedFile).split(/\r\n|\n/);
         lines.map((line) => {
           console.log(line);
           if (line.length > 0) {

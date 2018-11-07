@@ -1,4 +1,4 @@
-<form class="mt-4">
+<div class="mt-4">
   <div class="form-group">
     <div class="input-group">
       <div class="input-group-prepend">
@@ -51,4 +51,18 @@
       </small>
     </div>
   </div>
-</form>
+  <div class="form-group">
+    <label for="user-rt">Customized Retention Time</label>
+    <div>
+      <textarea id="user-rt" class="form-control" rows="10" [(ngModel)]="userRT"></textarea>
+    </div>
+    <div class="mt-2">
+      <button class="btn btn-secondary" (click)="submitManualRT()">Submit RT</button>
+    </div>
+    <div class="text-muted">
+      <small>
+        Each RT must be separated by newline.
+      </small>
+    </div>
+  </div>
+</div>

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {DataRow, DataStore, Result} from './data-row';
 import {FileHandlerService} from './file-handler.service';
-import {Subject} from 'rxjs/Subject';
+import {Subject} from 'rxjs';
 import {UniprotResult} from './helper/uniprot-result';
 
 @Injectable()

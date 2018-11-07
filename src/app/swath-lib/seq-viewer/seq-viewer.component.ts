@@ -49,7 +49,8 @@ export class SeqViewerComponent implements OnInit, OnDestroy {
   changeSubscribe: Subscription;
   selectedSubscribe: Subscription;
   commObject;
-  constructor(element: ElementRef, private d3Service: D3Service, private annotation: SvgAnnotationService, private cm: SvgContextMenuService, private libHelper: SwathLibHelperService) {
+  constructor(element: ElementRef, private d3Service: D3Service, private annotation: SvgAnnotationService,
+              private cm: SvgContextMenuService, private libHelper: SwathLibHelperService) {
     this.parentNativeElement = element.nativeElement;
     this.d3 = d3Service.getD3();
     this.d3Annotate = annotation.GetD3Annotation();
@@ -89,9 +90,21 @@ export class SeqViewerComponent implements OnInit, OnDestroy {
         }
       },
       {
+        title: 'Select for b-series',
+        action: function(elm, d, i) {
+          emit.emit({residue: elm.aa.coordinate, event: 'bselect'});
+        }
+      },
+      {
         title: 'y-series Stop',
         action: function(elm, d, i) {
           emit.emit({residue: elm.aa.coordinate, event: 'ystop'});
+        }
+      },
+      {
+        title: 'Select for y-series',
+        action: function(elm, d, i) {
+          emit.emit({residue: elm.aa.coordinate, event: 'yselect'});
         }
       }
     ];

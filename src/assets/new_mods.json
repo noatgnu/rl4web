@@ -81,7 +81,7 @@
     {
       "name": "Sulfation",
       "label": "s",
-      "mass": 0,
+      "mass": 79.95680,
       "regex": "S",
       "type": "variable",
       "auto_allocation": "FALSE",

@@ -1,11 +1,10 @@
 ///<reference path="../../node_modules/@types/node/index.d.ts"/>
 import { Injectable } from '@angular/core';
 import {DataRow, DataStore} from './data-row';
-import {Observable} from 'rxjs/Observable';
-import {Subject} from 'rxjs/Subject';
+import {Observable, Subject} from 'rxjs';
 import * as FileSaver from 'file-saver';
 import * as StreamSaver from 'streamsaver';
-import {AnnoucementService} from "./helper/annoucement.service";
+import {AnnoucementService} from './helper/annoucement.service';
 
 @Injectable()
 export class FileHandlerService {
@@ -32,7 +31,7 @@ export class FileHandlerService {
         reader.onload = (event) => {
           const loadedFile = reader.result;
 
-          const lines = loadedFile.split(/\r\n|\r|\n/);
+          const lines = (<string>loadedFile).split(/\r\n|\r|\n/);
 
           lines.map((line) => {
             if (line.length > 0) {
@@ -72,8 +71,9 @@ export class FileHandlerService {
   }
 
   setMitmLocation(loc: string) {
-    StreamSaver.mitm = loc + '?version=' +
-      StreamSaver.version.full;
+    StreamSaver.mitm = loc + '?version='
+      //+ '1.0.5';
+      + StreamSaver.version.full;
   }
 
   checkSaveStreamSupport() {
