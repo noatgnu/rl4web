@@ -3,8 +3,49 @@
     <div class="card-body">
       <form [formGroup]="form">
         <div class="input-group">
-          <span class="input-group-addon" id="label-excel-input">Excel Input Files:</span>
-          <input type="file" multiple class="form-control" aria-label="excel-input" aria-describedby="label-excel-input" (change)="fileChange($event)" required>
+          <div class="input-group-prepend">
+            <span class="input-group-text" id="label-excel-input">Excel Input Files:</span>
+          </div>
+          <div class="custom-file">
+            <input type="file" multiple class="custom-file-input" aria-label="excel-input" aria-describedby="label-excel-input" (change)="fileChange($event)" required>
+            <label class="custom-file-label" for="label-excel-input">{{fileNames.join(",")||'Select File'}}</label>
+          </div>
+        </div>
+        <div formGroupName="glycans">
+          <label class="mt-2 mr-2">Targets:</label>
+          <div class="form-group form-check form-check-inline">
+            <input type="checkbox" class="form-check-input" id="H" formControlName="H">
+            <label class="form-check-label" for="H">High mannose</label>
+          </div>
+          <div class="form-group form-check form-check-inline">
+            <input type="checkbox" class="form-check-input" id="D" formControlName="D">
+            <label class="form-check-label" for="D">Deaminated</label>
+          </div>
+          <div class="form-group form-check form-check-inline">
+            <input type="checkbox" class="form-check-input" id="U" formControlName="U">
+            <label class="form-check-label" for="U">Unmodified</label>
+          </div>
+        </div>
+
+        <div class="form-group form-check">
+          <input type="checkbox" class="form-check-input" formControlName="separate-h" id="separate-h">
+          <label class="form-check-label" for="separate-h">Dividing H into different glycoforms (Only work if there is a "Glycan compositions" column)</label>
+        </div>
+
+        <div formGroupName="aggregation">
+          <label class="mt-2 mr-2">Aggregation:</label>
+          <div class="form-group form-check form-check-inline">
+            <input type="checkbox" class="form-check-input" id="Ha" formControlName="H">
+            <label class="form-check-label" for="Ha">High mannose</label>
+          </div>
+          <div class="form-group form-check form-check-inline">
+            <input type="checkbox" class="form-check-input" id="Da" formControlName="D">
+            <label class="form-check-label" for="Da">Deaminated</label>
+          </div>
+          <div class="form-group form-check form-check-inline">
+            <input type="checkbox" class="form-check-input" id="Ua" formControlName="U">
+            <label class="form-check-label" for="Ua">Unmodified</label>
+          </div>
         </div>
 
         <div *ngIf="fileNames.length>0">
@@ -51,12 +92,22 @@
             <h6 class="card-header">Upload Reference Sequences</h6>
             <div class="card-body">
               <div class="input-group mt-2">
-                <span class="input-group-addon" id="label-fasta-input">Fasta Input Files:</span>
-                <input type="file" class="form-control" aria-label="fasta-input" aria-describedby="label-fasta-input" (change)="loadFasta($event)" required>
+                <div class="input-group-prepend">
+                  <span class="input-group-text" id="label-fasta-input">Fasta Input Files:</span>
+                </div>
+                <div class="custom-file">
+                  <input type="file" class="custom-file-input" aria-label="fasta-input" aria-describedby="label-fasta-input" (change)="loadFasta($event)" required>
+                  <label class="custom-file-label" for="label-fasta-input">{{inputFileLabel(seq)}}</label>
+                </div>
               </div>
               <div class="input-group mt-2">
-                <span class="input-group-addon" id="label-alignment-input">Alignment Input Files (Optional):</span>
-                <input type="file" class="form-control" aria-label="alignment-input" aria-describedby="label-alignment-input" (change)="loadAlignment($event)" required>
+                <div class="input-group-prepend">
+                  <span class="input-group-text" id="label-alignment-input">Alignment Input Files (Optional):</span>
+                </div>
+                <div class="custom-file">
+                  <input type="file" class="custom-file-input" aria-label="alignment-input" aria-describedby="label-alignment-input" (change)="loadAlignment($event)" required>
+                  <label class="custom-file-label" for="label-alignment-input">{{inputFileLabel(alignment)}}</label>
+                </div>
               </div>
             </div>
           </div>
@@ -114,7 +165,7 @@
       <div class="card mt-2" *ngFor="let r of result">
         <div class="card-body">
           <p>
-            {{r.protein}}
+            {{r.protein}} finished on {{finishedTime|date:'full'}}
           </p>
         </div>
         <div class="card-footer">

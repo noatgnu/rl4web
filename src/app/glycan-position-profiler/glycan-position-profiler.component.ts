@@ -5,8 +5,8 @@ import {GlycanProfilerService} from '../helper/glycan-profiler.service';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {GppExp} from '../helper/gpp-exp';
 import {GppQuery} from '../helper/gpp-query';
-import {Observable} from "rxjs";
-import {GppResult} from "../helper/gpp-result";
+import {Observable} from 'rxjs';
+import {GppResult} from '../helper/gpp-result';
 
 @Component({
   selector: 'app-glycan-position-profiler',
@@ -26,6 +26,7 @@ export class GlycanPositionProfilerComponent implements OnInit {
   expMap: Map<string, GppExp> = new Map();
   queries: GppQuery[] = [];
   result: Observable<GppResult[]>;
+  finishedTime;
   constructor(private fastaService: FastaFileService, private gpp: GlycanProfilerService, private fb: FormBuilder) {
     this.result = this.gpp.resultReader;
   }
@@ -58,13 +59,14 @@ export class GlycanPositionProfilerComponent implements OnInit {
   }
 
   upload() {
-    this.formData.append('fasta', this.seq, this.seq.name);
+    this.formData.set('fasta', this.seq, this.seq.name);
     if (this.alignment !== undefined) {
       this.formData.append('alignment', this.alignment, this.alignment.name);
     }
     this.formData.set('boilerplate', new Blob([JSON.stringify(this.queries)], {type: 'application/json'}));
     this.gpp.postFormData(this.formData).subscribe((data) => {
       console.log(data.body['data']);
+      this.finishedTime = this.getCurrentDate();
       this.gpp.updateResult(data.body['data']);
     });
   }
@@ -76,7 +78,7 @@ export class GlycanPositionProfilerComponent implements OnInit {
     this.queries = [];
     for (const e of this.expNames) {
       const g = this.expMap.get(e);
-      const q = new GppQuery(e, {}, {}, this.form.value['maxSites'], this.form.value['minimumArea']);
+      const q = new GppQuery(e, {}, {}, this.form.value['maxSites'], this.form.value['minimumArea'], this.form.value['glycans'], this.form.value['aggregation']);
       for (const fn of g.fileNames) {
         if (g.repMap.has(fn) && g.condMap.has(fn)) {
           q.repsMap[fn] = g.repMap.get(fn);
@@ -181,7 +183,30 @@ export class GlycanPositionProfilerComponent implements OnInit {
       'conds': '',
       'targets': '',
       'minimumArea': 10 ** 7,
-      'maxSites': 2
+      'maxSites': 2,
+      'separate-h': false,
+      'glycans': this.fb.group({
+        'H': true,
+        'D': true,
+        'U': true,
+      }),
+      'aggregation': this.fb.group({
+        'H': false,
+        'D': false,
+        'U': false,
+      })
     });
+  }
+
+  getCurrentDate() {
+    return Date.now();
+  }
+
+  inputFileLabel(f: File) {
+    if (f) {
+      return f.name;
+    } else {
+      return 'Select File';
+    }
   }
 }
