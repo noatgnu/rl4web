@@ -32,16 +32,16 @@ import {D3Service} from 'd3-ng2-service';
 import { BarChartComponent } from './bar-chart/bar-chart.component';
 import { PieChartComponent } from './pie-chart/pie-chart.component';
 import { SeqViewerComponent } from './swath-lib/seq-viewer/seq-viewer.component';
-import {SvgAnnotationService} from "./helper/svg-annotation.service";
-import {SvgContextMenuService} from "./helper/svg-context-menu.service";
-import {SwathLibHelperService} from "./helper/swath-lib-helper.service";
-import {ConnectorService} from "./helper/connector.service";
+import {SvgAnnotationService} from './helper/svg-annotation.service';
+import {SvgContextMenuService} from './helper/svg-context-menu.service';
+import {SwathLibHelperService} from './helper/swath-lib-helper.service';
+import {ConnectorService} from './helper/connector.service';
 import { ConnectorComponent } from './connector/connector.component';
-import {GraphService} from "./helper/graph.service";
+import {GraphService} from './helper/graph.service';
 import { SequenceHeatmapComponent } from './sequence-heatmap/sequence-heatmap.component';
 import { SequenceVisualizerComponent } from './sequence-visualizer/sequence-visualizer.component';
 import { FileSelectorComponent } from './file-selector/file-selector.component';
-import {ExampleService} from "./helper/example.service";
+import {ExampleService} from './helper/example.service';
 
 const appRoutes: Routes = [
   {path: '', component: HomeComponent},
@@ -80,7 +80,7 @@ const appRoutes: Routes = [
     FileSelectorComponent
   ],
   imports: [
-    NgbModule.forRoot(),
+    NgbModule,
     RouterModule.forRoot(
       appRoutes, {useHash: true}
     ),
