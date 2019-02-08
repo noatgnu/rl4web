@@ -78,7 +78,7 @@ export class GlycanPositionProfilerComponent implements OnInit {
     this.queries = [];
     for (const e of this.expNames) {
       const g = this.expMap.get(e);
-      const q = new GppQuery(e, {}, {}, this.form.value['maxSites'], this.form.value['minimumArea'], this.form.value['glycans'], this.form.value['aggregation']);
+      const q = new GppQuery(e, {}, {}, this.form.value['maxSites'], this.form.value['minimumArea'], this.form.value['glycans'], this.form.value['aggregation'], this.form.value['separate-h']);
       for (const fn of g.fileNames) {
         if (g.repMap.has(fn) && g.condMap.has(fn)) {
           q.repsMap[fn] = g.repMap.get(fn);
