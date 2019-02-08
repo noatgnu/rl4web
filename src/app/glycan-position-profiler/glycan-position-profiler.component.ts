@@ -185,16 +185,8 @@ export class GlycanPositionProfilerComponent implements OnInit {
       'minimumArea': 10 ** 7,
       'maxSites': 2,
       'separate-h': false,
-      'glycans': this.fb.group({
-        'H': true,
-        'D': true,
-        'U': true,
-      }),
-      'aggregation': this.fb.group({
-        'H': false,
-        'D': false,
-        'U': false,
-      })
+      'glycans': [],
+      'aggregation': []
     });
   }
 
