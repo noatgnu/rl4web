@@ -38,6 +38,7 @@ export class GlycanPositionProfilerComponent implements OnInit {
   fileChange(e) {
     const fileList: FileList = e.target.files;
     if (fileList.length > 0) {
+      this.fileNames = [];
       this.formData = new FormData();
       for (let i = 0; i < fileList.length; i++) {
         this.formData.append('files', fileList[i], fileList[i].name);
