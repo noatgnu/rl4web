@@ -7,7 +7,7 @@ import {BaseUrl} from './base-url';
 @Injectable()
 export class GlycanProfilerService {
   url = new BaseUrl();
-  private URL = this.url.url + ':9001/';
+  private URL = this.url.url + ':9000/';
   // private URL = 'http://localhost:9001/';
   private _resultSource = new Subject<GppResult[]>();
   resultReader = this._resultSource.asObservable();
