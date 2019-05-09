@@ -61,7 +61,7 @@ export class NglycoService {
         for (const mo of mods) {
           if (m.includes(mo)) {
             const pos = parseInt(m.split('@')[-1], 10);
-            if (data[i].row[seqColumn][pos + 2] === 'S' || data[i].row[seqColumn][pos + 2] === 'T') {
+            if (data[i].row[seqColumn][pos + 1] === 'S' || data[i].row[seqColumn][pos + 1] === 'T') {
               modifiedSeq += pos.toString(10) + ';';
             }
             break;
