@@ -14,7 +14,7 @@ import {Observable} from 'rxjs';
 export class NGlySequonParserComponent implements OnInit {
   fileHandler;
   result: DataStore;
-  model = {columnName: 'Sequence', ignoreMod: true, modFilter: false, modColumn: 'ProteinModifications', mod: 'HexNAc', annoSeq: false};
+  model = {columnName: 'Sequence', ignoreMod: true, modFilter: false, modColumn: 'ProteinModifications', mod: 'HexNAc', annoSeq: false, checkPosition: false};
   loadHeader = true;
   started = false;
   processing = false;

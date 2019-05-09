@@ -11,9 +11,9 @@
             <input type="file" class="form-control" aria-label="peptide-summary" aria-describedby="label-peptide" (change)="processFile($event)" required>
           </div>
           <small id="peptide-summary-rows" class="form-text text-muted">
-            <div *ngIf="this.result">
+            <span *ngIf="this.result">
               {{fileSize}} rows has been loaded.
-            </div>
+            </span>
           </small>
         </div>
         <div class="form-row">
@@ -37,10 +37,16 @@
             Sequence Annotated
           </label>
         </div>
-        <div class="form-check">
+        <div class="form-check col-md-6">
           <label class="form-check-label">
             <input type="checkbox" class="form-check-input" name="modFilter" [(ngModel)]="model.modFilter">
             Filter Modifications
+          </label>
+        </div>
+        <div class="form-check col-md-6">
+          <label class="form-check-label">
+            <input type="checkbox" class="form-check-input" name="checkPosition" [(ngModel)]="model.checkPosition">
+            Check Modification Position
           </label>
         </div>
         <div class="form-row">

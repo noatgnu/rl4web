@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {DataStore, Result} from './data-row';
+import {DataRow, DataStore, Result} from './data-row';
 import {Subject} from 'rxjs';
 import {NgForm} from '@angular/forms';
 
@@ -33,7 +33,11 @@ export class NglycoService {
       n += 1;
     }
     console.log(result.seqColumn);
-    const d = DataStore.filterSequon(f.value.ignoreMod, result.data, result.seqColumn);
+    let d = DataStore.filterSequon(f.value.ignoreMod, result.data, result.seqColumn);
+    if (f.value.checkPosition) {
+      d = this.checkModification(f.value.mod, d, result.modColumn, result.seqColumn);
+      result.header.push('Sequon Modification Positions');
+    }
     r.push(DataStore.toCSV(result.header, d, 'sequon_parsed_' + result.fileName, 'Sequon parsed'));
     if (f.value.modFilter) {
       const fMod = DataStore.filterMod(f.value.mod.split(','), result.modColumn, d);
@@ -46,5 +50,26 @@ export class NglycoService {
     }
     this.updateResult(r);
     this.updateResultStatus(true);
+  }
+
+  checkModification(modifications: string, data: DataRow[], modColumn: number, seqColumn: number) {
+    const mods = modifications.split(',');
+    for (let i = 0; i <= data.length; i ++) {
+      const ms = data[i].row[modColumn].split(';');
+      let modifiedSeq = '';
+      for (const m of ms) {
+        for (const mo of mods) {
+          if (m.includes(mo)) {
+            const pos = parseInt(m.split('@')[-1], 10);
+            if (data[i].row[seqColumn][pos + 2] === 'S' || data[i].row[seqColumn][pos + 2] === 'T') {
+              modifiedSeq += pos.toString(10) + ';';
+            }
+            break;
+          }
+        }
+      }
+      data[i].row.push(modifiedSeq);
+    }
+    return data;
   }
 }
