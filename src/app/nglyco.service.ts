@@ -55,20 +55,25 @@ export class NglycoService {
   checkModification(modifications: string, data: DataRow[], modColumn: number, seqColumn: number) {
     const mods = modifications.split(',');
     for (let i = 0; i <= data.length; i ++) {
-      const ms = data[i].row[modColumn].split(';');
-      let modifiedSeq = '';
-      for (const m of ms) {
-        for (const mo of mods) {
-          if (m.includes(mo)) {
-            const pos = parseInt(m.split('@')[-1], 10);
-            if (data[i].row[seqColumn][pos + 1] === 'S' || data[i].row[seqColumn][pos + 1] === 'T') {
-              modifiedSeq += pos.toString(10) + ';';
+
+      if (data[i] !== undefined) {
+        const ms = data[i].row[modColumn].split(';');
+        let modifiedSeq = '';
+        for (const m of ms) {
+          for (const mo of mods) {
+            if (m.includes(mo)) {
+              const pos = parseInt(m.split('@')[1], 10);
+              if (data[i].row[seqColumn][pos + 1] === 'S' || data[i].row[seqColumn][pos + 1] === 'T') {
+                modifiedSeq += `${pos};`;
+              }
+
+              break;
             }
-            break;
           }
         }
+        data[i].row.push(modifiedSeq);
+
       }
-      data[i].row.push(modifiedSeq);
     }
     return data;
   }
