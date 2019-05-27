@@ -147,7 +147,7 @@
       "name": "Methylation",
       "label": "m",
       "mass": 14.0157,
-      "regex": "E",
+      "regex": "[E|H|K|N|R]",
       "type": "variable",
       "auto_allocation": "FALSE",
       "Ytype": "",
