@@ -158,9 +158,9 @@
     },
     {
       "name": "Carboxydimethyl",
-      "label": "c",
+      "label": "e",
       "mass": 72.0211,
-      "regex": "C",
+      "regex": "E",
       "type": "variable",
       "auto_allocation": "FALSE",
       "Ytype": "",

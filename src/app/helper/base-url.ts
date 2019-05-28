@@ -1,3 +1,3 @@
 export class BaseUrl {
-  readonly url = 'http://10.89.222.29';
+  readonly url = 'http://10.89.223.183';
 }

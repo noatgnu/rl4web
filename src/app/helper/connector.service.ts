@@ -8,7 +8,7 @@ import {ConnectorUrl} from './connector-url';
   providedIn: 'root'
 })
 export class ConnectorService {
-  urls = [new ConnectorUrl('http://10.89.222.29', false)];
+  urls = [new ConnectorUrl('http://10.89.223.183', false)];
   connectMap = new Map<string, boolean>();
   private connectorModal = new Subject<boolean>();
   connectorModalSignal = this.connectorModal.asObservable();
