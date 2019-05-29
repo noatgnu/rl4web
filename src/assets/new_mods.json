@@ -106,7 +106,7 @@
     },
     {
       "name": "Methylated Carboxylation",
-      "label": "m",
+      "label": "n",
       "mass": 58.00548,
       "regex": "E",
       "type": "variable",
@@ -158,7 +158,7 @@
     },
     {
       "name": "Carboxydimethyl",
-      "label": "e",
+      "label": "i",
       "mass": 72.0211,
       "regex": "E",
       "type": "variable",
