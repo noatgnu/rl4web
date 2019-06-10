@@ -61,9 +61,9 @@ export class UniprotService {
       }
 
       const options: Map<string, string> = new Map<string, string>([
-        ['from', 'ACC+ID'],
+        ['from', 'ACC,ID'],
         ['to', 'ACC'],
-        ['query', l.join(' ')],
+        ['query', l.join('+OR+')],
         ['format', 'tab'],
         ['columns', 'id,entry name,reviewed,protein names,genes,organism,length,database(RefSeq),organism-id,go-id,go(cellular component),comment(SUBCELLULAR LOCATION),feature(TOPOLOGICAL_DOMAIN),feature(GLYCOSYLATION),comment(MASS SPECTROMETRY),sequence'],
         ['compress', 'no'],
@@ -72,7 +72,7 @@ export class UniprotService {
         ['desc', ''],
         ['fil', '']
       ]);
-      const uniprotUrl = this.base + this.toolEndpoint + this.toParamString(options);
+      const uniprotUrl = this.baseURL + this.toParamString(options);
       console.log(uniprotUrl);
       this.getUniprot(uniprotUrl).subscribe((data) => {
 
