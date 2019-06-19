@@ -144,10 +144,23 @@
       "offset": 0
     },
     {
-      "name": "Methylation",
+      "name": "Methylation (E,H,K,N,R)",
       "label": "m",
       "mass": 14.0157,
       "regex": "[E|H|K|N|R]",
+      "type": "variable",
+      "auto_allocation": "FALSE",
+      "Ytype": "",
+      "multiple_pattern": false,
+      "status": false,
+      "m_label": "",
+      "offset": 0
+    },
+    {
+      "name": "Methylation (E)",
+      "label": "m",
+      "mass": 14.0157,
+      "regex": "E",
       "type": "variable",
       "auto_allocation": "FALSE",
       "Ytype": "",
