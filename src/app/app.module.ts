@@ -42,6 +42,9 @@ import { SequenceHeatmapComponent } from './sequence-heatmap/sequence-heatmap.co
 import { SequenceVisualizerComponent } from './sequence-visualizer/sequence-visualizer.component';
 import { FileSelectorComponent } from './file-selector/file-selector.component';
 import {ExampleService} from './helper/example.service';
+import {OverlayModule} from '@angular/cdk/overlay';
+import { ContextMenuComponent } from './context-menu/context-menu.component';
+import {OverlayService} from './overlay.service';
 
 const appRoutes: Routes = [
   {path: '', component: HomeComponent},
@@ -77,7 +80,8 @@ const appRoutes: Routes = [
     ConnectorComponent,
     SequenceHeatmapComponent,
     SequenceVisualizerComponent,
-    FileSelectorComponent
+    FileSelectorComponent,
+    ContextMenuComponent
   ],
   imports: [
     NgbModule,
@@ -87,7 +91,8 @@ const appRoutes: Routes = [
     FormsModule,
     BrowserModule,
     HttpClientModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    OverlayModule
   ],
   providers: [
     AnnoucementService,
@@ -104,9 +109,11 @@ const appRoutes: Routes = [
     SvgContextMenuService,
     ConnectorService,
     GraphService,
+    OverlayService
     // SwathLibHelperService
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  entryComponents: [ContextMenuComponent]
 })
 export class AppModule { }
 declare global {

@@ -20,6 +20,7 @@ import {Protein} from '../helper/protein';
 import {SwathLibHelperService} from '../helper/swath-lib-helper.service';
 import {AARule, DigestRule} from '../helper/digest-rule';
 import {UniprotService} from '../uniprot.service';
+import {OverlayService} from '../overlay.service';
 
 @Component({
   selector: 'app-swath-lib',
@@ -70,7 +71,7 @@ export class SwathLibComponent implements OnInit, AfterViewInit, OnDestroy {
   acceptedProtein = [];
   constructor(private mod: SwathLibAssetService, private fastaFile: FastaFileService, private fb: FormBuilder,
               private srs: SwathResultService, private _fh: FileHandlerService, private anSer: AnnoucementService,
-              private modalService: NgbModal, private swathHelper: SwathLibHelperService, private uniprot: UniprotService) {
+              private modalService: NgbModal, private swathHelper: SwathLibHelperService, private uniprot: UniprotService, private overlay: OverlayService) {
     this.staticMods = mod.staticMods;
     this.variableMods = mod.variableMods;
     this.Ymods = mod.YtypeMods;

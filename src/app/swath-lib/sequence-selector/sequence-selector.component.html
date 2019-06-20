@@ -290,4 +290,14 @@
     <button type="button" class="btn btn-primary" (click)="saveProtein()">Save</button>
   </div>
 </ng-template>
+<ng-template #conMen let-aa>
+  <div class="list-group">
+    <div class="list-group-item list-group-item-action" (click)="contextMenuAction(aa, 'edit')">Edit</div>
+    <div class="list-group-item list-group-item-action" (click)="contextMenuAction(aa, 'bstop')">b-series Stop</div>
+    <div class="list-group-item list-group-item-action" (click)="contextMenuAction(aa, 'bselect')">Select for b-series Stop</div>
+    <div class="list-group-item list-group-item-action" (click)="contextMenuAction(aa, 'ystop')">y-series Stop</div>
+    <div class="list-group-item list-group-item-action" (click)="contextMenuAction(aa, 'yselect')">Select for y-series Stop</div>
+    <div class="list-group-item list-group-item-action" (click)="closeContextMenu()">Close</div>
+  </div>
+</ng-template>
 

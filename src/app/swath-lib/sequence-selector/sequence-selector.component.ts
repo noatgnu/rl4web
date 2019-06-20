@@ -1,4 +1,4 @@
-import {Component, OnInit, Input, OnDestroy, ViewChild} from '@angular/core';
+import {Component, OnInit, Input, OnDestroy, ViewChild, ViewContainerRef, TemplateRef} from '@angular/core';
 import {Protein} from '../../helper/protein';
 import {SeqCoordinate} from '../../helper/seq-coordinate';
 import {Modification} from '../../helper/modification';
@@ -18,6 +18,9 @@ import {DataStore} from '../../data-row';
 import {Oxonium} from '../../helper/oxonium';
 import {AnnoucementService} from '../../helper/annoucement.service';
 import {SwathLibHelperService} from '../../helper/swath-lib-helper.service';
+import {Overlay, OverlayRef} from '@angular/cdk/overlay';
+import {TemplatePortal} from '@angular/cdk/portal';
+import {OverlayService} from '../../overlay.service';
 
 @Component({
   selector: 'app-sequence-selector',
@@ -26,6 +29,9 @@ import {SwathLibHelperService} from '../../helper/swath-lib-helper.service';
   providers: [NgbTooltipConfig, NgbDropdownConfig]
 })
 export class SequenceSelectorComponent implements OnInit, OnDestroy {
+  @ViewChild('conMen') conMen: TemplateRef<any>;
+  overlayRef: OverlayRef | null;
+
   modalref: NgbModalRef;
   preMadeForm: FormGroup;
   addModForm: FormGroup;
@@ -41,6 +47,7 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
   b_selected = [];
   y_selected = [];
   progressStage = 'info';
+
   @ViewChild('coordEditor') coordEditor;
 
   get currentCoord(): SeqCoordinate {
@@ -100,7 +107,10 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
               private fb: FormBuilder,
               private srs: SwathResultService,
               private ans: AnnoucementService,
-              private libHelper: SwathLibHelperService) {
+              private libHelper: SwathLibHelperService,
+              public overlay: Overlay,
+              public viewContainerRef: ViewContainerRef,
+              private over: OverlayService) {
     this.staticMods = mod.staticMods;
     this.variableMods = mod.variableMods;
     this.Ymods = mod.YtypeMods;
@@ -565,35 +575,71 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
   }
 
   eventHandler(event) {
-    switch (event.event) {
+
+    // this.over.open(event.x, event.y);
+    this.OpenContextMenu(event.x, event.y, event.block.aa.coordinate);
+    console.log(event);
+  }
+
+  OpenContextMenu(x, y, aa) {
+    this.closeContextMenu();
+    const positionStrategy = this.overlay.position().flexibleConnectedTo({x, y}).withPositions([
+      {
+        originX: 'end',
+        originY: 'bottom',
+        overlayX: 'end',
+        overlayY: 'top',
+      }
+    ]);
+
+    this.overlayRef = this.overlay.create({
+      positionStrategy,
+      scrollStrategy: this.overlay.scrollStrategies.close()
+    });
+
+    this.overlayRef.attach(new TemplatePortal(this.conMen, this.viewContainerRef, {
+      $implicit: aa
+    }));
+    console.log(positionStrategy);
+  }
+
+  closeContextMenu() {
+    if (this.overlayRef) {
+      this.overlayRef.dispose();
+      this.overlayRef = null;
+    }
+
+  }
+
+  contextMenuAction(residue, action) {
+    switch (action) {
       case 'edit':
-        this.openEditModal(this.coordEditor, event.residue);
+        this.openEditModal(this.coordEditor, residue);
         break;
       case 'bstop':
-        this.b_stop_at = event.residue;
+        this.b_stop_at = residue;
         break;
       case 'ystop':
-        this.y_stop_at = event.residue;
+        this.y_stop_at = residue;
         break;
       case 'bselect':
 
-        if (!this.b_selected.includes(event.residue)) {
-          this.b_selected.push(event.residue);
+        if (!this.b_selected.includes(residue)) {
+          this.b_selected.push(residue);
         } else {
-          const pos = this.b_selected.indexOf(event.residue);
+          const pos = this.b_selected.indexOf(residue);
           this.b_selected.splice(pos, 1);
         }
         break;
       case 'yselect':
 
-        if (!this.y_selected.includes(event.residue)) {
-          this.y_selected.push(event.residue);
+        if (!this.y_selected.includes(residue)) {
+          this.y_selected.push(residue);
         } else {
-          const pos = this.y_selected.indexOf(event.residue);
+          const pos = this.y_selected.indexOf(residue);
           this.y_selected.splice(pos, 1);
         }
         break;
     }
-    console.log(event);
   }
 }

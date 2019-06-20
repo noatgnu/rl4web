@@ -1,10 +1,24 @@
-import {Component, ElementRef, Input, OnInit, AfterViewInit, OnChanges, Output, EventEmitter, OnDestroy} from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  Input,
+  OnInit,
+  AfterViewInit,
+  OnChanges,
+  Output,
+  EventEmitter,
+  OnDestroy,
+  ViewChild,
+  TemplateRef, ViewContainerRef,
+} from '@angular/core';
+import {Overlay, OverlayRef} from '@angular/cdk/overlay';
 import {D3Service, D3} from 'd3-ng2-service';
 import {SeqCoordinate} from '../../helper/seq-coordinate';
 import {SvgAnnotationService} from '../../helper/svg-annotation.service';
 import {SvgContextMenuService} from '../../helper/svg-context-menu.service';
 import {Observable, Subscription} from 'rxjs';
 import {SwathLibHelperService} from '../../helper/swath-lib-helper.service';
+import {TemplatePortal} from '@angular/cdk/portal';
 
 @Component({
   selector: 'app-seq-viewer',
@@ -12,6 +26,7 @@ import {SwathLibHelperService} from '../../helper/swath-lib-helper.service';
   styleUrls: ['./seq-viewer.component.scss']
 })
 export class SeqViewerComponent implements OnInit, OnDestroy {
+
   private _Seq: SeqCoordinate[];
   gridSize = 20;
   @Input() unique_id: string;
@@ -217,15 +232,21 @@ export class SeqViewerComponent implements OnInit, OnDestroy {
     aaTextBlock.on('mouseover', function (d) {
       const current = d3.select(d3.event.currentTarget.parentNode);
       current.selectAll('g.annotation-connector, g.annotation-note').classed('hidden', false);
+
     }).on('mouseout', function (d) {
       const current = d3.select(d3.event.currentTarget.parentNode);
       current.selectAll('g.annotation-connector, g.annotation-note').classed('hidden', true);
     })
     ;
 
-    if (this.menu) {
+    /*if (this.menu) {
       aaTextBlock.on('contextmenu', this.d3Context(this.menu));
-    }
+    }*/
+    const emit = this.contextEvent;
+    aaTextBlock.on('contextmenu', function (elm, d, i) {
+      d3.event.preventDefault();
+      emit.emit({block: elm, x: d3.event.clientX, y: d3.event.clientY, html: d3.select(d3.event.currentTarget).node()});
+    });
 
 
     /*const annotation = aaBlock.append('g').attr('class', 'annotation-group')
@@ -338,5 +359,6 @@ export class SeqViewerComponent implements OnInit, OnDestroy {
     }
     return annotations;
   }
+
 
 }
