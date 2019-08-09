@@ -477,6 +477,7 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
   }
 
   changeStatus(t, m) {
+    console.log(t, m);
     if (t.checked) {
       for (const k of m.positions) {
         for (const m2 of this.seqCoord[k].mods) {
@@ -500,6 +501,7 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
   }
 
   changePattern(t, m) {
+    console.log(t, m);
     if (t.checked) {
       for (const k of m.positions) {
         for (const m2 of this.seqCoord[k].mods) {

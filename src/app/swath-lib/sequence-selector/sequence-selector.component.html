@@ -46,12 +46,12 @@
                   <span class="badge badge-pill badge-warning" *ngSwitchCase="'static'" (click)="selectCoordinates(m.positions)">{{m.name}} {{m.Ytype}}: {{m.positions.length}}</span>
                 </div>
                 <div class="row mt-2 in-line form-inline" *ngIf="m.type=='Ytype'||m.type=='variable'">
-                  <input type="checkbox" class="form-control form-control-sm" id="status-filled-{{protein.id+m.label}}" #statusfilled (change)="changeStatus(statusfilled, m)" [checked]="m.status">
-                  <label for="status-filled-{{protein.id+m.label}}">Filled all positions</label>
+                  <input type="checkbox" class="form-control form-control-sm" id="status-filled-{{protein.id+m.label}}" #statusfilled [(ngModel)]="m.status" [checked]="m.status">
+                  <label>Filled all positions</label>
                 </div>
                 <div class="row mt-2 in-line form-inline" *ngIf="m.type=='Ytype'||m.type=='variable'">
                   <input type="checkbox" class="form-control form-control-sm" id="mp-{{protein.id+m.label}}" #mp (change)="changePattern(mp, m)" [checked]="m.multiple_pattern">
-                  <label for="mp-{{protein.id+m.label}}">Multiple Pattern</label>
+                  <label>Multiple Pattern</label>
                 </div>
               </div>
             </div>
